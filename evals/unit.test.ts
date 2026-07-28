@@ -12,6 +12,7 @@
  */
 
 import { includesFact, isBackendRefusal } from './run.js';
+import { wrapArtifact } from '../src/agent/artifact-harness.js';
 import {
 	buildPrompt,
 	extractToolCalls,
@@ -194,6 +195,23 @@ const GOOD = [
 ];
 for (const [i, t] of REFUSALS.entries()) check(isBackendRefusal(t), `flags refusal ${i + 1}`);
 for (const [i, t] of GOOD.entries()) check(!isBackendRefusal(t), `does NOT flag good answer ${i + 1}`);
+
+group('artifact harness: TypeScript-flavoured source must compile TS-first');
+// Regression, found by rendering in a real browser rather than unit-testing the
+// wrapper in isolation. `useState<number>(0)` is NOT a syntax error to Babel's
+// react preset — it parses as a chain of comparisons — so the react attempt
+// "succeeds", emits code referencing a bare identifier `number`, and the
+// artifact dies at RENDER time with "number is not defined". Trying react first
+// and breaking on success never reaches the TypeScript fallback for exactly the
+// input that needs it. The harness now sniffs TS syntax and reorders.
+const tsArtifact = wrapArtifact(
+	'react',
+	'function App() {\n  const [amps, setAmps] = useState<number>(200);\n  return <div>{amps}</div>;\n}',
+);
+const tsIdx = tsArtifact.html.indexOf("typescript");
+const jsxIdx = tsArtifact.html.indexOf("artifact.jsx");
+check(tsArtifact.html.includes('looksTypeScript'), 'harness ships the TS-detection branch');
+check(tsIdx !== -1 && jsxIdx !== -1, 'both Babel presets are present');
 
 console.log(failures === 0 ? '\nALL PASS' : `\n${failures} FAILURE(S)`);
 process.exit(failures === 0 ? 0 : 1);

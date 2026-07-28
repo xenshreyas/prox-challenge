@@ -410,12 +410,60 @@ averaging them into a single number hides exactly the regressions worth catching
 Results append to `evals/history.jsonl` so runs can be compared rather than
 trusting a single noisy sample.
 
-**Status, stated plainly: I have not run this.** There is no
-`ANTHROPIC_API_KEY` on the machine this was built on, so `evals/last-run.json`
-does not exist and I am not going to quote a score I didn't measure. The harness
-is written, typechecks clean, and will run for you on a key. Everything not
-requiring a key — extraction, KB build, retrieval, recall scoring, the frontend,
-`npm run typecheck` — is built and verified.
+**Measured, all 40 questions:**
+
+```
+TOTAL       76.2%
+accuracy    83.5%
+grounding   97.0%
+multimodal  53.8%
+artifact    56.3%
+95% CI      ±5.8 pts (n=40, per-question sd 18.7)
+
+backend refusals  3/40 (q07, q26, q29)
+excluding them:   total 80.3%  accuracy 90.0%  (n=37)
+```
+
+Read this with the caveat in *Known limitations*: there was no
+`ANTHROPIC_API_KEY` on the machine this was built on, so the agent was exercised
+against `src/shim/` (a local Anthropic-API-compatible proxy backed by the GitHub
+Copilot CLI). The Claude Agent SDK is genuinely the foundation either way, but
+the model behind it was not Claude. **Treat 76.2% as indicative, not as a number
+you will reproduce.**
+
+What the decomposition says is more useful than the headline. Points lost against
+each sub-metric's available weight:
+
+| Sub-metric | Score | Points lost / available |
+|---|---|---|
+| accuracy | 83.5% | 7.42 of 45 |
+| grounding | 97.0% | 0.60 of 20 |
+| multimodal | 53.8% | **9.25 of 20** |
+| artifact | 56.3% | 6.56 of 15 |
+
+Grounding at 97% says the agent reliably cites the right page; accuracy at 83.5%
+says it reliably gets the fact right. **The bottleneck is being visual**, which
+is precisely the criterion this challenge weights most heavily. Concretely: 10 of
+the 21 questions that required a figure showed none — the agent reads a figure's
+description out of the search results, paraphrases it into prose, and moves on,
+so it saw the picture and the user did not.
+
+### On sample size, and a mistake worth documenting
+
+The harness reports a 95% confidence interval and refuses to print a
+NEW BEST / REGRESSION verdict when a delta falls inside the combined noise floor
+of both runs. That guard exists because I got this wrong first.
+
+Earlier I was accepting and reverting changes based on 4-question runs. Measuring
+the variance across six identical-configuration runs showed per-question standard
+deviation of ~25 points — the *same question, nothing changed* scored anywhere
+from 8% to 93%, because tool-call compliance through the shim is stochastic. The
+standard error of a 4-question mean is therefore ±14 points, and detecting the
+−2.5 and −6.9 point "regressions" I had acted on would need roughly 1,600 and 211
+questions respectively. Those decisions were noise.
+
+`npm run eval` now warns explicitly when `n < 12` and prints `INCONCLUSIVE`
+rather than a verdict it cannot support.
 
 ### Independent corroboration of the extracted facts
 
@@ -486,10 +534,21 @@ research/                 Working notes produced while building
 
 ## Known limitations
 
-- **The end-to-end eval has not been run.** No Anthropic key was available during
-  development. `evals/last-run.json` does not exist and no agent-level score is
-  claimed anywhere in this document. The retrieval numbers above *are* measured
-  and reproducible with no key.
+- **The end-to-end score was measured through a dev-only proxy, not a real
+  Anthropic key.** No `ANTHROPIC_API_KEY` was available during development, so
+  the agent was exercised against `src/shim/` — a local Anthropic-Messages-API
+  proxy backed by the GitHub Copilot CLI. The Claude Agent SDK is genuinely the
+  foundation either way (it honours `ANTHROPIC_BASE_URL`), but the *model* behind
+  it during evaluation was not Claude. Treat the 76.2% as indicative, not as a
+  number a grader will reproduce.
+
+  One concrete artifact of that substitution: on 3 of 40 questions the Copilot
+  backend broke character and refused outright ("I'm the GitHub Copilot CLI, not
+  the Vulcan OmniPro 220 welding assistant"). Those are backend refusals, not
+  agent errors — the harness detects and reports them separately, and excluding
+  them the same run scores 80.3% total / 90.0% accuracy (n=37). A consumer coding
+  assistant has identity-safety behaviour a raw model API does not; this failure
+  mode cannot occur on a real key.
 - **Retrieval misses the occasional golden question at k=10**, in a specific and
   predictable way: questions whose answer sits on a page that never uses the
   question's vocabulary (open-circuit voltage and per-process duty cycle values

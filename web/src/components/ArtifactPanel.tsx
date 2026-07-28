@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Artifact } from '../types';
 import { artifactLabel, buildArtifactSrcDoc } from '../lib/artifactRuntime';
 import { CopyIcon, CheckIcon, CodeIcon, ExternalIcon, PlayIcon, RefreshIcon, CloseIcon } from './icons';
@@ -11,11 +11,24 @@ interface Props {
   onClose?: () => void;
 }
 
+/** Messages the artifact harness posts out of the sandboxed iframe. */
+type HarnessMessage =
+  | { source: 'artifact'; type: 'resize'; height: number }
+  | { source: 'artifact'; type: 'error'; message: string }
+  | { source: 'artifact'; type: 'ready' };
+
+function isHarnessMessage(d: unknown): d is HarnessMessage {
+  return !!d && typeof d === 'object' && (d as { source?: unknown }).source === 'artifact';
+}
+
 export function ArtifactPanel({ artifacts, activeId, onSelect, onClose }: Props) {
   const active = artifacts.find((a) => a.id === activeId) ?? artifacts[0];
   const [view, setView] = useState<'preview' | 'code'>('preview');
   const [copied, setCopied] = useState(false);
   const [nonce, setNonce] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [height, setHeight] = useState<number | null>(null);
+  const frameRef = useRef<HTMLIFrameElement | null>(null);
 
   const srcDoc = useMemo(
     () => (active ? buildArtifactSrcDoc(active) : ''),
@@ -23,9 +36,38 @@ export function ArtifactPanel({ artifacts, activeId, onSelect, onClose }: Props)
     [active?.id, active?.code, nonce],
   );
 
+  const reload = useCallback(() => {
+    setError(null);
+    setHeight(null);
+    setNonce((n) => n + 1);
+  }, []);
+
+  // Reset per-artifact state whenever the selection or the reload nonce changes.
   useEffect(() => {
     setView('preview');
+    setError(null);
+    setHeight(null);
   }, [active?.id]);
+
+  // The iframe is cross-origin (opaque), so postMessage is the only channel.
+  // Accept only messages whose source is this artifact's contentWindow, so a
+  // stale frame or an unrelated embed cannot drive this panel's state.
+  useEffect(() => {
+    const onMessage = (e: MessageEvent) => {
+      if (frameRef.current && e.source !== frameRef.current.contentWindow) return;
+      const d: unknown = e.data;
+      if (!isHarnessMessage(d)) return;
+      if (d.type === 'resize' && Number.isFinite(d.height)) {
+        setHeight(Math.min(Math.max(d.height, 120), 20000));
+      } else if (d.type === 'error') {
+        setError((prev) => prev ?? String(d.message));
+      } else if (d.type === 'ready') {
+        setError(null);
+      }
+    };
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, [active?.id, nonce]);
 
   useEffect(() => {
     if (!copied) return;
@@ -110,7 +152,7 @@ export function ArtifactPanel({ artifacts, activeId, onSelect, onClose }: Props)
           <code>{active.mimeType}</code>
         </div>
         <div className={styles.tools}>
-          <button className={styles.iconBtn} onClick={() => setNonce((n) => n + 1)} title="Reload artifact" aria-label="Reload artifact">
+          <button className={styles.iconBtn} onClick={reload} title="Reload artifact" aria-label="Reload artifact">
             <RefreshIcon />
           </button>
           <button className={styles.iconBtn} onClick={copyCode} title="Copy source" aria-label="Copy artifact source">
@@ -124,15 +166,40 @@ export function ArtifactPanel({ artifacts, activeId, onSelect, onClose }: Props)
 
       <div className={styles.stage}>
         {view === 'preview' ? (
-          <iframe
-            key={`${active.id}:${nonce}`}
-            className={styles.frame}
-            title={active.title}
-            srcDoc={srcDoc}
-            sandbox="allow-scripts"
-            referrerPolicy="no-referrer"
-            loading="lazy"
-          />
+          <div className={styles.scroller}>
+            {error && (
+              <div className={styles.errorBar} role="alert">
+                <div className={styles.errorHead}>
+                  <span className={styles.errorDot} aria-hidden />
+                  <strong>This artifact didn’t render cleanly</strong>
+                </div>
+                <pre className={styles.errorBody}>{error}</pre>
+                <div className={styles.errorActions}>
+                  <button className={styles.errorBtn} onClick={reload}>
+                    <RefreshIcon /> Try again
+                  </button>
+                  <button className={styles.errorBtn} onClick={() => setView('code')}>
+                    <CodeIcon /> View source
+                  </button>
+                  <button className={styles.errorBtn} onClick={copyCode}>
+                    {copied ? <CheckIcon /> : <CopyIcon />} Copy source
+                  </button>
+                </div>
+              </div>
+            )}
+            <iframe
+              ref={frameRef}
+              key={`${active.id}:${nonce}`}
+              className={styles.frame}
+              /* Sized from the harness's postMessage resize events; falls back to
+                 filling the stage until the first measurement arrives. */
+              style={height ? { height: `${height}px` } : undefined}
+              title={active.title}
+              srcDoc={srcDoc}
+              sandbox="allow-scripts"
+              referrerPolicy="no-referrer"
+            />
+          </div>
         ) : (
           <pre className={styles.code}>
             <code>{active.code}</code>

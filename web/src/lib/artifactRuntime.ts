@@ -42,18 +42,45 @@ const ERROR_TRAP = `
   function showError(label, err) {
     var box = document.createElement('pre');
     box.className = 'artifact-error';
-    box.textContent = label + '\\n\\n' + (err && (err.stack || err.message) || String(err));
+    var msg = (err && (err.stack || err.message)) || String(err);
+    if (msg.length > 1200) msg = msg.slice(0, 1200) + '\\n…';
+    box.textContent = label + '\\n\\n' + msg;
     document.body.appendChild(box);
+    // Mirror to the host so ArtifactPanel can show its inline failure state
+    // instead of just a red box buried inside the frame.
+    try { parent.postMessage({ source: 'artifact', type: 'error', message: label + ': ' + msg }, '*'); } catch (e) {}
   }
+  function reportReady() { try { parent.postMessage({ source: 'artifact', type: 'ready' }, '*'); } catch (e) {} }
   window.addEventListener('error', function (e) { showError('Runtime error', e.error || e.message); });
   window.addEventListener('unhandledrejection', function (e) { showError('Unhandled promise rejection', e.reason); });
+  // Keep the host iframe sized to the content.
+  (function () {
+    function report() {
+      var h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight,
+                       document.body.offsetHeight, document.documentElement.offsetHeight);
+      try { parent.postMessage({ source: 'artifact', type: 'resize', height: h }, '*'); } catch (e) {}
+    }
+    window.addEventListener('load', report);
+    if (typeof ResizeObserver !== 'undefined') {
+      window.addEventListener('DOMContentLoaded', function () { new ResizeObserver(report).observe(document.body); });
+    }
+    setInterval(report, 700);
+  })();
 `;
 
+/** A complete document — already wrapped by the server-side artifact harness. */
+function isFullDocument(code: string): boolean {
+  return /^\s*(<!doctype\s+html|<html[\s>])/i.test(code);
+}
+
 function isReactArtifact(a: Artifact): boolean {
+  // Checked first, and deliberately ahead of the mimeType test: the server-side
+  // harness emits an already-wrapped standalone document while still labelling
+  // it application/vnd.ant.react. Re-wrapping that as component source would
+  // hand Babel a `<!doctype html>` and blow up every server artifact.
+  if (isFullDocument(a.code)) return false;
   if (/react|jsx|tsx|javascript/i.test(a.mimeType)) return true;
-  // heuristic fallback: a bare code blob that clearly isn't a full document
-  const looksLikeDoc = /^\s*(<!doctype|<html)/i.test(a.code);
-  return !looksLikeDoc && /(export\s+default|function\s+\w+\s*\(|=>\s*\()/.test(a.code);
+  return /(export\s+default|function\s+\w+\s*\(|=>\s*\()/.test(a.code);
 }
 
 /** Strip ESM imports (React et al. are provided as globals) and normalise the default export. */
@@ -81,7 +108,10 @@ function escapeForScript(s: string): string {
 export function buildArtifactSrcDoc(artifact: Artifact): string {
   if (!isReactArtifact(artifact)) {
     const code = artifact.code;
-    // Full HTML document: inject our base CSS + error trap into <head>.
+    // Already a complete document. If it came from our server-side harness it
+    // has its own theme, error trap and resize reporter — leave it alone.
+    if (/id=["']artifact-error["']/.test(code)) return code;
+    // Full HTML document from somewhere else: inject our base CSS + error trap.
     if (/<html[\s>]/i.test(code)) {
       const inject = `<style>${BASE_CSS}</style><script>${ERROR_TRAP}<\/script>`;
       if (/<head[\s>]/i.test(code)) {
@@ -149,6 +179,7 @@ ${source}
   try {
     var root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(React.createElement(Component));
+    reportReady();
   } catch (err) {
     showError('Render failed', err);
   }
