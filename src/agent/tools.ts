@@ -377,6 +377,41 @@ export function answerCompletenessCallToAction(query: string, userQuestion = que
 			);
 		}
 	}
+	const asksForExcessiveCtwdDefects =
+		/\b(?:ctwd|contact tip(?: to|-to-)work distance)\b/i.test(userQuestion) &&
+		/\b(?:defects?|result|causes?|exceed|too long)\b/i.test(userQuestion);
+	if (asksForExcessiveCtwdDefects) {
+		// The answer spans the setup limit, the diagnosis chart, and several p. 37
+		// defect sections. Exact wording can rank only the numeric limit and omit a
+		// defect (spatter in the measured q28 run), so assemble the documented links.
+		const distance = search('maintain 1/2 CTWD inadequate penetration', { limit: 8 });
+		const defects = search(
+			'CTWD too long porosity excessive spatter crooked wavy bead inadequate penetration',
+			{ limit: 12 },
+		);
+		const limit = distance.find(
+			(hit) =>
+				hit.chunk.doc === 'owner-manual' &&
+				/maintaining 1\/2 inch or less CTWD/i.test(hit.chunk.text),
+		);
+		const porosity = search('porosity caused CTWD too long', { limit: 8 }).find(
+			(hit) => hit.chunk.doc === 'owner-manual' && /porosity can be caused.*CTWD too long/i.test(hit.chunk.text),
+		);
+		const spatter = defects.find(
+			(hit) => /excessive spatter can be caused.*CTWD too long/i.test(hit.chunk.text),
+		);
+		const crooked = defects.find(
+			(hit) => /crooked or wavy bead can be caused.*CTWD too long/i.test(hit.chunk.text),
+		);
+		if (limit && porosity && spatter && crooked) {
+			return (
+				`\n\n=== COMPLETE EXCESSIVE-CTWD EFFECTS REQUIRED ===\n` +
+				`${renderHit(limit)}\n\n${renderHit(porosity)}\n\n${renderHit(spatter)}\n\n${renderHit(crooked)}\n\n` +
+				`State the 1/2-inch maximum and preserve every retrieved result of excessive CTWD in the ` +
+				`visible answer: inadequate penetration, porosity, excessive spatter, and a crooked or wavy bead.`
+			);
+		}
+	}
 	if (asksForTroubleshootingEnumeration(userQuestion)) {
 		// A model rewrite can collapse an exact matrix-row request into generic
 		// wire-feed terms, which exposes adjacent troubleshooting rows and invites

@@ -578,6 +578,21 @@ check(
 	'original q38 wording preserves the complete thermal-protection response after a narrow search rewrite',
 );
 
+const ctwdDefectsQuestion =
+	'What CTWD does the manual require, and what defects result from exceeding it?';
+const ctwdDefectsCompleteness = answerCompletenessCallToAction(
+	'contact tip distance porosity defects',
+	ctwdDefectsQuestion,
+);
+check(
+	ctwdDefectsCompleteness.includes('1/2') &&
+		ctwdDefectsCompleteness.includes('porosity') &&
+		ctwdDefectsCompleteness.includes('spatter') &&
+		ctwdDefectsCompleteness.includes('crooked') &&
+		ctwdDefectsCompleteness.includes('inadequate penetration'),
+	'original q28 wording preserves every documented excessive-CTWD defect after a narrow search rewrite',
+);
+
 group('agent: artifact-required turns cannot stop before creating one');
 for (const question of [
 	'What is the highest MIG output current at 100% duty cycle on 120 V and 240 V?',
