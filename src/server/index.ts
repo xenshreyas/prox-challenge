@@ -10,16 +10,14 @@
 
 import { createReadStream, existsSync } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import 'dotenv/config';
 import express, { type Request, type Response } from 'express';
 
 import { ask, warmUp } from '../agent/agent.js';
-import { loadKB, KB_PAGES_DIR, REPO_ROOT } from '../kb/search.js';
+import { loadKB, KB_PAGES_DIR, REPO_ROOT, resolvePageImage } from '../kb/search.js';
 
 const PORT = Number(process.env.PORT ?? 8787);
-const HERE = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 app.use(express.json({ limit: '12mb' })); // headroom for user-uploaded photos
@@ -54,8 +52,8 @@ app.get('/api/page-image/:doc/:page', (req, res) => {
 		res.status(400).json({ error: 'Bad page reference' });
 		return;
 	}
-	const file = path.join(KB_PAGES_DIR, `${doc}-${String(page).padStart(2, '0')}.png`);
-	if (!file.startsWith(KB_PAGES_DIR) || !existsSync(file)) {
+	const file = resolvePageImage(doc, page);
+	if (!file || !file.startsWith(KB_PAGES_DIR)) {
 		res.status(404).json({ error: 'Page image not found' });
 		return;
 	}

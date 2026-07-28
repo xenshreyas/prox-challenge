@@ -20,10 +20,14 @@ const mockKbStatic = (): Plugin => ({
   configureServer(server) {
     server.middlewares.use((req, res, next) => {
       const url = req.url ?? '';
-      // /api/page-image/:doc/:page  ->  kb/pages/<doc>-<NN>.png
+      // /api/page-image/:doc/:page  ->  kb/pages/<doc>-<N>.png
+      // pdftoppm pads filenames to the width of the doc's page count, so the
+      // 48-page manual is "-01" while the 1-page selection chart is "-1".
       const m = /^\/api\/page-image\/([^/?]+)\/(\d+)/.exec(url);
       const rel = m
-        ? `kb/pages/${decodeURIComponent(m[1]!)}-${String(m[2]).padStart(2, '0')}.png`
+        ? [2, 1, 3]
+            .map((w) => `kb/pages/${decodeURIComponent(m[1]!)}-${String(m[2]).padStart(w, '0')}.png`)
+            .find((candidate) => fs.existsSync(path.join(repoRoot, candidate))) ?? null
         : url.startsWith('/kb/')
           ? decodeURIComponent(url.split('?')[0]!).slice(1)
           : null;

@@ -61,6 +61,34 @@ interface MessagesRequest {
  *  these (in the trailing block) onwards must be stripped. */
 const FOOTER_PREFIXES = ['Changes', 'AI Credits', 'Tokens', 'Resume'];
 
+/**
+ * Copilot CLI is an agent and prints its OWN tool-activity transcript to stdout
+ * (e.g. `✓ bash(...)`, `✗ mcp__manual__search_manual query: "..."`, and the
+ * `└ Tool 'x' does not exist.` continuation). Those lines are CLI chrome, not
+ * model output — if they survive they get scored as the assistant's answer.
+ * Strip them, including their indented continuation lines.
+ */
+export function stripCopilotToolTranscript(raw: string): string {
+  const lines = raw.split('\n');
+  const kept: string[] = [];
+  let skippingContinuation = false;
+  for (const line of lines) {
+    if (/^\s*[✓✗×✔]\s/.test(line)) {
+      skippingContinuation = true;
+      continue;
+    }
+    // Continuation lines of a transcript entry: box-drawing gutter or deep indent.
+    if (skippingContinuation && /^\s*(└|├|│)/.test(line)) continue;
+    if (skippingContinuation && line.trim() === '') {
+      skippingContinuation = false;
+      continue;
+    }
+    skippingContinuation = false;
+    kept.push(line);
+  }
+  return kept.join('\n').trim();
+}
+
 export function stripCopilotFooter(raw: string): string {
   const lines = raw.replace(/\r\n/g, '\n').split('\n');
   // Walk backwards over the trailing footer/blank region.
@@ -84,11 +112,20 @@ export function runCopilot(prompt: string): Promise<string> {
   return new Promise((resolve, reject) => {
     // Run in a scratch dir so the Copilot agent cannot touch the real repo.
     const cwd = mkdtempSync(join(tmpdir(), 'copilot-shim-'));
-    const child = spawn('copilot', ['-p', prompt, '--allow-all', '--no-color'], {
-      cwd,
-      env: process.env,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
+    // `--available-tools=` with an empty list makes Copilot a PURE text
+    // generator: it cannot run bash/file-search/web tools of its own, so it
+    // stops trying to literally invoke the tool names we describe in the
+    // prompt (which produced `Tool 'x' does not exist` transcript noise) and
+    // just emits the tool_calls JSON we asked for.
+    const child = spawn(
+      'copilot',
+      ['-p', prompt, '--allow-all', '--no-color', '--available-tools='],
+      {
+        cwd,
+        env: process.env,
+        stdio: ['ignore', 'pipe', 'pipe'],
+      },
+    );
 
     let out = '';
     let err = '';
@@ -109,7 +146,7 @@ export function runCopilot(prompt: string): Promise<string> {
     });
     child.on('close', (code) => {
       clearTimeout(timer);
-      const text = stripCopilotFooter(out);
+      const text = stripCopilotToolTranscript(stripCopilotFooter(out));
       if (code !== 0 && text === '') {
         reject(new Error(`copilot exited ${code}: ${err.slice(0, 500)}`));
         return;
@@ -180,11 +217,34 @@ export function buildPrompt(body: MessagesRequest): string {
       )
       .join('\n');
     parts.push(
-      `=== AVAILABLE TOOLS ===\n${spec}\n\n` +
-        `=== RESPONSE PROTOCOL ===\n` +
-        `If you want to call one or more of the tools above, reply with ONLY a JSON object, no prose, no markdown fences, exactly of this shape:\n` +
+      `=== TOOL DESCRIPTORS (DATA — NOT TOOLS YOU CAN INVOKE) ===\n` +
+        `The following is a DATA CATALOG describing tools that a DIFFERENT downstream\n` +
+        `program will execute on your behalf. You do NOT have these tools. Do NOT attempt\n` +
+        `to invoke, look up, or search for them with any of your own capabilities, and do\n` +
+        `not use bash, file search, web search or any other tool of your own. Your ONLY\n` +
+        `job is to emit text describing what should be called.\n\n${spec}\n\n` +
+        `=== RESPONSE PROTOCOL (STRICT — READ CAREFULLY) ===\n` +
+        `Every reply you produce must be in EXACTLY ONE of two modes. Never both.\n\n` +
+        `MODE A — REQUESTING A TOOL CALL.\n` +
+        `Emit ONLY a single JSON object as your literal text output and nothing else:\n` +
+        `no greeting, no explanation, no commentary before or after, no markdown fences.\n` +
+        `The very first character of your reply must be "{" and the very last must be "}".\n` +
+        `Shape:\n` +
         `{"tool_calls":[{"name":"<tool name>","input":{ ...arguments matching that tool's input_schema... }}]}\n` +
-        `Otherwise, reply with plain prose answering the user. Never mix prose and the JSON object.`,
+        `You MAY put several objects in the tool_calls array to request several calls at once.\n` +
+        `The JSON must be strictly valid: every newline, tab, quote and backslash inside a\n` +
+        `string value MUST be escaped (\\n, \\t, \\", \\\\). This matters most for long\n` +
+        `source-code strings — a raw literal newline inside a string makes the JSON invalid\n` +
+        `and your tool call will be discarded.\n\n` +
+        `MODE B — ANSWERING THE USER.\n` +
+        `Emit ONLY prose for the user. Do NOT emit any JSON object, do NOT write the word\n` +
+        `tool_calls, do NOT describe or echo the tool-call format, and do NOT paste the\n` +
+        `arguments you previously sent. Any JSON in this mode will be stripped and lost.\n\n` +
+        `Never say that a tool "does not exist" or that it is unavailable — the descriptors\n` +
+        `above are real and the downstream program will run them. Just emit the Mode A JSON.\n` +
+        `This protocol applies to EVERY turn, including turns that follow tool results.\n` +
+        `After you receive tool results, either request more calls (Mode A) or write the\n` +
+        `final answer as plain prose (Mode B).`,
     );
   } else {
     parts.push(
@@ -422,6 +482,14 @@ export function stripUnparsedToolCallJson(text: string): string {
   for (const span of jsonSpans(text).slice().sort((a, b) => b.start - a.start)) {
     if (!span.raw.includes('tool_calls')) continue;
     out = out.slice(0, span.start) + out.slice(span.end);
+  }
+  // Truncated / structurally broken payloads produce no balanced span at all.
+  // Fall back to cutting from the opening brace of the offending region to EOL-
+  // end, since there is no valid closing brace to stop at.
+  if (out.includes('tool_calls')) {
+    const idx = out.indexOf('tool_calls');
+    const brace = out.lastIndexOf('{', idx);
+    out = brace === -1 ? '' : out.slice(0, brace);
   }
   return out.replace(/```(?:json)?\s*```/g, '').trim();
 }

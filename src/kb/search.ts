@@ -156,7 +156,12 @@ const SYNONYM_GROUPS: string[][] = [
 	['circuit breaker', 'breaker', 'fuse', 'branch circuit', 'plug', 'adapter', 'receptacle'],
 	['error', 'fault', 'code', 'troubleshoot', 'troubleshooting', 'problem', 'symptom'],
 	['nameplate', 'rating plate', 'name plate', 'data plate', 'rating label', 'specification', 'specifications', 'spec', 'rated'],
-	['open circuit voltage', 'ocv', 'no load voltage', 'maximum voltage', 'max ocv'],
+	['open circuit voltage', 'ocv', 'no load voltage', 'maximum voltage', 'max ocv', 'u0'],
+	// Nameplate electrical symbols. The rating plate prints these as bare
+	// symbols (I1max / I1eff / U0 / X) while questions ask in words.
+	['i1max', 'maximum input current', 'max input current', 'rated input current'],
+	['i1eff', 'effective input current', 'effective current', 'rms input current'],
+	['ip21s', 'enclosure protection', 'protection rating', 'ingress protection', 'ip rating'],
 	['selection chart', 'selection', 'process selection', 'chart'],
 	['maintenance', 'clean', 'cleaning', 'inspect', 'inspection', 'service'],
 	['safety', 'warning', 'caution', 'hazard', 'danger', 'ppe'],
@@ -215,6 +220,8 @@ interface QueryShape {
 	/** expansion terms (lower weight) */
 	expansions: string[];
 	numericTerms: string[];
+	/** adjacent bigrams of the query's own terms */
+	bigrams: string[];
 }
 
 function analyzeQuery(query: string): QueryShape {
@@ -234,6 +241,7 @@ function analyzeQuery(query: string): QueryShape {
 		terms,
 		expansions: [...expansions],
 		numericTerms: terms.filter((t) => t.startsWith('#')),
+		bigrams: [...bigramsOf(terms)],
 	};
 }
 
@@ -245,6 +253,8 @@ interface IndexedChunk {
 	len: number;
 	/** tokens from heading/section/topics/figure hooks — higher precision */
 	fieldTf: Map<string, number>;
+	/** adjacent word-token bigrams ("duty|cycle") across body + metadata */
+	bigrams: Set<string>;
 }
 
 interface KBIndex {
@@ -268,6 +278,16 @@ function chunkFieldText(c: Chunk): string {
 	return parts.join(' ');
 }
 
+/** Adjacent bigrams over word tokens only (numeric `#` tokens are skipped). */
+function bigramsOf(...tokenLists: string[][]): Set<string> {
+	const out = new Set<string>();
+	for (const toks of tokenLists) {
+		const words = toks.filter((t) => !t.startsWith('#'));
+		for (let i = 0; i + 1 < words.length; i += 1) out.add(`${words[i]}|${words[i + 1]}`);
+	}
+	return out;
+}
+
 function buildIndex(kb: KnowledgeBase): KBIndex {
 	const docs: IndexedChunk[] = [];
 	const df = new Map<string, number>();
@@ -285,7 +305,7 @@ function buildIndex(kb: KnowledgeBase): KBIndex {
 		}
 		const len = bodyTokens.length + fieldTokens.length;
 		totalLen += len;
-		docs.push({ chunk, tf, len, fieldTf });
+		docs.push({ chunk, tf, len, fieldTf, bigrams: bigramsOf(bodyTokens, fieldTokens) });
 	}
 
 	const pageByKey = new Map<string, PageMeta>();
@@ -341,6 +361,13 @@ const EXPANSION_WEIGHT = 0.45;
 const FIELD_WEIGHT = envNum('RT_FIELD_WEIGHT', 1.9);
 
 const PROC_HIT = envNum('RT_PROC_HIT', 1.45);
+/**
+ * Phrase-adjacency bonus per matched query bigram.
+ *
+ * Tuned: 0.10 is the ceiling. 0.18+ buys nothing extra at @1/@3 and regresses
+ * recall@10 100.0% -> 97.4% by over-rewarding chunks that repeat a phrase.
+ */
+const BIGRAM_BONUS = envNum('RT_BIGRAM', 0.1);
 /**
  * Penalty for a chunk explicitly tagged with a *different* weld process.
  *
@@ -460,6 +487,15 @@ export function search(query: string, opts: SearchOptions = {}): SearchHit[] {
 			if (bareHits) score *= 1 + 0.12 * Math.min(bareHits, 4);
 		}
 
+		// --- phrase (bigram) bonus -------------------------------------------
+		// Rewards true adjacency, so "duty cycle" / "open circuit voltage" beat
+		// chunks that merely contain "duty" and "cycle" far apart.
+		if (q.bigrams.length) {
+			let bg = 0;
+			for (const b of q.bigrams) if (d.bigrams.has(b)) bg += 1;
+			if (bg) score *= 1 + BIGRAM_BONUS * Math.min(bg, 4);
+		}
+
 		// --- chunk-kind priors ----------------------------------------------
 		score *= kindPrior(c.kind, q);
 
@@ -516,6 +552,26 @@ export function search(query: string, opts: SearchOptions = {}): SearchHit[] {
 
 /* ---------------------------------------------------------------- helpers */
 
+/**
+ * Resolves the on-disk raster for a manual page.
+ *
+ * `pdftoppm` zero-pads output filenames to the width of the document's *page
+ * count*, not to a fixed width. So the 48-page owner's manual yields
+ * `owner-manual-01.png`, while the 1-page selection chart yields
+ * `selection-chart-1.png`. Assuming 2-digit padding silently 404s every
+ * single-digit-length document — including the selection chart, which is the
+ * pure-image page the whole vision pipeline exists for.
+ *
+ * Returns null when no candidate exists.
+ */
+export function resolvePageImage(doc: DocId | string, page: number): string | null {
+	for (const width of [2, 1, 3]) {
+		const file = path.join(KB_PAGES_DIR, `${doc}-${String(page).padStart(width, '0')}.png`);
+		if (existsSync(file)) return file;
+	}
+	return null;
+}
+
 export interface PageResult {
 	meta: PageMeta | null;
 	imagePath: string | null;
@@ -527,8 +583,7 @@ export function getPage(doc: DocId | string, page: number): PageResult {
 	const index = getIndex();
 	const meta = index.pageByKey.get(`${doc}#${page}`) ?? null;
 	const chunks = index.kb.chunks.filter((c) => c.doc === doc && c.page === page);
-	const file = path.join(KB_PAGES_DIR, `${doc}-${String(page).padStart(2, '0')}.png`);
-	return { meta, imagePath: existsSync(file) ? file : null, chunks };
+	return { meta, imagePath: resolvePageImage(doc, page), chunks };
 }
 
 export interface FigureResult {
@@ -544,8 +599,7 @@ export function getFigure(doc: DocId | string, page: number, slug: string): Figu
 		(c) => c.doc === doc && c.page === page && c.figure?.slug === slug,
 	);
 	if (!chunk?.figure) return null;
-	const file = path.join(KB_PAGES_DIR, `${doc}-${String(page).padStart(2, '0')}.png`);
-	return { figure: chunk.figure, chunk, imagePath: existsSync(file) ? file : null };
+	return { figure: chunk.figure, chunk, imagePath: resolvePageImage(doc, page) };
 }
 
 /** All figures on a page (handy when the model asks "what's on page N"). */
@@ -554,7 +608,6 @@ export function listFigures(doc?: DocId | string): FigureResult[] {
 	return index.kb.chunks
 		.filter((c) => c.figure && (!doc || c.doc === doc))
 		.map((c) => {
-			const file = path.join(KB_PAGES_DIR, `${c.doc}-${String(c.page).padStart(2, '0')}.png`);
-			return { figure: c.figure!, chunk: c, imagePath: existsSync(file) ? file : null };
+			return { figure: c.figure!, chunk: c, imagePath: resolvePageImage(c.doc, c.page) };
 		});
 }

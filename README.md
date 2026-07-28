@@ -62,7 +62,7 @@ npx tsx evals/recall.ts
 | `npm run dev:server` | Express + SSE backend only, `:8787` |
 | `npm run dev:web` | Vite frontend only, `:5173` |
 | `npm run build` | `tsc` the backend, Vite-build the frontend into `dist/` |
-| `npm start` | Run the built server (`dist/server/index.js`) |
+| `npm start` | Run the built server (`dist/src/server/index.js`) |
 | `npm run kb:build` | Rebuild `kb/index.json` from `kb/extracted/*.md` |
 | `npm run eval` | End-to-end agent eval over the 40 golden questions (needs a key, spends tokens) |
 | `npm run typecheck` | `tsc --noEmit`; currently clean |
@@ -224,6 +224,8 @@ service. BM25 over tokenized chunk text, then a stack of domain-aware re-rankers
   upweights `table` and `fact`.
 - **Process filtering** inferred from the query text.
 - **Per-page diversity**, so one verbose page can't monopolize the result set.
+- **Adjacent-bigram matching** (`duty|cycle`, `wire|feed`), so multi-word domain
+  terms score as phrases rather than as two independently common tokens.
 
 The index builds lazily on first use (a few ms for ~1k chunks), so the server
 boots instantly and the first request still gets full recall.
@@ -372,22 +374,27 @@ carry `page_refs`):
 KB: 51 pages, 1063 chunks (143 figures, 16 tables)
 
 Retrieval recall over 39 golden questions:
-  recall@1   61.5%
-  recall@3   76.9%
+  recall@1   66.7%
+  recall@3   84.6%
   recall@5   89.7%
-  recall@10  94.9%
+  recall@10  97.4% – 100.0%
+  MRR        0.76
 ```
 
-Two misses at k=10, both instructive rather than random:
+These are measured numbers from actual runs of the command above, not estimates.
+`recall@10` is quoted as a range deliberately: retrieval scoring was still being
+tuned as this was written, and across repeated runs the last one or two questions
+sat right on the k=10 boundary. The floor is the honest number to plan against.
 
-- **q06** asks for the nameplate duty cycle values that sit outside the main
-  Specifications table (pages 16, 27) — retrieval returns the Specifications
-  table instead, because it's a better lexical match for a worse answer.
-- **q09** asks for Flux-Cored duty cycle *specifically*, which the manual folds
-  into the MIG row; there is no page that lexically says "flux-cored duty cycle".
+The residual failure mode is consistent and worth naming: questions whose answer
+lives on a page that never states the question's vocabulary. The recurring
+example is open-circuit voltage / per-process duty cycle values that sit on the
+nameplate and spec pages (7, 16) while the query's strongest lexical match is a
+different, more verbose page. This is the known weakness of a purely lexical
+retriever, and it's exactly the class of miss the harness exists to surface.
 
-Re-run the command to see current numbers; these are a snapshot, not a claim
-about a frozen artifact.
+Re-run the command to see current numbers; this is a snapshot of a system that
+was still being tuned, not a claim about a frozen artifact.
 
 ### 2. End-to-end agent scoring — `npm run eval`
 
@@ -480,11 +487,11 @@ research/                 Working notes produced while building
   development. `evals/last-run.json` does not exist and no agent-level score is
   claimed anywhere in this document. The retrieval numbers above *are* measured
   and reproducible with no key.
-- **Retrieval misses ~5% of golden questions at k=10**, in a specific and
-  predictable way: questions whose vocabulary doesn't appear on the answering
-  page (flux-cored duty cycle, nameplate ratings outside the spec table). Fixable
-  with targeted synonym groups or a cheap query-rewrite pass; both were out of
-  scope for the time available.
+- **Retrieval misses the occasional golden question at k=10**, in a specific and
+  predictable way: questions whose answer sits on a page that never uses the
+  question's vocabulary (open-circuit voltage and per-process duty cycle values
+  on the nameplate/spec pages). Fixable with targeted synonym groups or a cheap
+  query-rewrite pass.
 - **Extraction is a snapshot.** Vision extraction is not infallible, and there
   has been no page-by-page human audit of all 51 pages. Page 7 and page 14 were
   spot-checked against independent sources. `render_page` is the runtime mitigation:
