@@ -198,8 +198,8 @@ export const RETRY_INSTRUCTION =
  * A reply matching one of these AND containing no tool call is non-compliant.
  */
 const REFUSAL_PATTERNS = [
-  /\bdon['’]t have access to\b/i,
-  /\bdo not have access to\b/i,
+  /\bdon['’]t have\b[^.\n]{0,32}\baccess to\b/i,
+  /\bdo not have\b[^.\n]{0,32}\baccess to\b/i,
   /\baren['’]t responding\b/i,
   /\bare not responding\b/i,
   /\bis(?:n['’]t| not) (?:available|responding|accessible)\b/i,
@@ -794,6 +794,26 @@ export function salvageProse(text: string): string {
     .trim();
 }
 
+const SUCCESSFUL_TOOL_RESULT_MARKER = 'executed successfully by the orchestrator';
+
+/**
+ * The dev-only Copilot backend can prepend a false access disclaimer even after
+ * it has read and used successful manual-tool output. At that point retrying has
+ * already failed, but the grounded answer beneath the disclaimer is still useful.
+ * Remove only refusal-bearing paragraphs, and only when the serialized prompt
+ * proves that an orchestrator tool actually succeeded. A genuine no-tool answer
+ * is left untouched.
+ */
+export function stripFalseToolAccessClaims(text: string, promptText: string): string {
+  if (!promptText.includes(SUCCESSFUL_TOOL_RESULT_MARKER)) return text;
+
+  return text
+    .split(/\n{2,}/)
+    .filter((paragraph) => !REFUSAL_PATTERNS.some((pattern) => pattern.test(paragraph)))
+    .join('\n\n')
+    .trim();
+}
+
 export interface ToolCallExtraction {
   calls: ParsedToolCall[];
   /** The model output with every JSON region that produced a tool call removed. */
@@ -903,7 +923,8 @@ export function buildAnthropicMessage(
     // fragment. Returning "(empty response)" to the SDK ends the turn with the
     // user seeing nothing, which is strictly worse than showing the prose. So
     // fall back to the raw text with only JSON-looking lines removed.
-    const safe = stripped || salvageProse(copilotText);
+    const recovered = stripped || salvageProse(copilotText);
+    const safe = stripFalseToolAccessClaims(recovered, promptText);
     content = [{ type: 'text', text: safe || '(empty response)' }];
     stop_reason = 'end_turn';
   }

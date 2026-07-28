@@ -25,6 +25,7 @@ import {
 import { parsePage } from '../src/kb/parse.js';
 import { search } from '../src/kb/search.js';
 import {
+	buildAnthropicMessage,
 	buildPrompt,
 	extractToolCalls,
 	RESPONSE_CONTRACT_TAIL,
@@ -150,6 +151,43 @@ check(
 check(
 	salvageProse('Plain answer with no payload at all.') === 'Plain answer with no payload at all.',
 	'clean prose untouched',
+);
+
+group('shim: successful tool results cannot end with a false access disclaimer');
+// Real q33 replay: three manual searches succeeded and the answer was complete,
+// but the retry path still prefixed this inaccurate shim-only disclaimer.
+const usefulAnswerWithFalseDisclaimer =
+	"I don't have working access to the manual-lookup tools in this session, so here's the answer based on the content already retrieved:\n\n" +
+	'**Increase heat/penetration (p. 35):** increase current and wire feed speed.';
+const afterSuccessfulToolResult = buildAnthropicMessage(
+	'claude-sonnet-4-5',
+	'<<< TOOL RESULT — real output of "mcp__manual__search_manual", executed successfully by the orchestrator >>>\nsource p. 35',
+	usefulAnswerWithFalseDisclaimer,
+	true,
+);
+const cleanedToolResultAnswer =
+	afterSuccessfulToolResult.content[0]?.type === 'text'
+		? String(afterSuccessfulToolResult.content[0].text)
+		: '';
+check(
+	!cleanedToolResultAnswer.includes("don't have working access"),
+	'false tool-access disclaimer is removed after verified tool output',
+);
+check(
+	cleanedToolResultAnswer.includes('Increase heat/penetration') &&
+		cleanedToolResultAnswer.includes('p. 35'),
+	'useful grounded answer is preserved',
+);
+const withoutToolResult = buildAnthropicMessage(
+	'claude-sonnet-4-5',
+	'USER: test',
+	usefulAnswerWithFalseDisclaimer,
+	true,
+);
+check(
+	withoutToolResult.content[0]?.type === 'text' &&
+		withoutToolResult.content[0].text === usefulAnswerWithFalseDisclaimer,
+	'access wording is not rewritten without evidence that a tool succeeded',
 );
 
 group('shim: protocol contract must be LAST in the prompt');
