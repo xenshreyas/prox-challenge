@@ -429,7 +429,7 @@ averaging them into a single number hides exactly the regressions worth catching
 Results append to `evals/history.jsonl` so runs can be compared rather than
 trusting a single noisy sample.
 
-**Measured, all 40 questions:**
+**Strongest recent measured run, all 40 questions:**
 
 ```
 TOTAL       89.2%
@@ -452,7 +452,7 @@ Copilot CLI). The Claude Agent SDK is genuinely the foundation either way, but
 the model behind it was not Claude. **Treat 89.2% as indicative, not as a number
 you will reproduce.**
 
-This latest run is **inconclusive against the statistically established 86.1%
+This run is **inconclusive against the statistically established 86.1%
 incumbent**: +3.1 points is inside the combined ±5.8-point noise floor, so it is
 corroboration rather than evidence of another model-quality gain. The decomposition
 is more useful than the headline. Points lost against each sub-metric's available
@@ -470,6 +470,17 @@ surfaced a relevant figure from an accepted source in the model-backed run, matc
 the separate 21/21 deterministic audit. The earlier rewritten-query misses on
 q24/q26/q33 are gone. Artifact compliance remains stochastic through the shim and
 is the largest current opportunity: 15/21 artifact-required questions built one.
+
+A fresh 40-question sweep after adding a bounded runtime artifact guard measured
+**82.4% ±7.7** with zero runtime errors. It again surfaced relevant figures for
+**21/21** visual questions and built artifacts for **17/21** artifact-required
+questions. Four Copilot-shim persona refusals (q02/q09/q16/q23) widened the run's
+variance; excluding them gives 88.7% total / 86.3% accuracy on n=36. Of the 19
+artifact-required questions not affected by a refusal, **17 built artifacts**.
+The raw −6.7-point delta from 89.2% remains inside the combined ±8.4-point noise
+floor, so this is not evidence of a model-quality regression. The sweep also
+exposed and fixed a refusal-detector blind spot for “I'm GitHub Copilot CLI”
+without the word “the.”
 
 ### On sample size, and a mistake worth documenting
 

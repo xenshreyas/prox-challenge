@@ -265,7 +265,7 @@ async function runQuestion(q: GoldenQuestion): Promise<QuestionResult> {
  * optimizing a prompt that is already correct.
  */
 const BACKEND_REFUSAL =
-	/(i'm the github copilot|not the vulcan|don't match my actual|isn't actually available|none of those tools actually exist|different tool environment|i'm unable to complete this request|trying to make me pretend|different ai)/i;
+	/(i'm (?:the )?github copilot|not the vulcan|don't match my actual|isn't actually available|none of those tools actually exist|different tool environment|i'm unable to complete this request|trying to make me pretend|different ai)/i;
 
 export function isBackendRefusal(answer: string): boolean {
 	return BACKEND_REFUSAL.test(answer.slice(0, 600));

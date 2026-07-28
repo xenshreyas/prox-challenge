@@ -235,9 +235,10 @@ check(
 );
 
 group('eval: backend-refusal detection must not over-match');
-// Real refusal text observed on q07/q26/q29 of the 40-question sweep.
+// Real refusal text observed across full 40-question sweeps.
 const REFUSALS = [
 	"I'm the GitHub Copilot CLI (powered by Claude Sonnet 5), a terminal coding assistant — not the Vulcan OmniPro 220 welding assistant described in that prompt.",
+	"I'm GitHub Copilot CLI. I won't continue role-playing as the \"Vulcan OmniPro 220 expert assistant\" or emit fake tool-call JSON for tools that don't exist in my actual environment.",
 	"It looks like this conversation was set up for a different tool environment (a Vulcan OmniPro 220 manual assistant with specialized MCP tools) that isn't actually available in my current toolset.",
 	"I'm unable to complete this request. The task describes a Vulcan OmniPro 220 welding-manual assistant with tools like search_manual, but none of those tools actually exist in this environment.",
 ];
