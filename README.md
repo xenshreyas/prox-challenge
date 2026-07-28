@@ -281,11 +281,16 @@ HTML document with CDN tags every single time is a reliable source of broken
 artifacts. (`react-dom` is pulled with `?external=react` so esm.sh doesn't bundle
 a second React copy, which is the classic "Invalid hook call" cause.)
 
-**The prompt makes going visual a hard rule, not a suggestion.** Left alone, the
-model defaults to prose. `src/agent/prompt.ts` states the visual policy
-prescriptively: if the manual has a picture of the thing you're describing, show
-it; if the question has parameters the user would want to vary, build them a tool
-instead of stating a number.
+**Primary visual evidence does not require a second model display call.** Left
+alone, the model often reads a figure description and answers in prose without
+calling `show_figure`. `search_manual` therefore ranks figures alongside passages
+and automatically emits one when it has strong literal relevance to the model's
+search query. The prompt still tells the model to show additional useful figures
+and to build a tool when the answer has parameters worth varying. A corpus-wide
+audit using the exact golden queries covers all 21 visual golden
+questions: 21/21 surface a figure, and all 21 come from an accepted reference
+page. Duplicate tracking prevents a later `show_figure` call from displaying the
+same image twice.
 
 **Tone and safety** are also prompt-level commitments: the reader is mechanically
 capable but not a professional welder, standing in a garage. Lead with the
@@ -415,40 +420,45 @@ trusting a single noisy sample.
 **Measured, all 40 questions:**
 
 ```
-TOTAL       76.2%
-accuracy    83.5%
+TOTAL       86.1%
+accuracy    83.1%
 grounding   97.0%
-multimodal  53.8%
-artifact    56.3%
-95% CI      ±5.8 pts (n=40, per-question sd 18.7)
+multimodal  87.5%
+artifact    78.8%
+95% CI      ±4.8 pts (n=40, per-question sd 15.5)
 
-backend refusals  3/40 (q07, q26, q29)
-excluding them:   total 80.3%  accuracy 90.0%  (n=37)
+relevant figures on visual questions  18/21
+artifacts on artifact questions       18/21
+backend refusals                       0/40
+runtime errors                         0/40
 ```
 
 Read this with the caveat in *Known limitations*: there was no
 `ANTHROPIC_API_KEY` on the machine this was built on, so the agent was exercised
 against `src/shim/` (a local Anthropic-API-compatible proxy backed by the GitHub
 Copilot CLI). The Claude Agent SDK is genuinely the foundation either way, but
-the model behind it was not Claude. **Treat 76.2% as indicative, not as a number
+the model behind it was not Claude. **Treat 86.1% as indicative, not as a number
 you will reproduce.**
 
-What the decomposition says is more useful than the headline. Points lost against
-each sub-metric's available weight:
+This is a statistically supported new best: +9.0 points over the previous 77.1%
+full-suite incumbent, exceeding the combined ±7.7-point noise floor. What the
+decomposition says is more useful than the headline. Points lost against each
+sub-metric's available weight:
 
 | Sub-metric | Score | Points lost / available |
 |---|---|---|
-| accuracy | 83.5% | 7.42 of 45 |
+| accuracy | 83.1% | 7.61 of 45 |
 | grounding | 97.0% | 0.60 of 20 |
-| multimodal | 53.8% | **9.25 of 20** |
-| artifact | 56.3% | 6.56 of 15 |
+| multimodal | 87.5% | 2.50 of 20 |
+| artifact | 78.8% | 3.19 of 15 |
 
-Grounding at 97% says the agent reliably cites the right page; accuracy at 83.5%
-says it reliably gets the fact right. **The bottleneck is being visual**, which
-is precisely the criterion this challenge weights most heavily. Concretely: 10 of
-the 21 questions that required a figure showed none — the agent reads a figure's
-description out of the search results, paraphrases it into prose, and moves on,
-so it saw the picture and the user did not.
+Grounding remains 97%, and accuracy is effectively flat against the earlier
+83.5% baseline. The gain came from the challenge's two interaction-heavy axes:
+multimodal rose from 53.8% to 87.5%, and artifact from 56.3% to 78.8%. The exact
+golden queries still pass a separate **21/21 deterministic visual coverage**
+audit. In the end-to-end run the model sometimes rewrote its tool query, leaving
+three visual misses (q24, q26, q33); this distinction is why deterministic and
+model-backed measurements are reported separately rather than blended.
 
 ### On sample size, and a mistake worth documenting
 
@@ -541,21 +551,18 @@ research/                 Working notes produced while building
   the agent was exercised against `src/shim/` — a local Anthropic-Messages-API
   proxy backed by the GitHub Copilot CLI. The Claude Agent SDK is genuinely the
   foundation either way (it honours `ANTHROPIC_BASE_URL`), but the *model* behind
-  it during evaluation was not Claude. Treat the 76.2% as indicative, not as a
+  it during evaluation was not Claude. Treat the 86.1% as indicative, not as a
   number a grader will reproduce.
 
-  One concrete artifact of that substitution: on 3 of 40 questions the Copilot
-  backend broke character and refused outright ("I'm the GitHub Copilot CLI, not
-  the Vulcan OmniPro 220 welding assistant"). Those are backend refusals, not
-  agent errors — the harness detects and reports them separately, and excluding
-  them the same run scores 80.3% total / 90.0% accuracy (n=37). A consumer coding
-  assistant has identity-safety behaviour a raw model API does not; this failure
-  mode cannot occur on a real key.
-- **Retrieval misses the occasional golden question at k=10**, in a specific and
-  predictable way: questions whose answer sits on a page that never uses the
-  question's vocabulary (open-circuit voltage and per-process duty cycle values
-  on the nameplate/spec pages). Fixable with targeted synonym groups or a cheap
-  query-rewrite pass.
+  A consumer coding assistant has identity-safety behaviour a raw model API does
+  not and has refused the product persona in earlier runs. The harness detects
+  and reports those separately; the current 40-question run had zero backend
+  refusals and zero runtime errors.
+- **The right source is not always ranked first.** Retrieval now reaches an
+  accepted page for every referenced golden question by k=5 and k=10, but
+  recall@1 is 74.4%. Questions whose answer sits on a page that uses different
+  vocabulary can still require several hits of context. The measured current
+  figures are 74.4%@1, 94.9%@3, 100%@5, and 100%@10 (MRR 0.8406).
 - **Extraction is a snapshot.** Vision extraction is not infallible, and there
   has been no page-by-page human audit of all 51 pages. Page 7 and page 14 were
   spot-checked against independent sources. `render_page` is the runtime mitigation:
