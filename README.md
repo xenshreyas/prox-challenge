@@ -421,15 +421,15 @@ trusting a single noisy sample.
 **Measured, all 40 questions:**
 
 ```
-TOTAL       86.1%
-accuracy    83.1%
-grounding   97.0%
+TOTAL       89.2%
+accuracy    92.1%
+grounding   98.5%
 multimodal  87.5%
-artifact    78.8%
-95% CI      ±4.8 pts (n=40, per-question sd 15.5)
+artifact    70.0%
+95% CI      ±3.2 pts (n=40, per-question sd 10.3)
 
-relevant figures on visual questions  18/21
-artifacts on artifact questions       18/21
+relevant figures on visual questions  21/21
+artifacts on artifact questions       15/21
 backend refusals                       0/40
 runtime errors                         0/40
 ```
@@ -438,28 +438,27 @@ Read this with the caveat in *Known limitations*: there was no
 `ANTHROPIC_API_KEY` on the machine this was built on, so the agent was exercised
 against `src/shim/` (a local Anthropic-API-compatible proxy backed by the GitHub
 Copilot CLI). The Claude Agent SDK is genuinely the foundation either way, but
-the model behind it was not Claude. **Treat 86.1% as indicative, not as a number
+the model behind it was not Claude. **Treat 89.2% as indicative, not as a number
 you will reproduce.**
 
-This is a statistically supported new best: +9.0 points over the previous 77.1%
-full-suite incumbent, exceeding the combined ±7.7-point noise floor. What the
-decomposition says is more useful than the headline. Points lost against each
-sub-metric's available weight:
+This latest run is **inconclusive against the statistically established 86.1%
+incumbent**: +3.1 points is inside the combined ±5.8-point noise floor, so it is
+corroboration rather than evidence of another model-quality gain. The decomposition
+is more useful than the headline. Points lost against each sub-metric's available
+weight:
 
 | Sub-metric | Score | Points lost / available |
 |---|---|---|
-| accuracy | 83.1% | 7.61 of 45 |
-| grounding | 97.0% | 0.60 of 20 |
+| accuracy | 92.1% | 3.54 of 45 |
+| grounding | 98.5% | 0.30 of 20 |
 | multimodal | 87.5% | 2.50 of 20 |
-| artifact | 78.8% | 3.19 of 15 |
+| artifact | 70.0% | 4.50 of 15 |
 
-Grounding remains 97%, and accuracy is effectively flat against the earlier
-83.5% baseline. The gain came from the challenge's two interaction-heavy axes:
-multimodal rose from 53.8% to 87.5%, and artifact from 56.3% to 78.8%. The exact
-golden queries still pass a separate **21/21 deterministic visual coverage**
-audit. In the end-to-end run the model sometimes rewrote its tool query, leaving
-three visual misses (q24, q26, q33); this distinction is why deterministic and
-model-backed measurements are reported separately rather than blended.
+The most important corroboration is visual: all **21/21** visual questions now
+surfaced a relevant figure from an accepted source in the model-backed run, matching
+the separate 21/21 deterministic audit. The earlier rewritten-query misses on
+q24/q26/q33 are gone. Artifact compliance remains stochastic through the shim and
+is the largest current opportunity: 15/21 artifact-required questions built one.
 
 ### On sample size, and a mistake worth documenting
 
@@ -552,7 +551,7 @@ research/                 Working notes produced while building
   the agent was exercised against `src/shim/` — a local Anthropic-Messages-API
   proxy backed by the GitHub Copilot CLI. The Claude Agent SDK is genuinely the
   foundation either way (it honours `ANTHROPIC_BASE_URL`), but the *model* behind
-  it during evaluation was not Claude. Treat the 86.1% as indicative, not as a
+  it during evaluation was not Claude. Treat the 89.2% as indicative, not as a
   number a grader will reproduce.
 
   A consumer coding assistant has identity-safety behaviour a raw model API does
