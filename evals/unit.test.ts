@@ -13,6 +13,8 @@
 
 import { includesFact, isBackendRefusal } from './run.js';
 import { wrapArtifact } from '../src/agent/artifact-harness.js';
+import { figureCallToAction } from '../src/agent/tools.js';
+import { search } from '../src/kb/search.js';
 import {
 	buildPrompt,
 	extractToolCalls,
@@ -212,6 +214,39 @@ const tsIdx = tsArtifact.html.indexOf("typescript");
 const jsxIdx = tsArtifact.html.indexOf("artifact.jsx");
 check(tsArtifact.html.includes('looksTypeScript'), 'harness ships the TS-detection branch');
 check(tsIdx !== -1 && jsxIdx !== -1, 'both Babel presets are present');
+
+group('tools: unshown figures get an explicit call-to-action');
+// The agent showed no figure on 10 of 21 questions that needed one, even though
+// retrieval returned a relevant figure for nearly all of them. The per-hit hint
+// was buried at the end of a long chunk body and got skimmed past. This block
+// restates them LAST, where they are read most reliably.
+const figHits = search('What are the material thickness ranges each process covers?', {
+	limit: 10,
+});
+const onlyFigs = figHits.filter((h) => h.chunk.kind === 'figure' && h.chunk.figure);
+const cta = figureCallToAction(figHits, new Set());
+check(onlyFigs.length > 0, 'retrieval returns figures for a thickness question');
+check(cta.length > 0, 'a call-to-action is emitted when figures are unshown');
+check(
+	onlyFigs.every((h) => cta.includes(h.chunk.figure!.slug)),
+	'every unshown figure is named with its slug',
+);
+check(
+	cta.includes('selection-chart'),
+	'surfaces the image-only selection chart (1 byte of text layer)',
+);
+// Must not nag about figures the user has already seen.
+const allShown = new Set(
+	onlyFigs.map((h) => `${h.chunk.doc}#${h.chunk.page}#${h.chunk.figure!.slug}`),
+);
+check(figureCallToAction(figHits, allShown) === '', 'suppressed once every figure is shown');
+check(
+	figureCallToAction(
+		figHits.filter((h) => h.chunk.kind !== 'figure'),
+		new Set(),
+	) === '',
+	'silent when the result set has no figures (adds no noise)',
+);
 
 console.log(failures === 0 ? '\nALL PASS' : `\n${failures} FAILURE(S)`);
 process.exit(failures === 0 ? 0 : 1);

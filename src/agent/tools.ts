@@ -40,6 +40,40 @@ function renderHit(hit: SearchHit): string {
 	return `[${where} | ${c.kind}${head}]\n${c.text}${figureNote}`;
 }
 
+/**
+ * Builds an explicit, unmissable call-to-action listing every figure in a result
+ * set that has not been shown yet.
+ *
+ * Measured motivation: with only a per-hit parenthetical hint, the agent showed
+ * no figure on 10 of the 21 questions that needed one, even though retrieval had
+ * returned a relevant figure for nearly all of them. The hint was there and got
+ * skimmed past — it sat at the end of a long chunk body, competing with the
+ * prose the model was actually mining for facts.
+ *
+ * Restating the available figures as a separate block at the *end* of the tool
+ * result puts them last, where they are read most reliably. Same recency effect
+ * that fixed the shim's protocol compliance.
+ */
+export function figureCallToAction(hits: SearchHit[], alreadyShown: Set<string>): string {
+	const figures = hits
+		.filter((h) => h.chunk.kind === 'figure' && h.chunk.figure)
+		.filter((h) => !alreadyShown.has(`${h.chunk.doc}#${h.chunk.page}#${h.chunk.figure!.slug}`));
+	if (figures.length === 0) return '';
+
+	const lines = figures.map((h) => {
+		const c = h.chunk;
+		const cap = c.figure!.caption ?? c.figure!.slug.replace(/-/g, ' ');
+		return `  - doc="${c.doc}" page=${c.page} slug="${c.figure!.slug}"  (${cap})`;
+	});
+	return (
+		`\n\n=== FIGURES AVAILABLE FOR THIS ANSWER — NOT YET SHOWN TO THE USER ===\n` +
+		`${lines.join('\n')}\n\n` +
+		`You have read these figures' descriptions, but the user has NOT seen the images.\n` +
+		`Paraphrasing a figure into prose is not the same as showing it. Call show_figure\n` +
+		`on each one that relates to your answer, in this same turn, before you finish.`
+	);
+}
+
 export interface ToolContext {
 	emit: EventSink;
 	/** Base URL the browser uses to fetch page images, e.g. "" for same-origin. */
@@ -49,6 +83,10 @@ export interface ToolContext {
 export function createManualTools(ctx: ToolContext) {
 	const imageUrl = (doc: string, page: number) =>
 		`${ctx.publicBaseUrl ?? ''}/api/page-image/${doc}/${page}`;
+
+	// Figures already surfaced this turn, so the call-to-action nags only about
+	// ones the user genuinely has not seen.
+	const shownFigures = new Set<string>();
 
 	const searchManual = tool(
 		'search_manual',
@@ -113,7 +151,9 @@ export function createManualTools(ctx: ToolContext) {
 				content: [
 					{
 						type: 'text' as const,
-						text: hits.map(renderHit).join('\n\n---\n\n'),
+						text:
+							hits.map(renderHit).join('\n\n---\n\n') +
+							figureCallToAction(hits, shownFigures),
 					},
 				],
 			};
@@ -164,6 +204,7 @@ export function createManualTools(ctx: ToolContext) {
 					],
 				};
 			}
+			shownFigures.add(`${doc}#${page}#${slug}`);
 			ctx.emit({
 				type: 'figure',
 				doc,
