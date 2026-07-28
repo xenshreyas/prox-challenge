@@ -187,6 +187,27 @@ export function directlyRelevantFigure(
 	return candidate;
 }
 
+export type ArtifactRequirement = 'duty-cycle' | 'settings' | 'troubleshooting' | 'polarity';
+
+/** Classifies user requests for which an interactive artifact is mechanical, not optional. */
+export function artifactRequirementForQuestion(question: string): ArtifactRequirement | null {
+	const q = question.trim().toLowerCase();
+	if (/duty[ -]?cycle|weld\/?rest|weld(?:ing)? (?:and|\/) rest/.test(q)) return 'duty-cycle';
+	if (
+		/(?:setting|configure|select|choose|recommend).*(?:material|thickness|wire|electrode|amp|volt|gas)/.test(
+			q,
+		) ||
+		/(?:material|thickness|wire|electrode).*(?:setting|size|range|amp|volt|gas)/.test(q)
+	) {
+		return 'settings';
+	}
+	if (/(?:troubleshoot|diagnos|causes?|checks?|fix(?:es)?|defect|symptom|won't|not working|problem)/.test(q)) {
+		return 'troubleshooting';
+	}
+	if (/polarity|cable (?:hookup|connection|routing)|which (?:cable|socket)/.test(q)) return 'polarity';
+	return null;
+}
+
 /** Restates the mechanical artifact rule beside parameterized search results. */
 export function artifactCallToAction(
 	query: string,
@@ -199,23 +220,14 @@ export function artifactCallToAction(
 	// As with figure selection, the model's search rewrite is useful for retrieval
 	// but can erase the parameterized intent that warrants an interactive tool.
 	// Drive the UI affordance from the user's original request when available.
-	const q = (userQuestion.trim() || query).toLowerCase();
-	const dutyCycle = /duty[ -]?cycle|weld\/?rest|weld(?:ing)? (?:and|\/) rest/.test(q);
-	const settings =
-		/(?:setting|configure|select|choose|recommend).*(?:material|thickness|wire|electrode|amp|volt|gas)/.test(
-			q,
-		) ||
-		/(?:material|thickness|wire|electrode).*(?:setting|size|range|amp|volt|gas)/.test(q);
-	const troubleshooting =
-		/(?:troubleshoot|diagnos|causes?|checks?|fix(?:es)?|defect|symptom|won't|not working|problem)/.test(q);
-	const polarity = /polarity|cable (?:hookup|connection|routing)|which (?:cable|socket)/.test(q);
-	if (!dutyCycle && !settings && !troubleshooting && !polarity) return '';
+	const requirement = artifactRequirementForQuestion(userQuestion.trim() || query);
+	if (!requirement) return '';
 
-	const format = dutyCycle
+	const format = requirement === 'duty-cycle'
 		? 'an interactive calculator with the retrieved ratings and a 10-minute weld/rest visualization'
-		: settings
+		: requirement === 'settings'
 			? 'an interactive settings configurator using the retrieved manual values'
-			: troubleshooting
+			: requirement === 'troubleshooting'
 				? 'a clickable troubleshooting flowchart for the retrieved causes and checks'
 				: 'an interactive polarity or cable-hookup diagram';
 

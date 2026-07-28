@@ -13,10 +13,21 @@
  *   deliberately tolerant: unknown message types are ignored rather than thrown.
  */
 
-import { query, startup, type SDKUserMessage } from '@anthropic-ai/claude-agent-sdk';
+import {
+	query,
+	startup,
+	type HookCallback,
+	type PostToolUseHookInput,
+	type SDKUserMessage,
+	type StopHookInput,
+} from '@anthropic-ai/claude-agent-sdk';
 
 import { SYSTEM_PROMPT, voltageContext } from './prompt.js';
-import { createManualTools, MANUAL_TOOL_NAMES } from './tools.js';
+import {
+	artifactRequirementForQuestion,
+	createManualTools,
+	MANUAL_TOOL_NAMES,
+} from './tools.js';
 import type { AgentEvent } from './events.js';
 
 export interface AskOptions {
@@ -53,6 +64,25 @@ export function assertConfigured(): void {
 		process.env.ANTHROPIC_AUTH_TOKEN?.trim() ||
 		process.env.ANTHROPIC_BASE_URL?.trim();
 	if (!hasCreds) throw new MissingApiKeyError();
+}
+
+/**
+ * One bounded stop-hook retry for the artifact rule. Tool-result reminders are
+ * usually enough, but measured full runs still showed the model claiming it had
+ * built a calculator without ever calling create_artifact. The stop hook turns
+ * that stochastic suggestion into a runtime invariant without risking a loop.
+ */
+export function artifactStopFeedback(
+	question: string,
+	artifactCreated: boolean,
+	stopHookActive: boolean,
+): string | null {
+	if (artifactCreated || stopHookActive || !artifactRequirementForQuestion(question)) return null;
+	return (
+		'This answer requires an interactive artifact and none has been created. ' +
+		'Before stopping, call mcp__manual__create_artifact (create_artifact) with a complete, ' +
+		'self-contained artifact based on the manual values you retrieved. Do not merely describe one.'
+	);
 }
 
 /** Pre-warms the SDK subprocess at boot so the first question isn't slow. */
@@ -103,6 +133,24 @@ export async function* ask(opts: AskOptions): AsyncGenerator<AgentEvent> {
 	// SDK stream. We buffer them here and drain between SDK messages.
 	const pending: AgentEvent[] = [];
 	const tools = createManualTools({ emit: (e) => pending.push(e), userQuestion: opts.question });
+	let artifactCreated = false;
+	const trackArtifact: HookCallback = async (input) => {
+		if (
+			input.hook_event_name === 'PostToolUse' &&
+			(input as PostToolUseHookInput).tool_name === 'mcp__manual__create_artifact'
+		) {
+			artifactCreated = true;
+		}
+		return {};
+	};
+	const requireArtifactBeforeStop: HookCallback = async (input) => {
+		if (input.hook_event_name !== 'Stop') return {};
+		const stop = input as StopHookInput;
+		const feedback = artifactStopFeedback(opts.question, artifactCreated, stop.stop_hook_active);
+		return feedback
+			? { hookSpecificOutput: { hookEventName: 'Stop', additionalContext: feedback } }
+			: {};
+	};
 
 	let sessionId: string | null = opts.sessionId ?? null;
 
@@ -133,6 +181,10 @@ export async function* ask(opts: AskOptions): AsyncGenerator<AgentEvent> {
 				allowDangerouslySkipPermissions: true,
 				includePartialMessages: true,
 				maxTurns: 24,
+				hooks: {
+					PostToolUse: [{ matcher: 'mcp__manual__create_artifact', hooks: [trackArtifact] }],
+					Stop: [{ hooks: [requireArtifactBeforeStop] }],
+				},
 				...(sessionId ? { resume: sessionId } : {}),
 				...(opts.signal ? { abortController: toAbortController(opts.signal) } : {}),
 			},

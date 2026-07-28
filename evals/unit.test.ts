@@ -22,6 +22,7 @@ import {
 } from './run.js';
 import { matchesReference } from './references.js';
 import { wrapArtifact } from '../src/agent/artifact-harness.js';
+import { artifactStopFeedback } from '../src/agent/agent.js';
 import {
 	answerCompletenessCallToAction,
 	artifactCallToAction,
@@ -443,6 +444,32 @@ check(
 		rangeQuestion,
 	).includes('settings configurator'),
 	'original parameterized question preserves artifact intent after a narrow search rewrite',
+);
+
+group('agent: artifact-required turns cannot stop before creating one');
+for (const question of [
+	'What is the highest MIG output current at 100% duty cycle on 120 V and 240 V?',
+	'What is the TIG duty cycle at 175 A on 240 V, and how many minutes weld/rest?',
+	'What is the rated duty cycle for Flux-Cored welding specifically?',
+	'How does wire/electrode size versus material thickness selection work?',
+	'Wire feed motor runs but wire does not feed properly. Give the four causes and fixes.',
+]) {
+	check(
+		artifactStopFeedback(question, false, false)?.includes('create_artifact') === true,
+		`blocks artifact-required stop: ${question.slice(0, 42)}`,
+	);
+}
+check(
+	artifactStopFeedback('What is the maximum open circuit voltage?', false, false) === null,
+	'ordinary one-value lookup may stop without an artifact',
+);
+check(
+	artifactStopFeedback('What is the TIG duty cycle at 175 A?', true, false) === null,
+	'a turn may stop after create_artifact succeeds',
+);
+check(
+	artifactStopFeedback('What is the TIG duty cycle at 175 A?', false, true) === null,
+	'a failed compliance retry is not blocked repeatedly',
 );
 
 group('tools: directly relevant figures surface without model compliance');

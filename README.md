@@ -281,6 +281,14 @@ HTML document with CDN tags every single time is a reliable source of broken
 artifacts. (`react-dom` is pulled with `?external=react` so esm.sh doesn't bundle
 a second React copy, which is the classic "Invalid hook call" cause.)
 
+**Artifact-required turns have a runtime backstop.** The prompt and each relevant
+search result both request `create_artifact`, but model compliance is stochastic.
+A bounded Claude Agent SDK `Stop` hook checks the original user question and
+blocks the first attempt to finish when a duty-cycle, settings, troubleshooting,
+or polarity request has not emitted an artifact. A successful `PostToolUse` hook
+clears the guard; `stop_hook_active` limits enforcement to one retry so a backend
+failure cannot loop indefinitely.
+
 **Primary visual evidence does not require a second model display call.** Left
 alone, the model often reads a figure description and answers in prose without
 calling `show_figure`. `search_manual` therefore ranks figures alongside passages
