@@ -137,6 +137,7 @@ const SYNONYM_GROUPS: string[][] = [
 	['flux cored', 'fcaw', 'gasless', 'flux core', 'fluxcore', 'no gas', 'self shielded', 'innershield'],
 	['tig', 'gtaw', 'tungsten', 'tungsten inert gas', 'gas tungsten arc'],
 	['stick', 'smaw', 'arc welding', 'electrode', 'shielded metal arc', 'rod'],
+	['prepare', 'preparation', 'sharpen', 'grind', 'grinding'],
 	['duty cycle', 'duty', 'rated output', 'overheat', 'thermal overload', 'ten minute'],
 	['porosity', 'pores', 'holes in weld', 'gas pocket', 'pinholes'],
 	['undercut', 'groove at toe', 'edge melted away'],
@@ -208,7 +209,7 @@ export function detectProcesses(query: string): WeldProcess[] {
 const VISUAL_RE = /\b(show|diagram|figure|picture|image|photo|illustrat|which socket|where is|point to|look like|label|callout|panel|see)\b/i;
 const NUMERIC_RE = /\b(how (many|much|long|thick)|what (amp|voltage|current|setting|speed|rate|size|thickness)|rating|rated|range|spec|specification|duty cycle|chart|table|setting|amp|volt|ipm|cfh|\d)\b/i;
 const FACTUAL_RE = /\b(what is|what's|which|does|is the|are the|can i|do i|how do i|when should|why)\b/i;
-const PROCEDURE_RE = /\b(how do i|how to|steps?|procedure|install|replace|change|set up|setup|adjust|thread|load|assembl)\b/i;
+const PROCEDURE_RE = /\b(how do i|how to|steps?|procedure|prepar\w*|install|replace|change|set up|setup|adjust|thread|load|assembl\w*)\b/i;
 
 interface QueryShape {
 	visual: boolean;
@@ -551,7 +552,29 @@ export function search(query: string, opts: SearchOptions = {}): SearchHit[] {
 	}
 
 	const final = [...primary, ...overflow].slice(0, limit);
-	return final.map<SearchHit>((s) => ({
+	const expanded = [...final];
+	if (q.procedural) {
+		// A high-ranking figure or atomic fact can identify the right page while
+		// omitting the surrounding steps. Keep the mixed-granularity index, but
+		// pair the first such hit with that page's fullest matching prose chunk.
+		for (let i = 0; i < expanded.length; i += 1) {
+			const hit = expanded[i];
+			if (hit.d.chunk.kind === 'prose') continue;
+			const companion = scored
+				.filter(
+					(s) =>
+						s.d.chunk.kind === 'prose' &&
+						s.d.chunk.doc === hit.d.chunk.doc &&
+						s.d.chunk.page === hit.d.chunk.page &&
+						!expanded.includes(s),
+				)
+				.sort((a, b) => b.d.chunk.text.length - a.d.chunk.text.length)[0];
+			if (companion) expanded.splice(Math.min(i + 1, limit - 1), 0, companion);
+			if (expanded.length > limit) expanded.pop();
+			break;
+		}
+	}
+	return expanded.map<SearchHit>((s) => ({
 		chunk: s.d.chunk,
 		score: Number(s.score.toFixed(4)),
 		matchedTerms: s.matched.slice(0, 16),

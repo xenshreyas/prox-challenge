@@ -315,6 +315,28 @@ const fluxDutyHits = search('What is the rated duty cycle for Flux-Cored welding
 const fluxDutyRank = fluxDutyHits.findIndex((hit) => [7, 19].includes(hit.chunk.page));
 check(fluxDutyRank >= 0 && fluxDutyRank < 5, 'shared MIG duty-cycle ratings rank in the top five');
 
+group('retrieval: preparation questions return the complete procedure');
+// Regression from the full q27 eval: the grinding figure ranked first, but the
+// second p. 26 slot went to a one-line electrode-size fact. The complete
+// preparation procedure (remove from the front, 2-1/2x taper, 1/8-1/4 inch
+// protrusion) was outside the result set, so the answer omitted four of five
+// required facts despite all of them existing in one prose chunk.
+const tungstenPreparationHits = search(
+	'Describe correct tungsten electrode preparation for TIG on this machine.',
+	{ limit: 10 },
+);
+const tungstenProcedureRank = tungstenPreparationHits.findIndex(
+	(hit) =>
+		hit.chunk.kind === 'prose' &&
+		hit.chunk.page === 26 &&
+		hit.chunk.text.includes('2-1/2 times') &&
+		hit.chunk.text.includes('1/8"-1/4"'),
+);
+check(
+	tungstenProcedureRank >= 0 && tungstenProcedureRank < 2,
+	'complete tungsten preparation procedure accompanies its figure in the top two',
+);
+
 group('KB parser: tables retain bold subsection labels');
 // Regression: page 25 has adjacent 240 V and 120 V nameplate tables under one
 // markdown heading. Their voltage labels are standalone bold lines, which the
