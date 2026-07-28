@@ -19,6 +19,7 @@ import {
 	artifactCallToAction,
 	directlyRelevantFigure,
 	figureCallToAction,
+	markFigureShown,
 } from '../src/agent/tools.js';
 import { parsePage } from '../src/kb/parse.js';
 import { search } from '../src/kb/search.js';
@@ -283,6 +284,12 @@ const allShown = new Set(
 	onlyFigs.map((h) => `${h.chunk.doc}#${h.chunk.page}#${h.chunk.figure!.slug}`),
 );
 check(figureCallToAction(figHits, allShown) === '', 'suppressed once every figure is shown');
+const displaySet = new Set<string>();
+check(markFigureShown(displaySet, 'owner-manual#11#wire-unwind-direction'), 'first display is emitted');
+check(
+	!markFigureShown(displaySet, 'owner-manual#11#wire-unwind-direction'),
+	'automatic display and a later show_figure call cannot emit a duplicate',
+);
 check(
 	figureCallToAction(
 		figHits.filter((h) => h.chunk.kind !== 'figure'),
@@ -333,6 +340,27 @@ check(
 		search('What is the maximum open circuit voltage?', { limit: 8 }),
 	) === null,
 	'an unrelated low-scoring figure is not auto-surfaced for an ordinary lookup',
+);
+const unwindQuestion =
+	'Which direction must the wire spool unwind, and what happens if the wingnut is too loose?';
+check(
+	directlyRelevantFigure(unwindQuestion, search(unwindQuestion, { limit: 8 }))?.chunk.figure
+		?.slug === 'wire-unwind-direction',
+	'a strongly matching wire-unwind diagram clears the visual threshold',
+);
+const gasSettingsQuestion =
+	'Where does the manual tell you to look for the specific shielding gas type and settings for a given job?';
+check(
+	directlyRelevantFigure(gasSettingsQuestion, search(gasSettingsQuestion, { limit: 8 }))?.chunk
+		.figure?.slug === 'gas-cylinder-regulator-setup',
+	'incidental weld-defect artwork does not displace a relevant gas setup figure',
+);
+const machineSettingsQuestion =
+	'How does the OmniPro 220 handle wire/electrode size versus material thickness selection?';
+check(
+	directlyRelevantFigure(machineSettingsQuestion, search(machineSettingsQuestion, { limit: 8 }))
+		?.chunk.figure?.slug === 'stick-diameter-thickness-screen',
+	'generic product wording does not outweigh the matching settings controls',
 );
 
 group('retrieval: shared MIG ratings remain reachable from a flux-cored query');

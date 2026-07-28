@@ -74,15 +74,61 @@ export function figureCallToAction(hits: SearchHit[], alreadyShown: Set<string>)
 	);
 }
 
+/** Returns true only once per figure, preventing duplicate side-channel events. */
+export function markFigureShown(alreadyShown: Set<string>, key: string): boolean {
+	if (alreadyShown.has(key)) return false;
+	alreadyShown.add(key);
+	return true;
+}
+
 /** Select a figure relevant enough to surface without another model tool call. */
 export function directlyRelevantFigure(query: string, hits: SearchHit[]): SearchHit | null {
 	const bestPassageScore = hits[0]?.score ?? 0;
 	if (bestPassageScore <= 0) return null;
-	const candidate = search(query, { limit: 1, kinds: ['figure'] })[0];
+	const queryTerms = new Set(
+		query
+			.toLowerCase()
+			.replace(/[\u2013\u2014]/g, '-')
+			.split(/[^a-z0-9]+/)
+			.filter(
+				(term) =>
+					term.length >= 3 &&
+					!['according', 'does', 'given', 'handle', 'manual', 'omnipro', 'specific', 'tell'].includes(
+						term,
+					),
+			),
+	);
+	const candidates = search(query, { limit: 10, kinds: ['figure'] });
+	const overlap = (hit: SearchHit) => {
+		const figureText = `${hit.chunk.heading ?? ''} ${hit.chunk.text}`.toLowerCase();
+		let count = 0;
+		for (const term of queryTerms) if (figureText.includes(term)) count += 1;
+		return count;
+	};
+	const relevant = candidates.filter(
+		(hit) => hit.score >= bestPassageScore * 0.5 && overlap(hit) >= 2,
+	);
+	if (relevant.length === 0) return null;
+	// Prefer the primary owner's manual when it has a strong match. Supplementary
+	// guides can duplicate diagrams under unrelated page numbers, while the
+	// answer's citations and surrounding procedure come from the primary source.
+	const primary = relevant.filter(
+		(hit) =>
+			hit.chunk.doc === 'owner-manual' &&
+			hit.score >= Math.max(...relevant.map((candidate) => candidate.score)) * 0.55,
+	);
+	const pool = primary.length > 0 ? primary : relevant;
+	const candidate = pool.reduce<SearchHit | undefined>((best, hit) => {
+		if (!best) return hit;
+		const delta = overlap(hit) - overlap(best);
+		return delta > 0 || (delta === 0 && hit.score > best.score) ? hit : best;
+	}, undefined);
 	if (!candidate?.chunk.figure) return null;
 	// Numeric searches intentionally down-rank figures. This threshold recovers
-	// strong visual evidence while rejecting incidental manual artwork.
-	return candidate.score >= bestPassageScore * 0.6 ? candidate : null;
+	// strong visual evidence while rejecting incidental manual artwork. Requiring
+	// several literal query terms prevents a high-scoring but off-topic defect
+	// image from winning on broad synonym expansion alone.
+	return candidate;
 }
 
 /** Restates the mechanical artifact rule beside parameterized search results. */
@@ -188,8 +234,7 @@ export function createManualTools(ctx: ToolContext) {
 				const c = figure.chunk;
 				const meta = c.figure!;
 				const key = `${c.doc}#${c.page}#${meta.slug}`;
-				if (!shownFigures.has(key)) {
-					shownFigures.add(key);
+				if (markFigureShown(shownFigures, key)) {
 					ctx.emit({
 						type: 'figure',
 						doc: c.doc,
@@ -273,7 +318,16 @@ export function createManualTools(ctx: ToolContext) {
 					],
 				};
 			}
-			shownFigures.add(`${doc}#${page}#${slug}`);
+			if (!markFigureShown(shownFigures, `${doc}#${page}#${slug}`)) {
+				return {
+					content: [
+						{
+							type: 'text' as const,
+							text: `Figure "${slug}" from ${doc} p.${page} is already displayed to the user. Do not show it again; refer to the existing figure naturally in your answer.`,
+						},
+					],
+				};
+			}
 			ctx.emit({
 				type: 'figure',
 				doc,
