@@ -446,6 +446,19 @@ check(
 	).includes('settings configurator'),
 	'original parameterized question preserves artifact intent after a narrow search rewrite',
 );
+const unsupportedDefectQuestion = 'Does the manual document undercut as a defect?';
+const unsupportedDefectCta = artifactCallToAction(
+	'undercut welding defect causes fixes',
+	search('undercut welding defect causes fixes', { limit: 8 }),
+	false,
+	unsupportedDefectQuestion,
+);
+check(
+	unsupportedDefectCta.includes('coverage checker') &&
+		unsupportedDefectCta.includes('not documented') &&
+		unsupportedDefectCta.includes('Do not invent'),
+	'unsupported defect requests get a truthful manual-coverage artifact instead of a nonexistent cause flowchart',
+);
 
 group('retrieval: enumerated troubleshooting keeps the complete matrix row');
 const wireStopsQuestion = 'Wire stops during welding. List all six causes.';
@@ -486,6 +499,13 @@ for (const question of [
 		`blocks artifact-required stop: ${question.slice(0, 42)}`,
 	);
 }
+const unsupportedDefectStop = artifactStopFeedback(unsupportedDefectQuestion, false, false);
+check(
+	unsupportedDefectStop?.includes('coverage checker') === true &&
+		unsupportedDefectStop.includes('not documented') &&
+		unsupportedDefectStop.includes('Do not invent'),
+	'stop retry gives a concrete truthful artifact shape when the requested defect is absent from the manual',
+);
 check(
 	artifactStopFeedback('What is the maximum open circuit voltage?', false, false) === null,
 	'ordinary one-value lookup may stop without an artifact',

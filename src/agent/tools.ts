@@ -208,6 +208,31 @@ export function artifactRequirementForQuestion(question: string): ArtifactRequir
 	return null;
 }
 
+/** Gives the model a concrete artifact shape, including truthful negative-coverage answers. */
+export function artifactInstructionForQuestion(
+	question: string,
+	requirement = artifactRequirementForQuestion(question),
+): string | null {
+	if (!requirement) return null;
+	if (
+		requirement === 'troubleshooting' &&
+		/\bmanual\b.*\b(?:document|mention|cover)(?:s|ed)?\b.*\bdefect\b/i.test(question)
+	) {
+		return (
+			'an interactive manual-coverage checker that marks the requested defect as documented or ' +
+			'not documented and compares only the nearest retrieved documented conditions. ' +
+			'Do not invent causes or fixes for an unsupported defect'
+		);
+	}
+	return requirement === 'duty-cycle'
+		? 'an interactive calculator with the retrieved ratings and a 10-minute weld/rest visualization'
+		: requirement === 'settings'
+			? 'an interactive settings configurator using the retrieved manual values'
+			: requirement === 'troubleshooting'
+				? 'a clickable troubleshooting flowchart for the retrieved causes and checks'
+				: 'an interactive polarity or cable-hookup diagram';
+}
+
 /** Restates the mechanical artifact rule beside parameterized search results. */
 export function artifactCallToAction(
 	query: string,
@@ -220,16 +245,9 @@ export function artifactCallToAction(
 	// As with figure selection, the model's search rewrite is useful for retrieval
 	// but can erase the parameterized intent that warrants an interactive tool.
 	// Drive the UI affordance from the user's original request when available.
-	const requirement = artifactRequirementForQuestion(userQuestion.trim() || query);
-	if (!requirement) return '';
-
-	const format = requirement === 'duty-cycle'
-		? 'an interactive calculator with the retrieved ratings and a 10-minute weld/rest visualization'
-		: requirement === 'settings'
-			? 'an interactive settings configurator using the retrieved manual values'
-			: requirement === 'troubleshooting'
-				? 'a clickable troubleshooting flowchart for the retrieved causes and checks'
-				: 'an interactive polarity or cable-hookup diagram';
+	const originalQuestion = userQuestion.trim() || query;
+	const format = artifactInstructionForQuestion(originalQuestion);
+	if (!format) return '';
 
 	return (
 		`\n\n=== INTERACTIVE ARTIFACT REQUIRED FOR THIS ANSWER ===\n` +

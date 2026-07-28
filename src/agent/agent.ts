@@ -24,6 +24,7 @@ import {
 
 import { SYSTEM_PROMPT, voltageContext } from './prompt.js';
 import {
+	artifactInstructionForQuestion,
 	artifactRequirementForQuestion,
 	createManualTools,
 	MANUAL_TOOL_NAMES,
@@ -77,11 +78,14 @@ export function artifactStopFeedback(
 	artifactCreated: boolean,
 	stopHookActive: boolean,
 ): string | null {
-	if (artifactCreated || stopHookActive || !artifactRequirementForQuestion(question)) return null;
+	if (artifactCreated || stopHookActive) return null;
+	const instruction = artifactInstructionForQuestion(question);
+	if (!instruction) return null;
 	return (
 		'This answer requires an interactive artifact and none has been created. ' +
-		'Before stopping, call mcp__manual__create_artifact (create_artifact) with a complete, ' +
-		'self-contained artifact based on the manual values you retrieved. Do not merely describe one.'
+		'Before stopping, call mcp__manual__create_artifact (create_artifact) and build ' +
+		`${instruction}. Make it complete and self-contained from the manual evidence you retrieved. ` +
+		'Do not merely describe an artifact.'
 	);
 }
 
