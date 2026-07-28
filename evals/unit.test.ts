@@ -13,7 +13,9 @@
 
 import { includesFact } from './run.js';
 import {
+	buildPrompt,
 	extractToolCalls,
+	RESPONSE_CONTRACT_TAIL,
 	salvageProse,
 	stripUnparsedToolCallJson,
 } from '../src/shim/copilot-proxy.js';
@@ -136,6 +138,42 @@ check(
 check(
 	salvageProse('Plain answer with no payload at all.') === 'Plain answer with no payload at all.',
 	'clean prose untouched',
+);
+
+group('shim: protocol contract must be LAST in the prompt');
+// Regression, and the highest-value invariant in this file. The SDK appends a
+// host-injected "CONTEXT NOTE" (Claude Code agent roster + skill catalog) to the
+// END of the conversation. When the response-format contract lived only near the
+// top, that note was the last thing the model read, so it behaved like that
+// agent harness and tried to genuinely EXECUTE mcp__manual__search_manual —
+// producing zero tool calls and an apologetic non-answer.
+//
+// Measured on the captured q11 prompt: contract-at-top 3/5 compliant,
+// contract-restated-last 6/6. Recency, not prompt length, was the trigger.
+const promptWithContextNote = buildPrompt({
+	model: 'claude-sonnet-4-5',
+	max_tokens: 1024,
+	system: 'You are the Vulcan OmniPro 220 expert assistant.',
+	tools: [
+		{
+			name: 'mcp__manual__search_manual',
+			description: 'Search the manual.',
+			input_schema: { type: 'object', properties: { query: { type: 'string' } } },
+		},
+	],
+	messages: [
+		{ role: 'user', content: 'What polarity for flux-cored?' },
+		// Stand-in for the SDK's trailing host-injected note.
+		{ role: 'user', content: 'CONTEXT NOTE: available agent types include general-purpose...' },
+	],
+} as never);
+
+const tailIndex = promptWithContextNote.lastIndexOf(RESPONSE_CONTRACT_TAIL.slice(0, 40));
+const noteIndex = promptWithContextNote.lastIndexOf('CONTEXT NOTE');
+check(tailIndex !== -1, 'contract tail is present in the prompt');
+check(
+	tailIndex > noteIndex,
+	'contract tail appears AFTER the trailing host-injected context note',
 );
 
 console.log(failures === 0 ? '\nALL PASS' : `\n${failures} FAILURE(S)`);

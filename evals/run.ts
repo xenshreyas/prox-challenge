@@ -219,32 +219,79 @@ async function main() {
 	console.log(`  multimodal  ${(summary.multimodal * 100).toFixed(1)}%`);
 	console.log(`  artifact    ${(summary.artifact * 100).toFixed(1)}%`);
 	if (summary.errors) console.log(`  errors      ${summary.errors}`);
+
+	// Report against the incumbent — but only when the sample can actually
+	// support the claim.
+	//
+	// This harness previously printed a bare NEW BEST / REGRESSION verdict on any
+	// delta, and I acted on those verdicts. That was wrong. Measured per-question
+	// standard deviation on this suite is ~25 points (the same question scores
+	// anywhere from 8% to 93% across runs, because the shim's tool-call
+	// compliance is genuinely stochastic). The standard error of a 4-question
+	// mean is therefore ~14 points, so a "-2.5 pt regression" on n=4 is pure
+	// noise — detecting it reliably would need hundreds of questions.
+	//
+	// The harness now reports a confidence interval and refuses to render a
+	// verdict it cannot support.
+	const perQuestionTotals = results.map((r) => r.scores.total);
+	const sd =
+		perQuestionTotals.length > 1
+			? Math.sqrt(
+					perQuestionTotals.reduce((s, v) => s + (v - summary.total) ** 2, 0) /
+						(perQuestionTotals.length - 1),
+				)
+			: 0;
+	const stderr = perQuestionTotals.length ? sd / Math.sqrt(perQuestionTotals.length) : 0;
+	// ~95% CI. Wide by construction; that is the honest picture.
+	const ci95 = 1.96 * stderr * 100;
+	console.log(
+		`  95% CI      ±${ci95.toFixed(1)} pts (n=${results.length}, per-question sd ${(sd * 100).toFixed(1)})`,
+	);
+	if (results.length < 12) {
+		console.log(`  NOTE        n=${results.length} is too small for a reliable verdict.`);
+		console.log(`              Run the full suite (npm run eval) before accepting or`);
+		console.log(`              rejecting a change.`);
+	}
 	console.log('─────────────────────────────────────\n');
 
 	const evalDir = path.join(REPO_ROOT, 'evals');
 	await mkdir(evalDir, { recursive: true });
 	await writeFile(
 		path.join(evalDir, 'last-run.json'),
-		JSON.stringify({ summary, results }, null, 2),
+		JSON.stringify({ summary: { ...summary, ci95: ci95 / 100, sd }, results }, null, 2),
 		'utf8',
 	);
-	await appendFile(path.join(evalDir, 'history.jsonl'), JSON.stringify(summary) + '\n', 'utf8');
+	await appendFile(
+		path.join(evalDir, 'history.jsonl'),
+		JSON.stringify({ ...summary, ci95: ci95 / 100, sd }) + '\n',
+		'utf8',
+	);
 
-	// Report against the incumbent so a regression is impossible to miss.
 	try {
 		const hist = (await readFile(path.join(evalDir, 'history.jsonl'), 'utf8'))
 			.trim()
 			.split('\n')
-			.map((l) => JSON.parse(l) as typeof summary)
+			.map((l) => JSON.parse(l) as typeof summary & { ci95?: number })
 			.filter((h) => h.n === summary.n);
 		const best = hist.reduce((a, b) => (b.total > a.total ? b : a), hist[0]);
 		if (best && best.at !== summary.at) {
 			const delta = (summary.total - best.total) * 100;
-			console.log(
-				delta >= 0
-					? `  NEW BEST (+${delta.toFixed(1)} pts over ${best.at})`
-					: `  REGRESSION (${delta.toFixed(1)} pts vs best ${(best.total * 100).toFixed(1)}% at ${best.at}) — keep the previous approach`,
-			);
+			// Only call it a real move if it clears the noise floor of BOTH runs.
+			const noiseFloor = Math.hypot(ci95, (best.ci95 ?? 0) * 100);
+			if (Math.abs(delta) < noiseFloor) {
+				console.log(
+					`  INCONCLUSIVE (${delta >= 0 ? '+' : ''}${delta.toFixed(1)} pts vs best ` +
+						`${(best.total * 100).toFixed(1)}%, within ±${noiseFloor.toFixed(1)} noise) — ` +
+						`not evidence either way`,
+				);
+			} else {
+				console.log(
+					delta >= 0
+						? `  NEW BEST (+${delta.toFixed(1)} pts over ${best.at}, exceeds ±${noiseFloor.toFixed(1)} noise)`
+						: `  REGRESSION (${delta.toFixed(1)} pts vs best ${(best.total * 100).toFixed(1)}%, ` +
+							`exceeds ±${noiseFloor.toFixed(1)} noise) — keep the previous approach`,
+				);
+			}
 		}
 	} catch {
 		/* first run */
