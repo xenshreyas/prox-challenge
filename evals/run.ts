@@ -59,6 +59,14 @@ function norm(s: string): string {
 	return s
 		.toLowerCase()
 		.replace(/[\u2013\u2014]/g, '-')
+		// Unicode vulgar fractions -> ASCII. Models write "2½ minutes" while the
+		// golden set says "2-1/2"; without this the grader marks a correct answer
+		// wrong. The leading `-` keeps "2½" normalizing to "2-1/2", not "21/2".
+		.replace(/\u00bd/g, '-1/2')
+		.replace(/\u00bc/g, '-1/4')
+		.replace(/\u00be/g, '-3/4')
+		.replace(/\u2153/g, '-1/3')
+		.replace(/\u2154/g, '-2/3')
 		.replace(/\s*-\s*/g, '-')
 		.replace(/(\d)\s+([a-z])/g, '$1$2')
 		.replace(/[^a-z0-9%./-]+/g, ' ')
@@ -70,8 +78,16 @@ function includesFact(haystack: string, needle: string): boolean {
 	const h = norm(haystack);
 	const n = norm(needle);
 	if (h.includes(n)) return true;
-	// Fall back to a spaceless compare so "2-1/2 minutes" matches "2 1/2minutes".
-	return h.replace(/ /g, '').includes(n.replace(/ /g, ''));
+	// Spaceless compare so "2-1/2 minutes" matches "2 1/2minutes".
+	if (h.replace(/ /g, '').includes(n.replace(/ /g, ''))) return true;
+	// Last resort: strip separators entirely, so "2-1/2" matches "21/2" and
+	// "2 1/2". Only applied to needles with a digit, to avoid false positives on
+	// short prose fragments.
+	if (/\d/.test(n)) {
+		const squash = (x: string) => x.replace(/[\s-]/g, '');
+		return squash(h).includes(squash(n));
+	}
+	return false;
 }
 
 function scoreOne(q: GoldenQuestion, r: Omit<QuestionResult, 'scores' | 'missing'>) {
