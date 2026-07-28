@@ -285,6 +285,33 @@ check(
 	) === 1,
 	'an exact document-and-page figure fully grounds a source-qualified question',
 );
+check(
+	groundingScore(
+		'The process ranges come from the selection chart (p. 1).',
+		[],
+		[],
+		[{ doc: 'selection-chart', page: 1 }],
+	) === 1,
+	'an inline document-and-page citation fully grounds a source-qualified question',
+);
+check(
+	groundingScore(
+		'The process ranges come from the owner manual (p. 1).',
+		[],
+		[],
+		[{ doc: 'selection-chart', page: 1 }],
+	) === 0.4,
+	'an inline citation to the same page in the wrong document earns only partial credit',
+);
+check(
+	groundingScore(
+		'The process ranges are listed on p. 1.',
+		[],
+		[],
+		[{ doc: 'selection-chart', page: 1 }],
+	) === 0.4,
+	'a bare ambiguous page citation cannot fully ground a source-qualified question',
+);
 const selectionChartReference = {
 	page_refs: [1],
 	source_refs: [{ doc: 'selection-chart', page: 1 }],

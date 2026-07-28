@@ -64,6 +64,43 @@ export function inlineCitedPages(answer: string): number[] {
 	return [...answer.matchAll(/\bp\.?\s*(\d{1,2})\b/gi)].map((m) => Number(m[1]));
 }
 
+const INLINE_DOCUMENT_ALIASES: { doc: string; pattern: string }[] = [
+	{ doc: 'owner-manual', pattern: String.raw`owner(?:'s)?[ -]manual` },
+	{ doc: 'quick-start-guide', pattern: String.raw`quick[ -]start(?:[ -]guide)?` },
+	{ doc: 'selection-chart', pattern: String.raw`(?:process[ -])?selection[ -]chart` },
+];
+
+/**
+ * Extracts document-qualified citations such as "selection chart (p. 1)" or
+ * "p. 1 of the selection-chart". Page numbers repeat across the three source
+ * documents, so these visible labels carry information a bare `p. 1` does not.
+ */
+export function inlineCitedSources(answer: string): SourceRef[] {
+	const found = new Map<string, SourceRef>();
+	const pagePattern = String.raw`(?:p(?:age)?\.?\s*|#)(\d{1,2})\b`;
+
+	for (const { doc, pattern } of INLINE_DOCUMENT_ALIASES) {
+		const documentThenPage = new RegExp(
+			String.raw`\b${pattern}\b[^\n.!?]{0,40}?${pagePattern}`,
+			'gi',
+		);
+		const pageThenDocument = new RegExp(
+			String.raw`${pagePattern}[^\n.!?]{0,40}?\b${pattern}\b`,
+			'gi',
+		);
+		for (const match of answer.matchAll(documentThenPage)) {
+			const source = { doc, page: Number(match[1]) };
+			found.set(`${source.doc}#${source.page}`, source);
+		}
+		for (const match of answer.matchAll(pageThenDocument)) {
+			const source = { doc, page: Number(match[1]) };
+			found.set(`${source.doc}#${source.page}`, source);
+		}
+	}
+
+	return [...found.values()];
+}
+
 /**
  * Scores citations the user actually received: inline prose citations and pages
  * surfaced as figures. Retrieval citation events are intentionally excluded —
@@ -76,21 +113,23 @@ export function groundingScore(
 	sourceRefs: SourceRef[] = [],
 ): number {
 	const inlinePages = [...new Set(inlineCitedPages(answer))];
+	const inlineSources = inlineCitedSources(answer);
 	const figures = figureSources.map((source) =>
 		typeof source === 'number' ? { doc: '', page: source } : source,
 	);
-	if (inlinePages.length === 0 && figures.length === 0) return 0;
+	if (inlinePages.length === 0 && inlineSources.length === 0 && figures.length === 0) return 0;
 
 	const references = { page_refs: referencePages, source_refs: sourceRefs };
 	const figureMatches = figures.some((source) => matchesReference(source, references));
+	const inlineSourceMatches = inlineSources.some((source) => matchesReference(source, references));
 	// A bare "p. 1" cannot prove which of three documents supplied the fact.
-	// Source-qualified questions therefore require a structured, visible figure
-	// event carrying both the document and page; legacy questions still accept
-	// their inline page citations.
+	// Source-qualified questions therefore require either a document-labelled
+	// inline citation or a structured visible figure; legacy questions still
+	// accept their page-only inline citations.
 	const inlineMatches =
 		sourceRefs.length === 0 && inlinePages.some((page) => referencePages.includes(page));
 	const hasNoReferences = sourceRefs.length === 0 && referencePages.length === 0;
-	return hasNoReferences || figureMatches || inlineMatches ? 1 : 0.4;
+	return hasNoReferences || figureMatches || inlineSourceMatches || inlineMatches ? 1 : 0.4;
 }
 
 /** Normalizes for tolerant substring matching: "2-1/2" vs "2 1/2", "200A" vs "200 A". */
