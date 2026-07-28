@@ -222,9 +222,37 @@ export function artifactCallToAction(
 	);
 }
 
-/** Restates a source-backed caveat that a narrow model rewrite can obscure. */
+/** Restates source-backed answer parts that a narrow model rewrite can obscure. */
 export function answerCompletenessCallToAction(query: string, userQuestion = query): string {
 	const intent = `${userQuestion} ${query}`;
+	const asksForBothHeatDirections =
+		/\b(?:heat|penetration)\b/i.test(intent) &&
+		/\b(?:thicker|increase)\b/i.test(userQuestion) &&
+		/\b(?:thinner|reduce|decrease|limit)\b/i.test(userQuestion);
+	if (asksForBothHeatDirections) {
+		// A rewrite commonly keeps only the first half ("increase penetration for
+		// thicker wire welds"). Recover both complementary p. 35 facts from the
+		// original question so all four controls survive in each direction.
+		const guidance = search(userQuestion, { limit: 8 });
+		const increase = guidance.find(
+			(hit) =>
+				/thicker workpieces properly/i.test(hit.chunk.text) &&
+				/increas(?:e|ing) (?:workpiece heat|weld current)/i.test(hit.chunk.text),
+		);
+		const reduce = guidance.find(
+			(hit) =>
+				/thinner workpieces properly/i.test(hit.chunk.text) &&
+				/(?:reduce workpiece heat|decreasing weld current)/i.test(hit.chunk.text),
+		);
+		if (increase && reduce) {
+			return (
+				`\n\n=== BOTH HALVES OF THE MANUAL'S HEAT-CONTROL ANSWER ARE REQUIRED ===\n` +
+				`${renderHit(increase)}\n\n${renderHit(reduce)}\n\n` +
+				`Answer both the thicker/increase and thinner/reduce halves. Preserve every retrieved ` +
+				`adjustment—current, travel speed, wire feed, and CTWD—in each direction.`
+			);
+		}
+	}
 	if (
 		!/\bshielding gas\b/i.test(intent) ||
 		!/\b(type|specific|appropriate|recommend(?:ed|ation)?)\b/i.test(intent)

@@ -385,6 +385,26 @@ check(
 	),
 	'gas-type completeness hint forbids unsupported blend examples',
 );
+const penetrationQuestion =
+	'How do you increase heat and penetration for thicker wire-welded workpieces, and how do you reduce it for thinner ones?';
+const penetrationCompleteness = answerCompletenessCallToAction(
+	'increase penetration thicker wire weld',
+	penetrationQuestion,
+);
+check(
+	penetrationCompleteness.includes('increasing weld current') &&
+		penetrationCompleteness.includes('decreasing travel speed') &&
+		penetrationCompleteness.includes('faster wire feed') &&
+		penetrationCompleteness.includes('shorter CTWD'),
+	'heat-control completeness hint preserves all four thicker-workpiece adjustments',
+);
+check(
+	penetrationCompleteness.includes('decreasing weld current') &&
+		penetrationCompleteness.includes('increasing travel speed') &&
+		penetrationCompleteness.includes('slower wire feed') &&
+		penetrationCompleteness.includes('longer CTWD'),
+	'original bidirectional question restores all four thinner-workpiece adjustments after a narrow rewrite',
+);
 check(
 	directlyRelevantFigure(gasSettingsQuestion, gasSettingsHits)?.chunk
 		.figure?.slug === 'gas-cylinder-regulator-setup',
