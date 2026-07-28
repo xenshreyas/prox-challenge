@@ -14,6 +14,7 @@
 import { includesFact } from './run.js';
 import {
 	extractToolCalls,
+	salvageProse,
 	stripUnparsedToolCallJson,
 } from '../src/shim/copilot-proxy.js';
 
@@ -112,6 +113,29 @@ check(Date.now() - started < 3000, 'all unbalanced shapes return promptly (no in
 check(
 	stripUnparsedToolCallJson('Duty cycle is 25% (p. 7).') === 'Duty cycle is 25% (p. 7).',
 	'clean prose is preserved verbatim',
+);
+
+group('shim: prose salvage when the stripper over-consumes');
+// Regression: q20 returned "(empty response)" — the model wrote prose alongside
+// a malformed JSON fragment, the aggressive stripper ate the whole thing, and
+// the user saw nothing. Losing a fragment is fine; losing the answer is not.
+const mixed =
+	'Unscrew the feed roller knob counterclockwise (p. 12).\n' +
+	'{"tool_calls":[{"name":"x","input":{"code":"fn(){\n' +
+	'The knurled groove is for flux-cored wire.';
+const salvaged = salvageProse(mixed);
+check(salvaged.includes('counterclockwise'), 'keeps leading prose');
+check(salvaged.includes('knurled'), 'keeps trailing prose');
+check(!salvaged.includes('tool_calls'), 'drops the JSON fragment');
+
+check(
+	salvageProse('● Web Search (MCP: github-mcp-server) · query\n  └ {"type":"output_text","text":{"value":"x"}}\nThe duty cycle is 25% (p. 7).')
+		=== 'The duty cycle is 25% (p. 7).',
+	"strips Copilot's own agent-trace lines",
+);
+check(
+	salvageProse('Plain answer with no payload at all.') === 'Plain answer with no payload at all.',
+	'clean prose untouched',
 );
 
 console.log(failures === 0 ? '\nALL PASS' : `\n${failures} FAILURE(S)`);

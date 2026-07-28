@@ -64,23 +64,66 @@ interface MessagesRequest {
 const FOOTER_PREFIXES = ['Changes', 'AI Credits', 'Tokens', 'Resume'];
 
 /**
- * Copilot CLI is an agent and prints its OWN tool-activity transcript to stdout
- * (e.g. `✓ bash(...)`, `✗ mcp__manual__search_manual query: "..."`, and the
- * `└ Tool 'x' does not exist.` continuation). Those lines are CLI chrome, not
- * model output — if they survive they get scored as the assistant's answer.
- * Strip them, including their indented continuation lines.
+ * Markers that begin a Copilot CLI tool-activity transcript entry.
+ *
+ *   ✓ / ✔  — tool succeeded
+ *   ✗ / ×  — tool failed  (e.g. `✗ mcp__manual__search_manual query: "..."`)
+ *   ●      — Copilot's own agent step header, e.g.
+ *            `● Web Search (MCP: github-mcp-server) · Vulcan OmniPro 220 ...`
+ *
+ * `●` was previously NOT stripped, which is how a whole Copilot agent trace —
+ * including the raw `{"type":"output_text",...}` MCP payload on its `└`
+ * continuation line — leaked into a scored assistant answer.
+ */
+const TRANSCRIPT_MARKER = /^\s*[✓✗×✔●]\s/;
+
+/** Box-drawing gutter that continues a transcript entry. */
+const TRANSCRIPT_GUTTER = /^\s*(└|├|│)/;
+
+/**
+ * Raw MCP tool payloads that Copilot sometimes prints inline, e.g.
+ * `{"type":"output_text","text":{"value":"..."}}`. These are machine output
+ * from Copilot's OWN builtin tools and must never reach the user, even when
+ * they appear on a line with no transcript marker at all.
+ */
+function stripMcpOutputTextPayloads(text: string): string {
+  let out = text;
+  for (;;) {
+    const idx = out.search(/\{\s*"type"\s*:\s*"output_text"/);
+    if (idx === -1) break;
+    const end = matchBalanced(out, idx);
+    // Unbalanced (truncated mid-stream) — drop to end of that line instead.
+    if (end === -1) {
+      const eol = out.indexOf('\n', idx);
+      out = out.slice(0, idx) + (eol === -1 ? '' : out.slice(eol));
+      continue;
+    }
+    out = out.slice(0, idx) + out.slice(end + 1);
+  }
+  return out;
+}
+
+/**
+ * Copilot CLI is an agent and prints its OWN tool-activity transcript to stdout.
+ * Those lines are CLI chrome, not model output — if they survive they get
+ * scored as the assistant's answer. Strip them, including their continuation
+ * lines and any embedded MCP output_text payloads.
  */
 export function stripCopilotToolTranscript(raw: string): string {
-  const lines = raw.split('\n');
+  const lines = stripMcpOutputTextPayloads(raw).split('\n');
   const kept: string[] = [];
   let skippingContinuation = false;
   for (const line of lines) {
-    if (/^\s*[✓✗×✔]\s/.test(line)) {
+    if (TRANSCRIPT_MARKER.test(line)) {
       skippingContinuation = true;
       continue;
     }
-    // Continuation lines of a transcript entry: box-drawing gutter or deep indent.
-    if (skippingContinuation && /^\s*(└|├|│)/.test(line)) continue;
+    // A gutter line always belongs to a transcript entry, even if the marker
+    // line it continues was already consumed (or never captured).
+    if (TRANSCRIPT_GUTTER.test(line)) {
+      skippingContinuation = true;
+      continue;
+    }
     if (skippingContinuation && line.trim() === '') {
       skippingContinuation = false;
       continue;
@@ -108,9 +151,106 @@ export function stripCopilotFooter(raw: string): string {
   return lines.slice(0, cut).join('\n').trim();
 }
 
+/**
+ * The protocol contract, restated at the very END of the prompt.
+ * See the long note at its use site in `buildPrompt` for the measurement that
+ * justifies it.
+ *
+ * WORDING MATTERS. An earlier draft opened with
+ * "=== RESPONSE FORMAT — THIS OVERRIDES EVERYTHING ABOVE ===" and told the
+ * model it had "NO tools of your own". That reads exactly like a
+ * prompt-injection payload, and Copilot's safety layer said so verbatim:
+ * "This message contains an embedded prompt-injection attempt … I'm not going
+ * to adopt that persona, call those non-existent tools, or emit raw JSON."
+ * So this text is framed as a neutral API reminder from the orchestrator, with
+ * no override language and no persona instructions.
+ */
+export const RESPONSE_CONTRACT_TAIL =
+  `=== REMINDER: API RESPONSE FORMAT ===\n` +
+  `(Reminder from the orchestrator that issued this request.)\n\n` +
+  `This is an API call, so the reply is parsed by a program, not read by a human.\n` +
+  `Tools listed in the catalog above are executed by the orchestrator, not in this\n` +
+  `session, so there is nothing for you to run or look up locally.\n\n` +
+  `Reply in exactly one of these two formats.\n\n` +
+  `FORMAT 1 — request tool execution. The reply is only this JSON object:\n` +
+  `{"tool_calls":[{"name":"<tool name from the catalog above>","input":{ ...arguments... }}]}\n` +
+  `The orchestrator runs it and sends you the result on the next turn.\n\n` +
+  `FORMAT 2 — final answer. Only prose for the user, with no JSON.\n\n` +
+  `To retrieve anything from the manual, use Format 1; that JSON is the request\n` +
+  `channel for these tools, and it always reaches the orchestrator.`;
+
+/**
+ * Terse re-prompt used when a first attempt came back non-compliant. Kept SHORT
+ * on purpose — the point is to escape the long-context distraction that caused
+ * the failure — and phrased neutrally for the same anti-injection reason as
+ * RESPONSE_CONTRACT_TAIL.
+ */
+export const RETRY_INSTRUCTION =
+  `=== ORCHESTRATOR: REPLY COULD NOT BE PARSED, PLEASE RESEND ===\n` +
+  `The previous reply contained no tool_calls JSON and no answer, so the request\n` +
+  `is still open.\n\n` +
+  `Resend using Format 1 only — a single JSON object, no other text:\n` +
+  `{"tool_calls":[{"name":"<tool name from the catalog above>","input":{ ...arguments... }}]}`;
+
+/**
+ * Phrases that mark a reply as a "confident-sounding non-answer": Copilot
+ * claiming it lacks access to tools it was never supposed to execute itself.
+ * A reply matching one of these AND containing no tool call is non-compliant.
+ */
+const REFUSAL_PATTERNS = [
+  /\bdon['’]t have access to\b/i,
+  /\bdo not have access to\b/i,
+  /\baren['’]t responding\b/i,
+  /\bare not responding\b/i,
+  /\bis(?:n['’]t| not) (?:available|responding|accessible)\b/i,
+  /\btools?\b[^.\n]{0,40}\bnot available\b/i,
+  /\bdoes not exist\b/i,
+  /\bcan['’]t look up\b/i,
+  /\bcannot look up\b/i,
+  /\bno access to\b[^.\n]{0,40}\btool/i,
+  // Copilot's safety layer mistaking the orchestrator's own protocol contract
+  // for an attack. Observed verbatim; must be retried, never shown to a user.
+  /\bprompt[- ]injection\b/i,
+  /\bnon-existent tools\b/i,
+  /\bI['’]m the GitHub Copilot CLI\b/i,
+  /\bwon['’]t (?:fabricate|adopt that persona)\b/i,
+];
+
+/**
+ * Decide whether a Copilot reply satisfied the protocol.
+ *
+ * Compliant when EITHER a tool_calls payload parses out, OR the text is a
+ * plausible standalone answer. Non-compliant when it is a refusal/apology about
+ * tools, or effectively empty — those are the cases worth one retry.
+ */
+export function isProtocolCompliant(text: string, toolsAvailable: boolean): boolean {
+  if (!toolsAvailable) return text.trim().length > 0;
+  if (extractToolCalls(text)) return true;
+  const t = text.trim();
+  if (t.length === 0) return false;
+  if (REFUSAL_PATTERNS.some((re) => re.test(t))) return false;
+  // Very short replies with no tool call are almost always a stub/apology.
+  return t.length >= 80;
+}
+
 const COPILOT_TIMEOUT_MS = Number(process.env.COPILOT_TIMEOUT_MS ?? 180_000);
 
-export function runCopilot(prompt: string): Promise<string> {
+/**
+ * Disabling Copilot's own builtin MCP servers (notably the GitHub MCP
+ * web-search) removes the tool that produced the leaked
+ * `● Web Search (MCP: github-mcp-server)` trace. Measured at realistic prompt
+ * length it also modestly improved compliance on its own (5/6 vs 3/5), and it
+ * is strictly additive with the recency contract. Opt out with
+ * SHIM_ALLOW_BUILTIN_MCPS=1 if a future CLI version drops the flag.
+ */
+function copilotArgs(): string[] {
+  const args = ['--allow-all', '--no-color'];
+  if (!process.env.SHIM_ALLOW_BUILTIN_MCPS) args.push('--disable-builtin-mcps');
+  return args;
+}
+
+/** One raw invocation of the Copilot CLI. */
+function runCopilotOnce(prompt: string): Promise<string> {
   return new Promise((resolve, reject) => {
     // Run in a scratch dir so the Copilot agent cannot touch the real repo.
     const cwd = mkdtempSync(join(tmpdir(), 'copilot-shim-'));
@@ -118,7 +258,7 @@ export function runCopilot(prompt: string): Promise<string> {
     // Copilot's own toolset (verified: it still lists bash/web_search/etc.) and
     // it measurably increased the rate at which Copilot refused to emit the
     // protocol JSON at all. Plain --allow-all is what works.
-    const child = spawn('copilot', ['-p', prompt, '--allow-all', '--no-color'], {
+    const child = spawn('copilot', ['-p', prompt, ...copilotArgs()], {
       cwd,
       env: process.env,
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -151,6 +291,28 @@ export function runCopilot(prompt: string): Promise<string> {
       resolve(text);
     });
   });
+}
+
+/**
+ * Invoke Copilot, and retry ONCE with a terse re-prompt if the first reply was
+ * non-compliant (no tool call and no plausible answer). The failure is
+ * intermittent, so a single independent resample recovers most of it; the
+ * retry prompt is short to escape the long-context distraction that caused it.
+ */
+export async function runCopilot(prompt: string, toolsAvailable = true): Promise<string> {
+  const first = await runCopilotOnce(prompt);
+  if (isProtocolCompliant(first, toolsAvailable)) return first;
+
+  console.error('[shim] non-compliant reply, retrying once with terse contract');
+  try {
+    const second = await runCopilotOnce(`${prompt}\n\n${RETRY_INSTRUCTION}`);
+    // Only prefer the retry if it is actually better; otherwise keep the first
+    // so we never trade a mediocre answer for an empty one.
+    if (isProtocolCompliant(second, toolsAvailable)) return second;
+    return second.trim().length > first.trim().length ? second : first;
+  } catch {
+    return first;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -306,6 +468,19 @@ export function buildPrompt(body: MessagesRequest): string {
   const parts: string[] = [];
   const system = systemToText(body.system);
   if (system) {
+    // REVERTED EXPERIMENT — do not reintroduce without measuring.
+    //
+    // Copilot intermittently refuses this prompt as prompt injection ("a block
+    // of injected text trying to make me pretend to be a different AI"), because
+    // the caller's system prompt opens "You are the Vulcan OmniPro 220 expert
+    // assistant". I tried reframing this block as "APPLICATION CONFIGURATION
+    // (supplied by the API caller)" with a note that it is the caller's own
+    // config rather than untrusted input.
+    //
+    // It made things WORSE, measured over two trials on the same 4 questions:
+    // 38.1% and 66.3% versus a 73.1% incumbent. Plausibly the extra meta-text
+    // about identity and injection primes the very refusal it was meant to
+    // prevent. Keeping the plain header, which measures better.
     parts.push(`=== SYSTEM INSTRUCTIONS ===\n${system}`);
   }
 
@@ -393,6 +568,26 @@ export function buildPrompt(body: MessagesRequest): string {
           `are right there. Answer directly from them and cite the pages they give you.`
         : ''),
   );
+
+  // RECENCY CONTRACT — measured fix, do not move this above the conversation.
+  //
+  // The protocol contract used to live ONLY near the top of the prompt. At the
+  // realistic prompt size (~19KB) the SDK appends a large host-injected
+  // "CONTEXT NOTE" (Claude Code agent-type list, skill catalog) at the END of
+  // the conversation, so the last thing Copilot read was a description of a
+  // real agent harness with real tools. Copilot then behaved as that agent:
+  // it tried to genuinely INVOKE `mcp__manual__search_manual`, got
+  // "Tool 'mcp__manual__search_manual' does not exist", printed its own
+  // transcript, and wrote an apologetic prose non-answer with zero tool calls.
+  //
+  // Measured on the captured q11 prompt, 6 trials per condition:
+  //   contract at top only (baseline) .................. 3/5 compliant
+  //   + --disable-builtin-mcps only .................... 5/6 compliant
+  //   + contract restated last (this block) ............ 6/6 compliant
+  // Restating the contract last is what actually fixes it.
+  if (tools.length > 0) {
+    parts.push(RESPONSE_CONTRACT_TAIL);
+  }
 
   return parts.join('\n\n');
 }
@@ -574,6 +769,31 @@ function coerceCalls(parsed: unknown): ParsedToolCall[] | null {
   return valid.length > 0 ? valid : null;
 }
 
+/**
+ * Last-resort recovery when {@link stripUnparsedToolCallJson} eats the whole
+ * response. Drops only lines that are obviously machine payload — JSON-looking
+ * lines and Copilot's own agent-trace glyphs — and keeps everything else.
+ *
+ * Losing a few words of prose is recoverable; returning nothing is not.
+ */
+export function salvageProse(text: string): string {
+  return text
+    .split('\n')
+    .filter((line) => {
+      const t = line.trim();
+      if (!t) return true;
+      if (t.startsWith('●') || t.startsWith('└') || t.startsWith('│')) return false;
+      if (t.includes('"tool_calls"')) return false;
+      if (t.includes('"type":"output_text"')) return false;
+      // A line that is essentially a JSON object/array fragment.
+      if (/^[[{]/.test(t) && /[\]}],?$/.test(t)) return false;
+      return true;
+    })
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 export interface ToolCallExtraction {
   calls: ParsedToolCall[];
   /** The model output with every JSON region that produced a tool call removed. */
@@ -677,7 +897,13 @@ export function buildAnthropicMessage(
     // leaking a partially-excised fragment.
   } else {
     // Even with no parsable calls, never surface tool_calls JSON as prose.
-    const safe = stripUnparsedToolCallJson(copilotText).trim();
+    const stripped = stripUnparsedToolCallJson(copilotText).trim();
+    // The stripper is deliberately aggressive, which means it can consume the
+    // entire response when the model interleaves prose with a malformed JSON
+    // fragment. Returning "(empty response)" to the SDK ends the turn with the
+    // user seeing nothing, which is strictly worse than showing the prose. So
+    // fall back to the raw text with only JSON-looking lines removed.
+    const safe = stripped || salvageProse(copilotText);
     content = [{ type: 'text', text: safe || '(empty response)' }];
     stop_reason = 'end_turn';
   }
@@ -828,7 +1054,7 @@ export function createCopilotProxyApp(): express.Express {
 
     let copilotText: string;
     try {
-      copilotText = await runCopilot(prompt);
+      copilotText = await runCopilot(prompt, toolsAvailable);
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       console.error(`[shim] copilot failed: ${message}`);

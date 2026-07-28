@@ -62,8 +62,43 @@ engineering:
    leak into a text block. As a safety net, any `tool_calls`-shaped JSON that
    could not be parsed is stripped from text output too.
 6. Copilot CLI is an agent and prints its own tool-activity transcript
-   (`✗ some_tool ...` / `└ Tool 'x' does not exist.`) to stdout. Those lines are
-   CLI chrome, not model output, and are stripped before parsing.
+   (`✗ some_tool ...` / `└ Tool 'x' does not exist.`, and `● Web Search (MCP:
+   github-mcp-server) …` when it invokes one of its *own* builtin MCP tools) to
+   stdout. Those lines are CLI chrome, not model output, and are stripped
+   before parsing — including embedded `{"type":"output_text",...}` MCP
+   payloads, which are excised by brace matching wherever they appear.
+7. The response-format contract is restated **verbatim at the very end of the
+   prompt**, after the conversation. See "Protocol compliance" below.
+8. If a reply comes back non-compliant (no parsable `tool_calls` and no
+   plausible answer — typically an apology that a tool "isn't available"),
+   `runCopilot` retries **once** with a short appended re-prompt.
+
+## Protocol compliance — why the contract is repeated at the end
+
+Copilot intermittently ignored the protocol and answered in prose claiming it
+had no tools, making **zero** tool calls.
+
+Root cause: the Claude Agent SDK appends a large host-injected *context note*
+(its agent-type roster and skill catalog) to the **end** of the conversation. At
+realistic prompt size (~19 KB) that note was the last thing Copilot read, so it
+behaved like that agent harness and tried to *genuinely execute*
+`mcp__manual__search_manual`. The CLI answered `Tool '…' does not exist`,
+Copilot printed its own failure transcript, then wrote an apologetic
+non-answer. Defects (A) prose-refusal and (B) trace-leak were the same bug.
+
+Measured on the captured q11 prompt replayed straight through `copilot -p`:
+
+| condition | tool_calls emitted | trace leaked |
+|---|---|---|
+| contract at top only (baseline) | 3/5 | 2/5 |
+| `--disable-builtin-mcps` only | 5/6 | 1/6 |
+| contract restated last | **6/6** | 0/6 |
+| contract last + `--disable-builtin-mcps` | **6/6** | 0/6 |
+
+Restating the contract last is the load-bearing fix. `--disable-builtin-mcps`
+is kept because it removes the builtin GitHub-MCP web search that produced the
+`●` trace in the first place (override with `SHIM_ALLOW_BUILTIN_MCPS=1`).
+Prompt *length* alone was not the trigger — recency of the contract was.
 
 This conversion lives in one function (`buildAnthropicMessage`) that **both**
 the JSON and the SSE paths call, so streaming and non-streaming cannot diverge,
@@ -93,9 +128,10 @@ for a grader who has a real Anthropic key: in that case just set
 - **Not true streaming.** Tokens are not streamed from Copilot; the SSE sequence
   is replayed from the completed answer.
 - **Tool calling is best-effort.** It depends on the model obeying the JSON
-  protocol. A model that answers in prose when it should have called a tool will
-  silently produce a text block instead. Multiple tool calls per turn *are*
-  supported, but the model does not always batch them.
+  protocol. Compliance is materially improved by restating the contract at the
+  end of the prompt plus a one-shot retry (see "Protocol compliance"), but it is
+  not guaranteed. Multiple tool calls per turn *are* supported, but the model
+  does not always batch them.
 - **Do not pass `--available-tools=`** to the Copilot CLI. It does not actually
   disable Copilot's own toolset (verified: it still lists bash/web_search/etc.)
   and it measurably increased the rate at which Copilot refused to emit the
