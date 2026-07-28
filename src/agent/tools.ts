@@ -192,10 +192,14 @@ export function artifactCallToAction(
 	query: string,
 	hits: SearchHit[],
 	alreadyCreated = false,
+	userQuestion = query,
 ): string {
 	if (alreadyCreated || hits.length === 0) return '';
 
-	const q = query.toLowerCase();
+	// As with figure selection, the model's search rewrite is useful for retrieval
+	// but can erase the parameterized intent that warrants an interactive tool.
+	// Drive the UI affordance from the user's original request when available.
+	const q = (userQuestion.trim() || query).toLowerCase();
 	const dutyCycle = /duty[ -]?cycle|weld\/?rest|weld(?:ing)? (?:and|\/) rest/.test(q);
 	const settings =
 		/(?:setting|configure|select|choose|recommend).*(?:material|thickness|wire|electrode|amp|volt|gas)/.test(
@@ -381,7 +385,7 @@ export function createManualTools(ctx: ToolContext) {
 						text:
 							hits.map(renderHit).join('\n\n---\n\n') +
 							figureCallToAction(hits, shownFigures) +
-							artifactCallToAction(query, hits, artifactCreated) +
+							artifactCallToAction(query, hits, artifactCreated, ctx.userQuestion) +
 							answerCompletenessCallToAction(query, ctx.userQuestion),
 					},
 				],

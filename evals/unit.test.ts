@@ -328,6 +328,15 @@ check(
 	),
 	'process-comparison ranges request an interactive settings configurator',
 );
+check(
+	artifactCallToAction(
+		'process capability bands maximum minimum',
+		search('process capability bands maximum minimum', { limit: 8 }),
+		false,
+		rangeQuestion,
+	).includes('settings configurator'),
+	'original parameterized question preserves artifact intent after a narrow search rewrite',
+);
 
 group('tools: directly relevant figures surface without model compliance');
 // Regression: q26 retrieved the complete image-only selection chart and built a
