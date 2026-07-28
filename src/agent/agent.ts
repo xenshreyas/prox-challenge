@@ -102,7 +102,7 @@ export async function* ask(opts: AskOptions): AsyncGenerator<AgentEvent> {
 	// synchronously from inside tool handlers, which run while we're awaiting the
 	// SDK stream. We buffer them here and drain between SDK messages.
 	const pending: AgentEvent[] = [];
-	const tools = createManualTools({ emit: (e) => pending.push(e) });
+	const tools = createManualTools({ emit: (e) => pending.push(e), userQuestion: opts.question });
 
 	let sessionId: string | null = opts.sessionId ?? null;
 

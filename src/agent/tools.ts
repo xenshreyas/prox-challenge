@@ -82,15 +82,25 @@ export function markFigureShown(alreadyShown: Set<string>, key: string): boolean
 }
 
 /** Select a figure relevant enough to surface without another model tool call. */
-export function directlyRelevantFigure(query: string, hits: SearchHit[]): SearchHit | null {
-	const bestPassageScore = hits[0]?.score ?? 0;
+export function directlyRelevantFigure(
+	query: string,
+	hits: SearchHit[],
+	userQuestion = query,
+): SearchHit | null {
+	// The model often rewrites the user's wording into a narrower fact lookup.
+	// That helps retrieval but can discard visual intent (for example, "selection
+	// chart" becoming "process thickness band gauge maximum minimum"). Automatic
+	// UI behavior must follow the user's request, not a lossy rewrite.
+	const selectionQuery = userQuestion.trim() || query;
+	const selectionHits = selectionQuery === query ? hits : search(selectionQuery, { limit: 8 });
+	const bestPassageScore = selectionHits[0]?.score ?? 0;
 	if (bestPassageScore <= 0) return null;
-	const normalizedQuery = query.toLowerCase();
+	const normalizedQuery = selectionQuery.toLowerCase();
 	// Nameplate table chunks receive a large numeric/table prior, so comparing a
 	// figure's raw score to the best passage hides the exact picture being asked
 	// about. Prefer the reproduced rear-panel nameplate explicitly when named.
 	if (/nameplate|rating label/.test(normalizedQuery)) {
-		const nameplate = search(query, { limit: 20, kinds: ['figure'] }).find(
+		const nameplate = search(selectionQuery, { limit: 20, kinds: ['figure'] }).find(
 			(hit) =>
 				hit.chunk.doc === 'owner-manual' &&
 				hit.chunk.page === 27 &&
@@ -102,7 +112,7 @@ export function directlyRelevantFigure(query: string, hits: SearchHit[]): Search
 	// the power input. Troubleshooting prose answers when to press it; the figure
 	// answers the visual part of where that physical button is.
 	if (/reset button|reset control/.test(normalizedQuery)) {
-		const resetControl = search(query, { limit: 20, kinds: ['figure'] }).find(
+		const resetControl = search(selectionQuery, { limit: 20, kinds: ['figure'] }).find(
 			(hit) =>
 				hit.chunk.doc === 'owner-manual' &&
 				hit.chunk.page === 27 &&
@@ -111,7 +121,7 @@ export function directlyRelevantFigure(query: string, hits: SearchHit[]): Search
 		if (resetControl) return resetControl;
 	}
 	if (/\bctwd\b|contact tip to work distance/.test(normalizedQuery)) {
-		const ctwd = search(query, { limit: 20, kinds: ['figure'] }).find(
+		const ctwd = search(selectionQuery, { limit: 20, kinds: ['figure'] }).find(
 			(hit) =>
 				hit.chunk.doc === 'owner-manual' &&
 				hit.chunk.page === 22 &&
@@ -123,7 +133,7 @@ export function directlyRelevantFigure(query: string, hits: SearchHit[]): Search
 	// inside a diagram, but the TIG settings screen is the accepted visual source
 	// for the other half of this comparison: the required 100% Argon gas.
 	if (/\bscfh\b/.test(normalizedQuery) && /\btig\b/.test(normalizedQuery)) {
-		const tigGas = search(query, { limit: 20, kinds: ['figure'] }).find(
+		const tigGas = search(selectionQuery, { limit: 20, kinds: ['figure'] }).find(
 			(hit) =>
 				hit.chunk.doc === 'owner-manual' &&
 				hit.chunk.page === 30 &&
@@ -132,7 +142,7 @@ export function directlyRelevantFigure(query: string, hits: SearchHit[]): Search
 		if (tigGas) return tigGas;
 	}
 	const queryTerms = new Set(
-		query
+		selectionQuery
 			.toLowerCase()
 			.replace(/[\u2013\u2014]/g, '-')
 			.split(/[^a-z0-9]+/)
@@ -144,7 +154,7 @@ export function directlyRelevantFigure(query: string, hits: SearchHit[]): Search
 					),
 			),
 	);
-	const candidates = search(query, { limit: 10, kinds: ['figure'] });
+	const candidates = search(selectionQuery, { limit: 10, kinds: ['figure'] });
 	const overlap = (hit: SearchHit) => {
 		const figureText = `${hit.chunk.heading ?? ''} ${hit.chunk.text}`.toLowerCase();
 		let count = 0;
@@ -214,6 +224,8 @@ export function artifactCallToAction(
 
 export interface ToolContext {
 	emit: EventSink;
+	/** Original user wording; model-generated retrieval queries may be narrower. */
+	userQuestion?: string;
 	/** Base URL the browser uses to fetch page images, e.g. "" for same-origin. */
 	publicBaseUrl?: string;
 }
@@ -275,7 +287,7 @@ export function createManualTools(ctx: ToolContext) {
 			// Measured evals repeatedly found that the model read a relevant figure
 			// description but skipped the follow-up display call. Surface one strong
 			// visual match deterministically and retain show_figure for additional images.
-			const figure = directlyRelevantFigure(query, hits);
+			const figure = directlyRelevantFigure(query, hits, ctx.userQuestion);
 			if (figure?.chunk.figure) {
 				const c = figure.chunk;
 				const meta = c.figure!;

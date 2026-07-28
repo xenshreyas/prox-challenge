@@ -339,6 +339,18 @@ check(
 		q26Figure.chunk.figure?.slug === 'how-to-choose-a-welder-chart',
 	'q26 deterministically surfaces the image-only process selection chart',
 );
+const rewrittenRangeQuery = 'process thickness band gauge maximum minimum';
+const q26RewrittenFigure = directlyRelevantFigure(
+	rewrittenRangeQuery,
+	search(rewrittenRangeQuery, { limit: 8 }),
+	rangeQuestion,
+);
+check(
+	q26RewrittenFigure?.chunk.doc === 'selection-chart' &&
+		q26RewrittenFigure.chunk.page === 1 &&
+		q26RewrittenFigure.chunk.figure?.slug === 'how-to-choose-a-welder-chart',
+	'user wording, not a model-rewritten search query, drives automatic figure selection',
+);
 check(
 	directlyRelevantFigure(
 		'What is the maximum open circuit voltage?',
