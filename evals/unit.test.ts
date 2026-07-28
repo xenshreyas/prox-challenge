@@ -303,6 +303,14 @@ check(
 	artifactCallToAction('What is the maximum open circuit voltage?', search('maximum open circuit voltage', { limit: 8 })) === '',
 	'plain one-value lookup adds no artifact noise',
 );
+const rangeQuestion =
+	'What are the material thickness ranges each process covers according to the Harbor Freight selection chart?';
+check(
+	artifactCallToAction(rangeQuestion, search(rangeQuestion, { limit: 8 })).includes(
+		'settings configurator',
+	),
+	'process-comparison ranges request an interactive settings configurator',
+);
 
 group('retrieval: shared MIG ratings remain reachable from a flux-cored query');
 // The manual publishes no separate FCAW duty-cycle table: the answer lives in

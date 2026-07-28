@@ -88,7 +88,7 @@ export function artifactCallToAction(
 		/(?:setting|configure|select|choose|recommend).*(?:material|thickness|wire|electrode|amp|volt|gas)/.test(
 			q,
 		) ||
-		/(?:material|thickness|wire|electrode).*(?:setting|size|amp|volt|gas)/.test(q);
+		/(?:material|thickness|wire|electrode).*(?:setting|size|range|amp|volt|gas)/.test(q);
 	const troubleshooting =
 		/(?:troubleshoot|diagnos|causes?|checks?|fix(?:es)?|defect|symptom|won't|not working|problem)/.test(q);
 	const polarity = /polarity|cable (?:hookup|connection|routing)|which (?:cable|socket)/.test(q);
