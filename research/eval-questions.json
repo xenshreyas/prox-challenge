@@ -99,6 +99,7 @@
     "requires_artifact": true,
     "page_refs": [
       16,
+      25,
       27
     ]
   },
@@ -115,6 +116,7 @@
     "requires_artifact": true,
     "page_refs": [
       16,
+      25,
       27
     ]
   },
@@ -130,7 +132,8 @@
     "requires_artifact": false,
     "page_refs": [
       7,
-      16
+      16,
+      25
     ]
   },
   {

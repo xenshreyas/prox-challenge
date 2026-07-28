@@ -11,6 +11,8 @@
  * No API key, no network, no model. Run: `npm test`.
  */
 
+import { readFileSync } from 'node:fs';
+
 import { classifyAgainstBest, groundingScore, includesFact, isBackendRefusal } from './run.js';
 import { wrapArtifact } from '../src/agent/artifact-harness.js';
 import { artifactCallToAction, figureCallToAction } from '../src/agent/tools.js';
@@ -220,6 +222,20 @@ check(
 	groundingScore('', [12], [12]) === 1,
 	'a figure visibly shown from a reference page is grounded',
 );
+
+group('eval: golden references include every verified nameplate source');
+// The same physical nameplate is reproduced on pp. 16, 25, and 27. The golden
+// references omitted p. 25 even though its extraction has the clearest
+// process-labelled transcription. Correct answers citing that page were scored
+// as only partially grounded, and retrieval of that exact table counted as a
+// miss for q06-q08.
+const goldenQuestions = JSON.parse(
+	readFileSync(new URL('../research/eval-questions.json', import.meta.url), 'utf8'),
+) as { id: string; page_refs: number[] }[];
+for (const id of ['q06', 'q07', 'q08']) {
+	const question = goldenQuestions.find((q) => q.id === id);
+	check(question?.page_refs.includes(25) === true, `${id} accepts the verified nameplate on p. 25`);
+}
 
 group('artifact harness: TypeScript-flavoured source must compile TS-first');
 // Regression, found by rendering in a real browser rather than unit-testing the

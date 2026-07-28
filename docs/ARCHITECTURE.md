@@ -336,11 +336,11 @@ whether a correct page appears in the top-k.
 KB: 51 pages, 1063 chunks (143 figures, 16 tables)
 
 Retrieval recall over 39 golden questions:
-  recall@1   66.7%
-  recall@3   84.6%
-  recall@5   89.7%
+  recall@1   74.4%
+  recall@3   92.3%
+  recall@5   97.4%
   recall@10 100.0%
-  MRR        0.7658
+  MRR        0.8314
 ```
 
 Retrieval is deterministic — no model, no network, no sampling — so repeated runs
@@ -353,8 +353,12 @@ page never enters the agent's context, no prompt engineering recovers the answer
 When end-to-end accuracy drops, this harness is what tells you whether the cause is
 upstream (retrieval) or downstream (prompt, tools, model).
 
-The `@1` and `@3` figures are where the remaining headroom is: the right page is
-always retrieved by k=10, it is just not always ranked first.
+The golden references count all three verified reproductions of the physical
+nameplate (pp. 16, 25, and 27). In particular, p. 25 contains the clearest
+process-labelled transcription, so excluding it incorrectly treated exact
+nameplate retrieval and citations as misses. The `@1` figure is where the
+remaining headroom is: the right page is always retrieved by k=10, it is just not
+always ranked first.
 
 ### 5.2 End-to-end agent scoring — `npm run eval`
 
