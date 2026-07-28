@@ -23,7 +23,7 @@ import { randomUUID } from 'node:crypto';
 import { createSdkMcpServer, tool } from '@anthropic-ai/claude-agent-sdk';
 import { z } from 'zod';
 
-import { getFigure, getPage, loadKB, search } from '../kb/search.js';
+import { getFigure, getPage, loadKB, search, tokenize } from '../kb/search.js';
 import type { Chunk, SearchHit } from '../kb/types.js';
 import type { ArtifactKind, EventSink } from './events.js';
 import { wrapArtifact } from './artifact-harness.js';
@@ -241,6 +241,34 @@ export function artifactCallToAction(
 /** Restates source-backed answer parts that a narrow model rewrite can obscure. */
 export function answerCompletenessCallToAction(query: string, userQuestion = query): string {
 	const intent = `${userQuestion} ${query}`;
+	if (/(?:\blist\b.*\bcauses?\b|\ball\b.*\bcauses?\b|\bgive\b.*\bcauses?\b)/i.test(userQuestion)) {
+		// A model rewrite can collapse an exact matrix-row request into generic
+		// wire-feed terms, which exposes adjacent troubleshooting rows and invites
+		// mixing their causes. Recover the row selected by the user's own wording.
+		const matrix = search(userQuestion, { limit: 8 }).find((hit) => hit.chunk.kind === 'table');
+		if (matrix) {
+			const wanted = new Set(tokenize(userQuestion));
+			const row = matrix.chunk.text
+				.split('\n')
+				.filter((line) => /^\|.+\|$/.test(line) && !/^\|[-|]+\|$/.test(line.replace(/\s/g, '')))
+				.map((line) => {
+					const problemTerms = new Set(tokenize(line.split('|')[1] ?? ''));
+					return {
+						line,
+						overlap: [...problemTerms].filter((term) => wanted.has(term)).length,
+					};
+				})
+				.sort((a, b) => b.overlap - a.overlap)[0];
+			if (row?.overlap) {
+				return (
+					`\n\n=== EXACT TROUBLESHOOTING ROW REQUIRED BY THE USER ===\n` +
+					`[${matrix.chunk.doc} p.${matrix.chunk.page} | table row]\n${row.line}\n\n` +
+					`Use this row only—not adjacent troubleshooting problems. List every requested cause ` +
+					`and preserve each paired check or fix in both the answer and the interactive troubleshooter.`
+				);
+			}
+		}
+	}
 	const asksForBothHeatDirections =
 		/\b(?:heat|penetration)\b/i.test(intent) &&
 		/\b(?:thicker|increase)\b/i.test(userQuestion) &&

@@ -66,8 +66,12 @@ function stem(word: string): string {
 	if (word.endsWith('sses')) return word.slice(0, -2);
 	if (word.endsWith('ses') && word.length > 4) return word.slice(0, -2);
 	if (word.endsWith('s') && !word.endsWith('ss') && !word.endsWith('us')) return word.slice(0, -1);
-	if (word.endsWith('ing') && word.length > 5) return word.slice(0, -3);
-	if (word.endsWith('ed') && word.length > 4) return word.slice(0, -2);
+	if (word.endsWith('ing') && word.length > 5) {
+		return word.slice(0, -3).replace(/([^lsz])\1$/, '$1');
+	}
+	if (word.endsWith('ed') && word.length > 4) {
+		return word.slice(0, -2).replace(/([^lsz])\1$/, '$1');
+	}
 	return word;
 }
 
@@ -572,6 +576,27 @@ export function search(query: string, opts: SearchOptions = {}): SearchHit[] {
 			if (companion) expanded.splice(Math.min(i + 1, limit - 1), 0, companion);
 			if (expanded.length > limit) expanded.pop();
 			break;
+		}
+	}
+	if (/(?:\blist\b.*\bcauses?\b|\ball\b.*\bcauses?\b|\bgive\b.*\bcauses?\b)/i.test(query)) {
+		// Atomic facts are ideal for concise answers, but an enumerated diagnostic
+		// request also needs the complete matrix row: it carries each cause's paired
+		// check/fix. Keep that table beside the leading fact instead of letting the
+		// page-diversity cap replace it with another short fact from the same page.
+		const lead = expanded[0];
+		const matrix = lead && scored
+			.filter(
+				(s) =>
+					s.d.chunk.kind === 'table' &&
+					s.d.chunk.doc === lead.d.chunk.doc &&
+					s.d.chunk.page === lead.d.chunk.page,
+			)
+			.sort((a, b) => b.d.chunk.text.length - a.d.chunk.text.length)[0];
+		if (matrix && !expanded.slice(0, 2).includes(matrix)) {
+			const existing = expanded.indexOf(matrix);
+			if (existing >= 0) expanded.splice(existing, 1);
+			expanded.splice(Math.min(1, expanded.length), 0, matrix);
+			if (expanded.length > limit) expanded.pop();
 		}
 	}
 	// Symbol/glossary tables repeat "wire feed" and receive the numeric-table

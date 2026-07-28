@@ -447,6 +447,32 @@ check(
 	'original parameterized question preserves artifact intent after a narrow search rewrite',
 );
 
+group('retrieval: enumerated troubleshooting keeps the complete matrix row');
+const wireStopsQuestion = 'Wire stops during welding. List all six causes.';
+const wireStopsHits = search(wireStopsQuestion, { limit: 8 });
+check(
+	wireStopsHits.slice(0, 2).some(
+		(hit) =>
+			hit.chunk.doc === 'owner-manual' &&
+			hit.chunk.page === 42 &&
+			hit.chunk.kind === 'table' &&
+			hit.chunk.text.includes('Wire Stops During Welding') &&
+			hit.chunk.text.includes('correct groove for wire diameter') &&
+			hit.chunk.text.includes('Check Feed Tensioner'),
+	),
+	'q37 retrieves the complete six-cause row and fixes in the top two results',
+);
+const wireStopsCompleteness = answerCompletenessCallToAction(
+	'wire feed pressure tensioner causes',
+	wireStopsQuestion,
+);
+check(
+	wireStopsCompleteness.includes('Gun cable is severely bent') &&
+		wireStopsCompleteness.includes('correct groove for wire diameter') &&
+		wireStopsCompleteness.includes('Check Feed Tensioner'),
+	'original q37 wording restores its complete matrix row after a narrow search rewrite',
+);
+
 group('agent: artifact-required turns cannot stop before creating one');
 for (const question of [
 	'What is the highest MIG output current at 100% duty cycle on 120 V and 240 V?',
