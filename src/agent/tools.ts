@@ -222,6 +222,34 @@ export function artifactCallToAction(
 	);
 }
 
+/** Restates a source-backed caveat that a narrow model rewrite can obscure. */
+export function answerCompletenessCallToAction(query: string, userQuestion = query): string {
+	const intent = `${userQuestion} ${query}`;
+	if (
+		!/\bshielding gas\b/i.test(intent) ||
+		!/\b(type|specific|appropriate|recommend(?:ed|ation)?)\b/i.test(intent)
+	) {
+		return '';
+	}
+
+	// Use the original wording so a model rewrite optimized for the door chart
+	// cannot erase the user's broader request for where the recommendation comes
+	// from. The evidence is copied from the KB, never hard-coded into the prompt.
+	const supplierGuidance = search(userQuestion, { limit: 8 }).find((hit) =>
+		/wire supplier/i.test(hit.chunk.text),
+	);
+	if (!supplierGuidance) return '';
+
+	return (
+		`\n\n=== REQUIRED ANSWER CAVEAT FROM THE MANUAL ===\n` +
+		`${renderHit(supplierGuidance)}\n\n` +
+		`Do not omit this limitation as incidental troubleshooting detail: explicitly tell the user ` +
+		`that the manual says to use the shielding gas recommended by the wire supplier. ` +
+		`Do not add gas blend examples unless a retrieved passage explicitly states them; ` +
+		`the door Settings Chart, not general welding knowledge, is the source of the job-specific value.`
+	);
+}
+
 export interface ToolContext {
 	emit: EventSink;
 	/** Original user wording; model-generated retrieval queries may be narrower. */
@@ -325,7 +353,8 @@ export function createManualTools(ctx: ToolContext) {
 						text:
 							hits.map(renderHit).join('\n\n---\n\n') +
 							figureCallToAction(hits, shownFigures) +
-							artifactCallToAction(query, hits, artifactCreated),
+							artifactCallToAction(query, hits, artifactCreated) +
+							answerCompletenessCallToAction(query, ctx.userQuestion),
 					},
 				],
 			};

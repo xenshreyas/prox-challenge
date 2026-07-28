@@ -152,7 +152,7 @@ function extractFigures(body: string): {
 		// A figure block ends at the next `###`/`##`/`#` heading or `---` rule.
 		const endIdx = rest.search(/^(#{1,3}\s|---\s*$)/m);
 		const blockRaw = endIdx === -1 ? rest : rest.slice(0, endIdx);
-		if (endIdx !== -1) proseParts.push(rest.slice(endIdx));
+		const afterBlock = endIdx === -1 ? '' : rest.slice(endIdx);
 
 		const field = (name: string): string => {
 			const re = new RegExp(
@@ -178,6 +178,22 @@ function extractFigures(body: string): {
 			description: field('Description'),
 			answersQuestionsLike,
 		});
+
+		// The extractor sometimes puts substantive instructions directly after the
+		// final figure-metadata field and before the next heading. Previously the
+		// whole pre-heading region was treated as figure metadata, silently dropping
+		// troubleshooting causes and fixes from searchable prose. Keep everything
+		// after the one-line/bulleted "Answers questions like" value.
+		const answersField = /^\*\*Answers questions like:\*\*[^\n]*(?:\n\s*[-*]\s+[^\n]*)*/m.exec(
+			blockRaw,
+		);
+		if (answersField) {
+			const trailingProse = blockRaw
+				.slice(answersField.index + answersField[0].length)
+				.trim();
+			if (trailingProse) proseParts.push(trailingProse);
+		}
+		if (afterBlock) proseParts.push(afterBlock);
 	}
 
 	return { figures, prose: proseParts.join('\n') };

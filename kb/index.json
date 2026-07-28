@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-07-28T08:49:00.298Z",
+  "builtAt": "2026-07-28T12:58:43.216Z",
   "chunks": [
     {
       "doc": "owner-manual",
@@ -2701,6 +2701,30 @@
       "processes": [
         "general"
       ],
+      "id": "owner-manual#p6:table:0",
+      "kind": "table",
+      "heading": "Symbology",
+      "text": "| Icon/Symbol | Meaning |\n|---|---|\n| Spool with arrow (Wire Feed icon) | Wire Feed (Speed) |\n| Ground clamp icon | Workpiece Ground Cable |\n| MIG torch/gun icon | Torch Cable |\n| Thermometer icon | Overheat Shutdown Indicator |\n| Fan icon | Cooling Fan |\n| Ground symbol icon | Housing Ground Point |\n| VAC | Volts Alternating Current |\n| A | Amperes |\n| OCV | Open Circuit Voltage |\n| KVA | Kilovolt Amperes (Volts / 1000 * Amperes) |\n| IPM | Inches Per Minute |\n| AWG | American Wire Gauge |\n| Person shocked icon | Electric Shock Hazard. Do not touch energized parts. |\n| Person with fumes icon | Inhalation Hazard. Keep head out of fumes and use proper ventilation. |\n| Open book icon | Read manual before setup and/or use. |\n| Fire/sparks icon | Fire Hazard. Keep flammable materials away during welding. Spatter can cause accidental fires. |\n| Welding helmet icon | Arc Ray Hazard. Wear welding helmet with properly rated filter lens. |\n| Heart/pacemaker prohibition icon | Pacemaker Hazard. Welding processes may interfere with pacemakers. Consult doctor before use. |"
+    },
+    {
+      "doc": "owner-manual",
+      "page": 6,
+      "section": "Safety - Grounding and Symbology",
+      "topics": [
+        "grounding",
+        "extension-cords",
+        "replacement-cords",
+        "symbology",
+        "hazard-icons",
+        "electric-shock",
+        "pacemaker-warning",
+        "arc-ray-hazard",
+        "fire-hazard",
+        "inhalation-hazard"
+      ],
+      "processes": [
+        "general"
+      ],
       "id": "owner-manual#p6:figure:0",
       "kind": "figure",
       "heading": "symbology-icon-table",
@@ -3988,7 +4012,7 @@
       "id": "owner-manual#p8:prose:0",
       "kind": "prose",
       "heading": "Front Panel Controls",
-      "text": "---\n\nPage 8                      For technical questions, please call 1-800-444-3353.    Item 57812"
+      "text": "**Note:** When using an optional Spool Gun (sold separately), connect the Spool Gun gas hose to the Spool Gun Gas Outlet.\n---\n\nPage 8                      For technical questions, please call 1-800-444-3353.    Item 57812"
     },
     {
       "doc": "owner-manual",
@@ -7363,7 +7387,169 @@
       "id": "owner-manual#p16:prose:1",
       "kind": "prose",
       "heading": "⚠ DANGER",
-      "text": "**PARTS MAY BE AT WELDING VOLTAGE**\n**TO PREVENT ELECTRIC SHOCK AND DEATH:**\n\n1. **Keep hands away from Wire Feed mechanism.**\n2. **Close door before plugging in, unless using Cold Wire Feed to feed wire through to gun.**\n3. **Do not touch Trigger while feeding wire through to gun.**\n\n---\n\n24. Plug either 120VAC or 240VAC Power Cord into Power Input Socket.\n\n**Note:** Plug will only fit one way.\n\n---\n\n25. Do not touch the Gun's Trigger. Plug the Power Cord into a properly grounded, GFCI protected 120VAC (20 amp rated) or 240VAC receptacle that matches the plug and turn the Power Switch ON. The circuit must be equipped with delayed action-type circuit breaker or fuses.\n\n---\n\n26. Point the Gun away from all objects. Press and hold the Cold Wire Feed Switch until the wire feeds through two inches.\n\n**The wire liner may come out with the welding wire. This is normal, just push the wire liner back into the Gun.**\n\nIf the wire does not feed properly and the Spool is stationary, turn OFF and unplug the Welder and slightly tighten the Feed Tensioner clockwise before retrying.\n\n---\n\nPage 16                       For technical questions, please call 1-800-444-3353.                       Item 57812"
+      "text": "**PARTS MAY BE AT WELDING VOLTAGE**\n**TO PREVENT ELECTRIC SHOCK AND DEATH:**\n\n1. **Keep hands away from Wire Feed mechanism.**\n2. **Close door before plugging in, unless using Cold Wire Feed to feed wire through to gun.**\n3. **Do not touch Trigger while feeding wire through to gun.**\n\n---\n\n24. Plug either 120VAC or 240VAC Power Cord into Power Input Socket.\n\n**Note:** Plug will only fit one way."
+    },
+    {
+      "doc": "owner-manual",
+      "page": 16,
+      "section": "Controls / Wire Feed Setup",
+      "topics": [
+        "power-input-socket",
+        "power-cord-connection",
+        "gfci-receptacle",
+        "power-switch",
+        "rating-nameplate",
+        "duty-cycle",
+        "cold-wire-feed",
+        "wire-liner",
+        "feed-tensioner",
+        "mig-gun",
+        "welding-wire-length",
+        "electric-shock-safety"
+      ],
+      "processes": [
+        "mig",
+        "general"
+      ],
+      "id": "owner-manual#p16:prose:2",
+      "kind": "prose",
+      "heading": "Rating nameplate (data label) transcription",
+      "text": "Header information printed on the nameplate:\n- Date: (blank/handwritten field on label)\n- Model: Vulcan OMNIPRO 220\n- Conforms to ANSI/IEC Std. 60974-1\n- UPC 193175422590\n- Item: 57812\n- Serial number field: 25d 264149\n\nThe nameplate contains six duty-cycle rating blocks (three under 240V input, three under 120V input), each showing an output current/voltage range, a rated no-load voltage U0, and duty-cycle (X) values at three points with corresponding output current (I2) and output voltage (U2). Individual process icons are printed to the left of each block (wire-spool-like, torch-like, and zigzag/electrode-like icons) but the icon artwork is too small in the source scan to read any printed process-name text; process identity per block is illegible from the image and is not asserted below.\n\n**240V Input Group (U1 = 240V, 1~50/60Hz):**\n\n240V input current draw (per range, left-to-right = Range 1 / Range 2 / Range 3):\n\n**120V Input Group (U1 = 120V, 1~50/60Hz):**\n\n120V input current draw (per range, left-to-right = Range 4 / Range 5 / Range 6):\n\nAdditional nameplate markings: enclosure rating \"IP21S\", and small symbols \"S\", \"f1\", \"f2\" printed near the bottom of the label (standard IEC welding symbols; exact adjacent text illegible at source resolution).\n---"
+    },
+    {
+      "doc": "owner-manual",
+      "page": 16,
+      "section": "Controls / Wire Feed Setup",
+      "topics": [
+        "power-input-socket",
+        "power-cord-connection",
+        "gfci-receptacle",
+        "power-switch",
+        "rating-nameplate",
+        "duty-cycle",
+        "cold-wire-feed",
+        "wire-liner",
+        "feed-tensioner",
+        "mig-gun",
+        "welding-wire-length",
+        "electric-shock-safety"
+      ],
+      "processes": [
+        "mig",
+        "general"
+      ],
+      "id": "owner-manual#p16:prose:3",
+      "kind": "prose",
+      "heading": "Rating nameplate (data label) transcription",
+      "text": "25. Do not touch the Gun's Trigger. Plug the Power Cord into a properly grounded, GFCI protected 120VAC (20 amp rated) or 240VAC receptacle that matches the plug and turn the Power Switch ON. The circuit must be equipped with delayed action-type circuit breaker or fuses.\n\n---\n\n26. Point the Gun away from all objects. Press and hold the Cold Wire Feed Switch until the wire feeds through two inches.\n\n**The wire liner may come out with the welding wire. This is normal, just push the wire liner back into the Gun.**\n\nIf the wire does not feed properly and the Spool is stationary, turn OFF and unplug the Welder and slightly tighten the Feed Tensioner clockwise before retrying.\n\n---\n\nPage 16                       For technical questions, please call 1-800-444-3353.                       Item 57812"
+    },
+    {
+      "doc": "owner-manual",
+      "page": 16,
+      "section": "Controls / Wire Feed Setup",
+      "topics": [
+        "power-input-socket",
+        "power-cord-connection",
+        "gfci-receptacle",
+        "power-switch",
+        "rating-nameplate",
+        "duty-cycle",
+        "cold-wire-feed",
+        "wire-liner",
+        "feed-tensioner",
+        "mig-gun",
+        "welding-wire-length",
+        "electric-shock-safety"
+      ],
+      "processes": [
+        "mig",
+        "general"
+      ],
+      "id": "owner-manual#p16:table:0",
+      "kind": "table",
+      "heading": "Rating nameplate (data label) transcription",
+      "text": "| Range | Output Range | U0 | X (duty cycle) | I2 (output current) | U2 (output voltage) |\n|---|---|---|---|---|---|\n| 1 | 30A/15.5V to 220A/25V | 86V | 25% / 60% / 100% | 200A / 130A / 115A | 24V / 20.5V / 19.75V |\n| 2 | 10A/20.4V to 175A/27V | 86V | 25% / 60% / 100% | 175A / 115A / 100A | 27V / 24.6V / 24V |\n| 3 | 10A/10.4V to 175A/17V | 86V | 30% / 60% / 100% | 175A / 125A / 105A | 17V / 15V / 14.2V |"
+    },
+    {
+      "doc": "owner-manual",
+      "page": 16,
+      "section": "Controls / Wire Feed Setup",
+      "topics": [
+        "power-input-socket",
+        "power-cord-connection",
+        "gfci-receptacle",
+        "power-switch",
+        "rating-nameplate",
+        "duty-cycle",
+        "cold-wire-feed",
+        "wire-liner",
+        "feed-tensioner",
+        "mig-gun",
+        "welding-wire-length",
+        "electric-shock-safety"
+      ],
+      "processes": [
+        "mig",
+        "general"
+      ],
+      "id": "owner-manual#p16:table:1",
+      "kind": "table",
+      "heading": "Rating nameplate (data label) transcription",
+      "text": "| Value | Range 1 | Range 2 | Range 3 |\n|---|---|---|---|\n| I1max | 25.5A | 23.7A | 15.6A |\n| I1eff | 12.8A | 11.9A | 8.5A |"
+    },
+    {
+      "doc": "owner-manual",
+      "page": 16,
+      "section": "Controls / Wire Feed Setup",
+      "topics": [
+        "power-input-socket",
+        "power-cord-connection",
+        "gfci-receptacle",
+        "power-switch",
+        "rating-nameplate",
+        "duty-cycle",
+        "cold-wire-feed",
+        "wire-liner",
+        "feed-tensioner",
+        "mig-gun",
+        "welding-wire-length",
+        "electric-shock-safety"
+      ],
+      "processes": [
+        "mig",
+        "general"
+      ],
+      "id": "owner-manual#p16:table:2",
+      "kind": "table",
+      "heading": "Rating nameplate (data label) transcription",
+      "text": "| Range | Output Range | U0 | X (duty cycle) | I2 (output current) | U2 (output voltage) |\n|---|---|---|---|---|---|\n| 4 | 30A/15.5V to 140A/21V | 86V | 40% / 60% / 100% | 100A / 85A / 75A | 19V / 18.25V / 17.75V |\n| 5 | 10A/20.4V to 80A/23.2V | 86V | 40% / 60% / 100% | 80A / 70A / 60A | 23.2V / 22.8V / 22.4V |\n| 6 | 10A/10.4V to 125A/15V | 86V | 40% / 60% / 100% | 125A / 105A / 90A | 15V / 14.2V / 13.6V |"
+    },
+    {
+      "doc": "owner-manual",
+      "page": 16,
+      "section": "Controls / Wire Feed Setup",
+      "topics": [
+        "power-input-socket",
+        "power-cord-connection",
+        "gfci-receptacle",
+        "power-switch",
+        "rating-nameplate",
+        "duty-cycle",
+        "cold-wire-feed",
+        "wire-liner",
+        "feed-tensioner",
+        "mig-gun",
+        "welding-wire-length",
+        "electric-shock-safety"
+      ],
+      "processes": [
+        "mig",
+        "general"
+      ],
+      "id": "owner-manual#p16:table:3",
+      "kind": "table",
+      "heading": "Rating nameplate (data label) transcription",
+      "text": "| Value | Range 4 | Range 5 | Range 6 |\n|---|---|---|---|\n| I1max | 20.8A | 19.5A | 20.6A |\n| I1eff | 13.1A | 12.3A | 13A |"
     },
     {
       "doc": "owner-manual",
@@ -10126,7 +10312,7 @@
       "id": "owner-manual#p20:prose:2",
       "kind": "prose",
       "heading": "Settings",
-      "text": "---\n\nPage 20                      For technical questions, please call 1-800-444-3353.                        Item 57812"
+      "text": "1. Press Home Button on Control Panel.\n2. Turn Main Control Knob until desired process appears on LCD display screen.\n3. Press Main Control Knob to select process.\n\n**Note:** Press Main Control Knob to go to next screen. Press Back Button to return to the previous screen.\n\n4. Adjust settings for the selected process.\n\na. Polarity and Gas Settings:\n      • Plug cables in according to screen.\n      • Connect gas according to screen.\n      • Set SCFH between 20-30.\nb. Set Wire Diameter and Material Thickness:\n      • Turn Left Knob to set wire diameter.\n      • Turn Right Knob to set material thickness.\nc. Auto Weld Settings:\n      • Turn Left Knob to adjust Wire Feed Speed (Amperage).\n      • Turn Right Knob to adjust Voltage.\n**Note:** If the Wire Feed Speed or Voltage settings are adjusted manually, the white mark on the line shows the recommended setting for your wire/electrode diameter and workpiece thickness.\n---\n\nPage 20                      For technical questions, please call 1-800-444-3353.                        Item 57812"
     },
     {
       "doc": "owner-manual",
@@ -14503,8 +14689,215 @@
       ],
       "id": "owner-manual#p27:prose:0",
       "kind": "prose",
+      "heading": "Connect Cables",
+      "text": "1. Plug Ground Clamp Cable into Negative Socket. Twist clockwise all the way to lock in place.\n2. Plug Electrode Holder Cable into Positive Socket. Twist clockwise all the way to lock in place.\n## Connect Power Cord\n\nPlug either 120 VAC or 240 VAC Power Cord into Power Input Socket.\n\n**Note:** Plug will only fit one way.\n\n**WARNING! TO PREVENT SERIOUS INJURY FROM ACCIDENTAL OPERATION:** Do not plug cord into wall outlet at this time.\n\n**Rating Label Contents (Vulcan OMNIPRO 220, Item 57812):**\n\n- Date: [blank field on label]\n- Vulcan OMNIPRO 220\n- Conforms to ANSI/IEC Std. 60974-1\n- UPC 193175422590 | Item 57812 | 25d | 264149\n\n**Duty Cycle Table 1 — Range 30A/15.5V to 220A/25V**\n\n**Duty Cycle Table 2 — Range 10A/20.4V to 175A/27V**\n\n**Duty Cycle Table 3 — Range 10A/10.4V to 175A/17V**\n\n**Primary Current — U1 = 240V, 1~50/60Hz**\n\n**Duty Cycle Table 4 — Range 30A/15.5V to 140A/21V**\n\n**Duty Cycle Table 5 — Range 10A/20.4V to 80A/23.2V**\n\n**Duty Cycle Table 6 — Range 10A/10.4V to 125A/15V**\n\n**Primary Current — U1 = 120V, 1~50/60Hz**\n\n*(Note: the 120V I1max/I1eff row values are transcribed exactly as extracted from the page's embedded text layer, in the order they appear; the values in the 100% column being numerically higher than the 60% column is as printed in the source and could not be cross-verified because the rating label is illustrative/not legible in the page image.)*"
+    },
+    {
+      "doc": "owner-manual",
+      "page": 27,
+      "section": "Stick Setup",
+      "topics": [
+        "stick-setup",
+        "connect-cables",
+        "connect-power-cord",
+        "ground-clamp",
+        "electrode-holder",
+        "power-input",
+        "rating-label",
+        "duty-cycle",
+        "nameplate"
+      ],
+      "processes": [
+        "stick"
+      ],
+      "id": "owner-manual#p27:prose:1",
+      "kind": "prose",
+      "heading": "Connect Cables",
+      "text": "Additional symbols printed near the bottom of the rating label: \"IP21S\" (ingress protection rating), an \"S\" in a box (suitable for use in environments with increased hazard of electric shock), and symbols labeled \"f1\" and \"f2\" (transformer/single-phase rectifier converter symbols), alongside a general \"X\" duty-cycle icon.\n---\n\nItem 57812 | For technical questions, please call 1-800-444-3353. | Page 27"
+    },
+    {
+      "doc": "owner-manual",
+      "page": 27,
+      "section": "Stick Setup",
+      "topics": [
+        "stick-setup",
+        "connect-cables",
+        "connect-power-cord",
+        "ground-clamp",
+        "electrode-holder",
+        "power-input",
+        "rating-label",
+        "duty-cycle",
+        "nameplate"
+      ],
+      "processes": [
+        "stick"
+      ],
+      "id": "owner-manual#p27:table:0",
+      "kind": "table",
       "heading": "Connect Power Cord",
-      "text": "Plug either 120 VAC or 240 VAC Power Cord into Power Input Socket.\n\n**Note:** Plug will only fit one way.\n\n**WARNING! TO PREVENT SERIOUS INJURY FROM ACCIDENTAL OPERATION:** Do not plug cord into wall outlet at this time.\n\n---\n\nItem 57812 | For technical questions, please call 1-800-444-3353. | Page 27"
+      "text": "| X | 25% | 60% | 100% |\n|---|-----|-----|------|\n| I2 | 200A | 130A | 115A |\n| U2 (U0 = 86V) | 24V | 20.5V | 19.75V |"
+    },
+    {
+      "doc": "owner-manual",
+      "page": 27,
+      "section": "Stick Setup",
+      "topics": [
+        "stick-setup",
+        "connect-cables",
+        "connect-power-cord",
+        "ground-clamp",
+        "electrode-holder",
+        "power-input",
+        "rating-label",
+        "duty-cycle",
+        "nameplate"
+      ],
+      "processes": [
+        "stick"
+      ],
+      "id": "owner-manual#p27:table:1",
+      "kind": "table",
+      "heading": "Connect Power Cord",
+      "text": "| X | 25% | 60% | 100% |\n|---|-----|-----|------|\n| I2 | 175A | 115A | 100A |\n| U2 (U0 = 86V) | 27V | 24.6V | 24V |"
+    },
+    {
+      "doc": "owner-manual",
+      "page": 27,
+      "section": "Stick Setup",
+      "topics": [
+        "stick-setup",
+        "connect-cables",
+        "connect-power-cord",
+        "ground-clamp",
+        "electrode-holder",
+        "power-input",
+        "rating-label",
+        "duty-cycle",
+        "nameplate"
+      ],
+      "processes": [
+        "stick"
+      ],
+      "id": "owner-manual#p27:table:2",
+      "kind": "table",
+      "heading": "Connect Power Cord",
+      "text": "| X | 30% | 60% | 100% |\n|---|-----|-----|------|\n| I2 | 175A | 125A | 105A |\n| U2 (U0 = 86V) | 17V | 15V | 14.2V |"
+    },
+    {
+      "doc": "owner-manual",
+      "page": 27,
+      "section": "Stick Setup",
+      "topics": [
+        "stick-setup",
+        "connect-cables",
+        "connect-power-cord",
+        "ground-clamp",
+        "electrode-holder",
+        "power-input",
+        "rating-label",
+        "duty-cycle",
+        "nameplate"
+      ],
+      "processes": [
+        "stick"
+      ],
+      "id": "owner-manual#p27:table:3",
+      "kind": "table",
+      "heading": "Connect Power Cord",
+      "text": "| | 25% | 60% | 100% |\n|---|-----|-----|------|\n| I1max | 25.5A | 23.7A | 15.6A |\n| I1eff | 12.8A | 11.9A | 8.5A |"
+    },
+    {
+      "doc": "owner-manual",
+      "page": 27,
+      "section": "Stick Setup",
+      "topics": [
+        "stick-setup",
+        "connect-cables",
+        "connect-power-cord",
+        "ground-clamp",
+        "electrode-holder",
+        "power-input",
+        "rating-label",
+        "duty-cycle",
+        "nameplate"
+      ],
+      "processes": [
+        "stick"
+      ],
+      "id": "owner-manual#p27:table:4",
+      "kind": "table",
+      "heading": "Connect Power Cord",
+      "text": "| X | 40% | 60% | 100% |\n|---|-----|-----|------|\n| I2 | 100A | 85A | 75A |\n| U2 (U0 = 86V) | 19V | 18.25V | 17.75V |"
+    },
+    {
+      "doc": "owner-manual",
+      "page": 27,
+      "section": "Stick Setup",
+      "topics": [
+        "stick-setup",
+        "connect-cables",
+        "connect-power-cord",
+        "ground-clamp",
+        "electrode-holder",
+        "power-input",
+        "rating-label",
+        "duty-cycle",
+        "nameplate"
+      ],
+      "processes": [
+        "stick"
+      ],
+      "id": "owner-manual#p27:table:5",
+      "kind": "table",
+      "heading": "Connect Power Cord",
+      "text": "| X | 40% | 60% | 100% |\n|---|-----|-----|------|\n| I2 | 80A | 70A | 60A |\n| U2 (U0 = 86V) | 23.2V | 22.8V | 22.4V |"
+    },
+    {
+      "doc": "owner-manual",
+      "page": 27,
+      "section": "Stick Setup",
+      "topics": [
+        "stick-setup",
+        "connect-cables",
+        "connect-power-cord",
+        "ground-clamp",
+        "electrode-holder",
+        "power-input",
+        "rating-label",
+        "duty-cycle",
+        "nameplate"
+      ],
+      "processes": [
+        "stick"
+      ],
+      "id": "owner-manual#p27:table:6",
+      "kind": "table",
+      "heading": "Connect Power Cord",
+      "text": "| X | 40% | 60% | 100% |\n|---|-----|-----|------|\n| I2 | 125A | 105A | 90A |\n| U2 (U0 = 86V) | 15V | 14.2V | 13.6V |"
+    },
+    {
+      "doc": "owner-manual",
+      "page": 27,
+      "section": "Stick Setup",
+      "topics": [
+        "stick-setup",
+        "connect-cables",
+        "connect-power-cord",
+        "ground-clamp",
+        "electrode-holder",
+        "power-input",
+        "rating-label",
+        "duty-cycle",
+        "nameplate"
+      ],
+      "processes": [
+        "stick"
+      ],
+      "id": "owner-manual#p27:table:7",
+      "kind": "table",
+      "heading": "Connect Power Cord",
+      "text": "| | 40% | 60% | 100% |\n|---|-----|-----|------|\n| I1max | 20.8A | 19.5A | 20.6A |\n| I1eff | 13.1A | 12.3A | 13A |"
     },
     {
       "doc": "owner-manual",
@@ -16762,7 +17155,7 @@
       "id": "owner-manual#p31:prose:0",
       "kind": "prose",
       "heading": "Page 31 — TIG Welding Procedure (continued) & Optional Settings",
-      "text": "d. Optional Settings:\n   - Press Main Control Knob to enter Optional Settings.\n   - Turn Main Control Knob until desired setting appears on screen.\n   - Press Main Control Knob to select desired setting.\n   - Turn Main Control Knob to adjust setting.\n\nAvailable Optional Settings:\n   - Recall Setting – Retrieve saved settings.\n   - Save Setting – Program up to 5 different configurations.\n\n---\n\n10. Hold TIG Torch in one gloved hand and the TIG Rod (sold separately) in other gloved hand.\n\n**NOTE:** Maintain a constant distance between the Tungsten Electrode and the workpiece: between 1 and 1.5 times the diameter of the Electrode.\n\n11. Open valve on TIG Torch to start gas flow.\n\n12. To initiate welding arc, push Foot Pedal and touch Electrode to work piece and lift. If not using Foot Pedal, touch Electrode to work piece and lift.\n\n13. When welding puddle is hot enough, tilt Torch backward about 10-15 degrees from vertical and move it back slightly. Add TIG Rod material as needed to the front end of the weld puddle.\n\n14. Alternate between pushing the torch/weld puddle and adding the TIG Rod material.\n\n**NOTE:** Remove the TIG Rod each time the Electrode is advanced, but do not remove it from the gas shield. This prevents oxidation from contaminating the weld."
+      "text": "d. Optional Settings:\n   - Press Main Control Knob to enter Optional Settings.\n   - Turn Main Control Knob until desired setting appears on screen.\n   - Press Main Control Knob to select desired setting.\n   - Turn Main Control Knob to adjust setting.\n\nAvailable Optional Settings:\n   - Recall Setting – Retrieve saved settings.\n   - Save Setting – Program up to 5 different configurations.\n\n**Note:** The initial settings may need to be adjusted after stopping and carefully inspecting the weld. Proper welding takes experience.\n\n**WARNING! TO PREVENT SERIOUS INJURY:** Protective gear must be worn when using the Welder; minimum shade number 10 full face shield (or welding mask), ear protection, welding gloves, sleeves and apron, NIOSH-approved respirator, and fire resistant work clothes without pockets should be worn when welding. Light from the arc can cause permanent damage to the eyes and skin. Do not breathe arc fumes.\n\n> **After practice welding on scrap,** stop, and check your progress. Perform Strike Test according to **Strike Test on page 34.** After making any necessary adjustments, continue to weld *while carefully following the DUTY CYCLE guidelines as explained on page 29.*\n\n**WARNING! TO PREVENT SERIOUS INJURY:** Metal work bench must be grounded when TIG welding.\n---"
     },
     {
       "doc": "owner-manual",
@@ -16775,7 +17168,20 @@
       "id": "owner-manual#p31:prose:1",
       "kind": "prose",
       "heading": "Page 31 — TIG Welding Procedure (continued) & Optional Settings",
-      "text": "15. When finished welding, release the Foot Pedal but keep Torch on weld puddle until weld solidifies. If not using Foot Pedal, pull Torch away from work piece until welding arc is broken, then return the gas coverage until weld solidifies.\n\n16. Close valve on TIG Torch and turn Right Knob to OFF to turn off power to TIG Torch.\n\n17. Set TIG Torch down on nonconductive, nonflammable surface away from any grounded objects.\n\n18. Turn the Power Switch OFF.\n\n19. To prevent accidents, after use:\n    - Allow Welder to cool down.\n    - Unplug Welder's power cord from outlet.\n    - Remove Ground Clamp from workpiece or table.\n    - Disconnect TIG Torch, Ground and Foot Pedal Cables.\n    - Close gas cylinder's valve securely, remove regulator and replace cap.\n    - Disconnect Gas Hose from Welder.\n    - Store and secure gas cylinder.\n    - Clean, then store Welder and its accessories indoors out of children's reach.\n\n---\n\n*Right-side vertical tab labels visible on page edge: SAFETY, CONTROLS, WIRE, TIG / STICK, WELDING TIPS, MAINTENANCE.*\n\nItem 57812                    For technical questions, please call 1-800-444-3353.                       Page 31\n\n```yaml\npage: 31\ndoc: owner-manual\nsection: TIG / Stick Welding Procedure\ntopics: [tig-welding, optional-settings, recall-setting, save-setting, foot-pedal, tig-torch, tig-rod, tungsten-electrode, post-use-shutdown, safety-warnings, duty-cycle, strike-test, ground-clamp, gas-cylinder]\nprocesses: [tig]\nhas_table: false\nhas_figure: true\nfigure_slugs: [recall-setting-display, save-setting-display]\nkey_facts:\n  - \"Optional Settings are entered by pressing the Main Control Knob.\"\n  - \"Available Optional Settings include Recall Setting and Save Setting.\"\n  - \"Recall Setting retrieves saved settings.\"\n  - \"Save Setting allows programming up to 5 different configurations.\"\n  - \"The Recall Setting display shows an upward arrow icon.\"\n  - \"The Save Setting display shows a downward arrow icon.\"\n  - \"The Tungsten Electrode should be kept at a distance from the workpiece equal to 1 to 1.5 times the diameter of the Electrode.\"\n  - \"The TIG Torch valve must be opened to start gas flow before welding.\"\n  - \"To initiate the welding arc, push the Foot Pedal and touch the Electrode to the workpiece, then lift.\"\n  - \"If not using a Foot Pedal, touch the Electrode to the workpiece and lift to start the arc.\"\n  - \"When the puddle is hot enough, tilt the Torch backward 10-15 degrees from vertical and move it back slightly.\"\n  - \"TIG Rod material should be added to the front end of the weld puddle.\"\n  - \"The TIG Rod should be removed each time the Electrode is advanced but kept within the gas shield to prevent oxidation contamination.\"\n  - \"After welding, release the Foot Pedal but keep the Torch on the puddle until the weld solidifies.\"\n  - \"Without a Foot Pedal, pull the Torch away until the arc breaks, then hold gas coverage until the weld solidifies.\"\n  - \"Turn the Right Knob to OFF to turn off power to the TIG Torch after closing the gas valve.\"\n  - \"The TIG Torch should be set down on a nonconductive, nonflammable surface away from grounded objects.\"\n  - \"After use, the Power Switch must be turned OFF.\"\n  - \"Post-use safety steps include: allow welder to cool, unplug power cord, remove ground clamp, disconnect TIG Torch/Ground/Foot Pedal cables, close and cap the gas cylinder valve, remove regulator, disconnect gas hose, store gas cylinder securely, and clean and store the welder indoors.\"\n  - \"Minimum shade number 10 full face shield or welding mask is required protective gear for welding.\"\n  - \"Required protective gear also includes ear protection, welding gloves, sleeves, apron, NIOSH-approved respirator, and fire resistant work clothes without pockets.\"\n  - \"Arc light can cause permanent damage to eyes and skin; arc fumes should not be breathed.\"\n  - \"A Strike Test should be performed after practice welding on scrap, per instructions on page 34.\"\n  - \"Duty Cycle guidelines are explained on page 29 and must be followed during adjustments.\"\n  - \"The metal work bench must be grounded when TIG welding to prevent serious injury.\""
+      "text": "10. Hold TIG Torch in one gloved hand and the TIG Rod (sold separately) in other gloved hand.\n\n**NOTE:** Maintain a constant distance between the Tungsten Electrode and the workpiece: between 1 and 1.5 times the diameter of the Electrode.\n\n11. Open valve on TIG Torch to start gas flow.\n\n12. To initiate welding arc, push Foot Pedal and touch Electrode to work piece and lift. If not using Foot Pedal, touch Electrode to work piece and lift.\n\n13. When welding puddle is hot enough, tilt Torch backward about 10-15 degrees from vertical and move it back slightly. Add TIG Rod material as needed to the front end of the weld puddle.\n\n14. Alternate between pushing the torch/weld puddle and adding the TIG Rod material.\n\n**NOTE:** Remove the TIG Rod each time the Electrode is advanced, but do not remove it from the gas shield. This prevents oxidation from contaminating the weld.\n\n15. When finished welding, release the Foot Pedal but keep Torch on weld puddle until weld solidifies. If not using Foot Pedal, pull Torch away from work piece until welding arc is broken, then return the gas coverage until weld solidifies.\n\n16. Close valve on TIG Torch and turn Right Knob to OFF to turn off power to TIG Torch."
+    },
+    {
+      "doc": "owner-manual",
+      "page": 31,
+      "section": "Unknown",
+      "topics": [],
+      "processes": [
+        "general"
+      ],
+      "id": "owner-manual#p31:prose:2",
+      "kind": "prose",
+      "heading": "Page 31 — TIG Welding Procedure (continued) & Optional Settings",
+      "text": "17. Set TIG Torch down on nonconductive, nonflammable surface away from any grounded objects.\n\n18. Turn the Power Switch OFF.\n\n19. To prevent accidents, after use:\n    - Allow Welder to cool down.\n    - Unplug Welder's power cord from outlet.\n    - Remove Ground Clamp from workpiece or table.\n    - Disconnect TIG Torch, Ground and Foot Pedal Cables.\n    - Close gas cylinder's valve securely, remove regulator and replace cap.\n    - Disconnect Gas Hose from Welder.\n    - Store and secure gas cylinder.\n    - Clean, then store Welder and its accessories indoors out of children's reach.\n\n---\n\n*Right-side vertical tab labels visible on page edge: SAFETY, CONTROLS, WIRE, TIG / STICK, WELDING TIPS, MAINTENANCE.*\n\nItem 57812                    For technical questions, please call 1-800-444-3353.                       Page 31\n\n```yaml\npage: 31\ndoc: owner-manual\nsection: TIG / Stick Welding Procedure\ntopics: [tig-welding, optional-settings, recall-setting, save-setting, foot-pedal, tig-torch, tig-rod, tungsten-electrode, post-use-shutdown, safety-warnings, duty-cycle, strike-test, ground-clamp, gas-cylinder]\nprocesses: [tig]\nhas_table: false\nhas_figure: true\nfigure_slugs: [recall-setting-display, save-setting-display]\nkey_facts:\n  - \"Optional Settings are entered by pressing the Main Control Knob.\"\n  - \"Available Optional Settings include Recall Setting and Save Setting.\"\n  - \"Recall Setting retrieves saved settings.\"\n  - \"Save Setting allows programming up to 5 different configurations.\"\n  - \"The Recall Setting display shows an upward arrow icon.\"\n  - \"The Save Setting display shows a downward arrow icon.\"\n  - \"The Tungsten Electrode should be kept at a distance from the workpiece equal to 1 to 1.5 times the diameter of the Electrode.\"\n  - \"The TIG Torch valve must be opened to start gas flow before welding.\"\n  - \"To initiate the welding arc, push the Foot Pedal and touch the Electrode to the workpiece, then lift.\"\n  - \"If not using a Foot Pedal, touch the Electrode to the workpiece and lift to start the arc.\"\n  - \"When the puddle is hot enough, tilt the Torch backward 10-15 degrees from vertical and move it back slightly.\"\n  - \"TIG Rod material should be added to the front end of the weld puddle.\"\n  - \"The TIG Rod should be removed each time the Electrode is advanced but kept within the gas shield to prevent oxidation contamination.\"\n  - \"After welding, release the Foot Pedal but keep the Torch on the puddle until the weld solidifies.\"\n  - \"Without a Foot Pedal, pull the Torch away until the arc breaks, then hold gas coverage until the weld solidifies.\"\n  - \"Turn the Right Knob to OFF to turn off power to the TIG Torch after closing the gas valve.\"\n  - \"The TIG Torch should be set down on a nonconductive, nonflammable surface away from grounded objects.\"\n  - \"After use, the Power Switch must be turned OFF.\"\n  - \"Post-use safety steps include: allow welder to cool, unplug power cord, remove ground clamp, disconnect TIG Torch/Ground/Foot Pedal cables, close and cap the gas cylinder valve, remove regulator, disconnect gas hose, store gas cylinder securely, and clean and store the welder indoors.\"\n  - \"Minimum shade number 10 full face shield or welding mask is required protective gear for welding.\"\n  - \"Required protective gear also includes ear protection, welding gloves, sleeves, apron, NIOSH-approved respirator, and fire resistant work clothes without pockets.\"\n  - \"Arc light can cause permanent damage to eyes and skin; arc fumes should not be breathed.\"\n  - \"A Strike Test should be performed after practice welding on scrap, per instructions on page 34.\"\n  - \"Duty Cycle guidelines are explained on page 29 and must be followed during adjustments.\"\n  - \"The metal work bench must be grounded when TIG welding to prevent serious injury.\""
     },
     {
       "doc": "owner-manual",
@@ -16840,7 +17246,28 @@
       "id": "owner-manual#p32:prose:0",
       "kind": "prose",
       "heading": "⚠ WARNING",
-      "text": "**TO PREVENT SERIOUS INJURY AND DEATH:**\n**Do not weld without Grounding Clamp.**\n**When the operator is not holding the Electrode Holder, it must be sitting on a nonconductive, nonflammable surface.**\n\n1. Turn the Power Switch to the OFF position, then plug the Welder into a properly grounded, GFCI protected, 120 VAC (20 amp rated) outlet or 240 V outlet. The circuit must be equipped with delayed action-type circuit breaker or fuses.\n2. Set Electrode Holder down on nonconductive, nonflammable surface away from any grounded objects.\n3. Turn the Power Switch ON.\n4. Press Home Button on Control Panel.\n5. Turn Main Control Knob until Stick process appears on LCD display screen.\n6. Press Main Control Knob to select STICK process.\n\n**Note:** Press Main Control Knob to go to next screen. Press Back Button to return to the previous screen.\n\n---\nPage 32                       For technical questions, please call 1-800-444-3353.                    Item 57812"
+      "text": "**TO PREVENT SERIOUS INJURY AND DEATH:**\n**Do not weld without Grounding Clamp.**\n**When the operator is not holding the Electrode Holder, it must be sitting on a nonconductive, nonflammable surface.**\n\n1. Turn the Power Switch to the OFF position, then plug the Welder into a properly grounded, GFCI protected, 120 VAC (20 amp rated) outlet or 240 V outlet. The circuit must be equipped with delayed action-type circuit breaker or fuses.\n2. Set Electrode Holder down on nonconductive, nonflammable surface away from any grounded objects.\n3. Turn the Power Switch ON.\n4. Press Home Button on Control Panel.\n5. Turn Main Control Knob until Stick process appears on LCD display screen.\n6. Press Main Control Knob to select STICK process.\n\n**Note:** Press Main Control Knob to go to next screen. Press Back Button to return to the previous screen.\n\n7. Adjust settings for the STICK process.\n   a. Polarity Setting:\n      • Plug cables in according to screen.\nb. Set Electrode type:\n      • Turn Main Control Knob to set electrode type.\nc. Set Electrode Diameter and Material Thickness:\n      • Turn Left Knob to set electrode diameter.\n      • Turn Right Knob to set material thickness.\nd. Auto Weld Settings:\n      • Turn Left Knob to adjust output amperage.\n      • Turn Right Knob to ON to energize Electrode Holder."
+    },
+    {
+      "doc": "owner-manual",
+      "page": 32,
+      "section": "Stick Welding",
+      "topics": [
+        "stick-welding",
+        "control-panel",
+        "electrode-setup",
+        "polarity-setting",
+        "auto-weld-settings",
+        "hot-start",
+        "arc-force"
+      ],
+      "processes": [
+        "stick"
+      ],
+      "id": "owner-manual#p32:prose:1",
+      "kind": "prose",
+      "heading": "⚠ WARNING",
+      "text": "**WARNING! TO PREVENT SERIOUS INJURY:** Welder is now energized and Open Circuit Voltage is present.\n---\nPage 32                       For technical questions, please call 1-800-444-3353.                    Item 57812"
     },
     {
       "doc": "owner-manual",
@@ -17458,7 +17885,7 @@
       "id": "owner-manual#p33:prose:0",
       "kind": "prose",
       "heading": "e. Optional Settings:\n- Press Main Control Knob to enter Optional Settings.\n- Turn Main Control Knob until desired setting appears on screen.\n- Press Main Control Knob to select desired setting.\n- Turn Main Control Knob to adjust setting.",
-      "text": "Available Optional Settings:\n- Hot Start – Adjust amperage at start of weld.\n- Arc Force – Adjust weld penetration and smoothness.\n- Recall Setting – Retrieve saved settings.\n- Save Setting – Program up to 5 different configurations.\n\n---"
+      "text": "Available Optional Settings:\n- Hot Start – Adjust amperage at start of weld.\n- Arc Force – Adjust weld penetration and smoothness.\n- Recall Setting – Retrieve saved settings.\n- Save Setting – Program up to 5 different configurations.\n\n**Note:** The initial settings may need to be adjusted after stopping and carefully inspecting the weld. Proper welding takes experience.\n---"
     },
     {
       "doc": "owner-manual",
@@ -19190,8 +19617,35 @@
       ],
       "id": "owner-manual#p36:prose:1",
       "kind": "prose",
-      "heading": "Weld Not Adhering Properly",
-      "text": "Gaps present between weld and previous bead or between weld and workpiece. See areas below.\n\n---\n\nPage 36     For technical questions, please call 1-800-444-3353.     Item 57812"
+      "heading": "Wire Weld Penetration (Workpiece Heat Control)",
+      "text": "**POSSIBLE CAUSES AND SOLUTIONS** (for Excess Penetration / Burn-Through)\n1. **Workpiece overheating:**\n   Reduce wire feed speed.\n   Decrease weld current.\n2. **Travel speed too slow:**\n   Increase travel speed and ensure that travel speed is kept steady.\n3. **Excessive material at weld:**\n   Reduce wire feed speed.\n\n**POSSIBLE CAUSES AND SOLUTIONS** (for Inadequate Penetration)\n4. **Incorrect welding technique:**\n   Maintain 1/2\" or less CTWD.\n   Keep arc on leading edge of weld puddle.\n   Hold MIG Gun at proper angles.\n5. **Insufficient weld heat:**\n   Reduce travel speed.\n   Increase weld current.\n6. **Workpieces too thick/close:**\n   Bevel thick workpieces, allow slight gap, and weld in several passes.\n7. **Insufficient weld material:**\n   Increase wire feed speed.\n## Bend at Joint\n\n**POSSIBLE CAUSES AND SOLUTIONS**\n1. **Improper clamping:**\n   Clamp workpieces securely.\n   Make tack welds to hold workpieces.\n2. **Excessive heat:**\n   Weld a small portion and allow to cool before proceeding.\n   Increase travel speed.\n   Reduce wire feed speed.\n## Coat of Slag Over Weld\n\nSlag is a necessary part of a flux-cored wire weld. It shields the weld from impurities. Clean off the slag with a Chipping Hammer and Wire Brush after welding."
+    },
+    {
+      "doc": "owner-manual",
+      "page": 36,
+      "section": "Welding Tips",
+      "topics": [
+        "wire-weld-penetration",
+        "burn-through",
+        "inadequate-penetration",
+        "proper-penetration",
+        "bend-at-joint",
+        "slag",
+        "flux-cored-wire",
+        "weld-adhesion",
+        "troubleshooting",
+        "ctwd",
+        "travel-speed",
+        "wire-feed-speed"
+      ],
+      "processes": [
+        "mig",
+        "flux-cored"
+      ],
+      "id": "owner-manual#p36:prose:2",
+      "kind": "prose",
+      "heading": "Wire Weld Penetration (Workpiece Heat Control)",
+      "text": "Gas-shielded MIG welds are protected by the shielding gas and do not need slag to protect them.\n## Weld Not Adhering Properly\n\nGaps present between weld and previous bead or between weld and workpiece. See areas below.\n\n**POSSIBLE CAUSES AND SOLUTIONS**\n1. **Incorrect welding technique:**\n   Place stringer bead at correct place in joint.\n   Adjust workpiece position or weld angle to permit proper welding to bottom of piece.\n   Pause briefly at sides during weave bead.\n   Keep arc on leading edge of weld puddle.\n   Hold MIG Gun at proper angles.\n2. **Insufficient weld heat:**\n   Increase current.\n   Increase wire feed speed.\n3. **Dirty workpiece:**\n   Clean workpiece down to bare metal.\n4. **Insufficient weld material:**\n   Increase wire feed speed.\n5. **Workpiece gap too narrow:**\n   Widen groove or increase bevel.\n---\n\nPage 36     For technical questions, please call 1-800-444-3353.     Item 57812"
     },
     {
       "doc": "owner-manual",
@@ -20024,10 +20478,10 @@
         "flux-cored",
         "general"
       ],
-      "id": "owner-manual#p37:prose:1",
+      "id": "owner-manual#p37:prose:0",
       "kind": "prose",
-      "heading": "Wire Weld – Excessive Spatter",
-      "text": "Fine spatter is normal.\nSpatter that is grainy and large is a problem."
+      "heading": "Wire Weld – Porosity",
+      "text": "Small cavities or holes in the bead.\n\nPOSSIBLE CAUSES AND SOLUTIONS\n1. **Incorrect polarity:**\n   Check that polarity is set correctly for type of welding.\n2. **Insufficient shielding gas (MIG only):**\n   Increase flow of gas.\n   Clean nozzle.\n   Maintain proper CTWD.\n3. **Incorrect shielding gas (MIG only):**\n   Use shielding gas recommended by wire supplier.\n4. **Dirty workpiece or welding wire:**\n   Clean workpiece down to bare metal.\n   Make certain that wire is clean and free from oil, coatings, and other residues.\n5. **Inconsistent travel speed:**\n   Maintain steady travel speed.\n6. **CTWD too long:**\n   Reduce CTWD.\n## Wire Weld – Excessive Spatter\n\nFine spatter is normal.\nSpatter that is grainy and large is a problem.\n\nPOSSIBLE CAUSES AND SOLUTIONS\n1. **Dirty workpiece or welding wire:**\n   Clean workpiece down to bare metal.\n   Make certain that wire is clean and free from oil, coatings, and other residues.\n2. **Incorrect polarity:**\n   Check that polarity is set correctly for type of welding.\n3. **Insufficient shielding gas (MIG only):**\n   Increase flow of gas.\n   Clean nozzle.\n   Maintain proper CTWD.\n4. **Wire feeding too fast:**\n   Reduce wire feed speed.\n5. **CTWD too long:**\n   Reduce CTWD.\n## Wire Weld – Crooked/Wavy Bead"
     },
     {
       "doc": "owner-manual",
@@ -20050,10 +20504,10 @@
         "flux-cored",
         "general"
       ],
-      "id": "owner-manual#p37:prose:2",
+      "id": "owner-manual#p37:prose:1",
       "kind": "prose",
-      "heading": "Wire Weld – Burn-Through",
-      "text": "Base material melts away, leaving a hole in the weld.\n\n---\nItem 57812 | For technical questions, please call 1-800-444-3353. | Page 37"
+      "heading": "Wire Weld – Porosity",
+      "text": "POSSIBLE CAUSES AND SOLUTIONS\n1. **Inaccurate welding:**\n   Use two hands or rest hand on steady surface.\n2. **Inconsistent travel speed:**\n   Maintain steady travel speed.\n3. **CTWD too long:**\n   Reduce CTWD.\n## Wire Weld – Burn-Through\n\nBase material melts away, leaving a hole in the weld.\n\nPOSSIBLE CAUSES AND SOLUTIONS\n1. **Workpiece overheating:**\n   Reduce current and/or wire feed speed.\n2. **Travel speed too slow:**\n   Increase travel speed and ensure that travel speed is kept steady.\n3. **Excessive material at weld:**\n   Reduce wire feed speed.\n---\nItem 57812 | For technical questions, please call 1-800-444-3353. | Page 37"
     },
     {
       "doc": "owner-manual",
@@ -27870,7 +28324,7 @@
       "processes": [
         "general"
       ],
-      "hasTable": false,
+      "hasTable": true,
       "hasFigure": true,
       "figureSlugs": [
         "symbology-icon-table"
@@ -28302,7 +28756,7 @@
         "mig",
         "general"
       ],
-      "hasTable": false,
+      "hasTable": true,
       "hasFigure": true,
       "figureSlugs": [
         "rear-panel-power-input",
@@ -28835,7 +29289,7 @@
       "processes": [
         "stick"
       ],
-      "hasTable": false,
+      "hasTable": true,
       "hasFigure": true,
       "figureSlugs": [
         "stick-cable-connections",

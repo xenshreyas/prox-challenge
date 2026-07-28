@@ -574,6 +574,35 @@ export function search(query: string, opts: SearchOptions = {}): SearchHit[] {
 			break;
 		}
 	}
+	// Symbol/glossary tables repeat "wire feed" and receive the numeric-table
+	// prior, but they do not answer an exact Feed Tensioner setting lookup. Keep
+	// the concise recommended-setting fact in the useful top-three window.
+	if (/\bfeed tensioner\b/i.test(query) && /\bsetting/i.test(query)) {
+		const settingFact = scored.find((s) => /recommended tensioner setting/i.test(s.d.chunk.text));
+		if (settingFact && !expanded.slice(0, 3).includes(settingFact)) {
+			const existing = expanded.indexOf(settingFact);
+			if (existing >= 0) expanded.splice(existing, 1);
+			expanded.splice(Math.min(2, expanded.length), 0, settingFact);
+			if (expanded.length > limit) expanded.pop();
+		}
+	}
+	// A specific-gas question has two complementary manual answers: the door
+	// Settings Chart gives the normal job setting, while Welding Tips says an
+	// incorrect-gas case must follow the wire supplier's recommendation. The
+	// latter is a single sentence among long troubleshooting lists, so ordinary
+	// lexical ranking drops it behind repeated setup passages. Keep that caveat in
+	// the bounded context instead of globally boosting troubleshooting content.
+	if (
+		/\bshielding gas\b/i.test(query) &&
+		/\b(type|specific|appropriate|recommend(?:ed|ation)?)\b/i.test(query) &&
+		!expanded.some((s) => /wire supplier/i.test(s.d.chunk.text))
+	) {
+		const supplierGuidance = scored.find((s) => /wire supplier/i.test(s.d.chunk.text));
+		if (supplierGuidance) {
+			if (expanded.length >= limit) expanded.pop();
+			expanded.push(supplierGuidance);
+		}
+	}
 	return expanded.map<SearchHit>((s) => ({
 		chunk: s.d.chunk,
 		score: Number(s.score.toFixed(4)),

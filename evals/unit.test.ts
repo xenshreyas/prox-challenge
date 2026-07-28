@@ -16,6 +16,7 @@ import { readFileSync } from 'node:fs';
 import { classifyAgainstBest, groundingScore, includesFact, isBackendRefusal } from './run.js';
 import { wrapArtifact } from '../src/agent/artifact-harness.js';
 import {
+	answerCompletenessCallToAction,
 	artifactCallToAction,
 	directlyRelevantFigure,
 	figureCallToAction,
@@ -367,8 +368,25 @@ check(
 );
 const gasSettingsQuestion =
 	'Where does the manual tell you to look for the specific shielding gas type and settings for a given job?';
+const gasSettingsHits = search(gasSettingsQuestion, { limit: 8 });
 check(
-	directlyRelevantFigure(gasSettingsQuestion, search(gasSettingsQuestion, { limit: 8 }))?.chunk
+	gasSettingsHits.some((hit) => hit.chunk.text.toLowerCase().includes('wire supplier')),
+	'specific gas-type guidance includes the manual supplier caveat',
+);
+check(
+	answerCompletenessCallToAction('shielding gas settings chart location', gasSettingsQuestion).includes(
+		'wire supplier',
+	),
+	'original gas-type question restates the supplier caveat after a narrow rewrite',
+);
+check(
+	answerCompletenessCallToAction('shielding gas settings chart location', gasSettingsQuestion).includes(
+		'Do not add gas blend examples',
+	),
+	'gas-type completeness hint forbids unsupported blend examples',
+);
+check(
+	directlyRelevantFigure(gasSettingsQuestion, gasSettingsHits)?.chunk
 		.figure?.slug === 'gas-cylinder-regulator-setup',
 	'incidental weld-defect artwork does not displace a relevant gas setup figure',
 );
@@ -429,6 +447,26 @@ const tungstenProcedureRank = tungstenPreparationHits.findIndex(
 check(
 	tungstenProcedureRank >= 0 && tungstenProcedureRank < 2,
 	'complete tungsten preparation procedure accompanies its figure in the top two',
+);
+
+group('retrieval: exact tensioner settings beat generic wire-feed tables');
+const feedTensionHits = search(
+	'What Feed Tensioner setting numbers does the manual specify, and why do they differ?',
+	{ limit: 10 },
+);
+check(
+	feedTensionHits.slice(0, 3).some((hit) => hit.chunk.page === 15),
+	'feed tensioner settings remain in the top three after corpus expansion',
+);
+
+group('KB parser: instructions after figures remain searchable');
+const weldingTips = parsePage(
+	'owner-manual-37',
+	readFileSync(new URL('../kb/extracted/owner-manual-37.md', import.meta.url), 'utf8'),
+);
+check(
+	weldingTips?.chunks.some((chunk) => chunk.text.includes('wire supplier')) === true,
+	'porosity gas recommendation after a figure is retained as prose',
 );
 
 group('KB parser: tables retain bold subsection labels');
