@@ -287,7 +287,10 @@ A bounded Claude Agent SDK `Stop` hook checks the original user question and
 blocks the first attempt to finish when a duty-cycle, settings, troubleshooting,
 or polarity request has not emitted an artifact. A successful `PostToolUse` hook
 clears the guard; `stop_hook_active` limits enforcement to one retry so a backend
-failure cannot loop indefinitely.
+failure cannot loop indefinitely. Prose emitted before that retry is held until
+the outcome is known: it is discarded when the artifact succeeds so the UI does
+not append two complete answers, or released as a fallback if the bounded retry
+still fails.
 
 **Primary visual evidence does not require a second model display call.** Left
 alone, the model often reads a figure description and answers in prose without

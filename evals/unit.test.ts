@@ -22,7 +22,7 @@ import {
 } from './run.js';
 import { matchesReference } from './references.js';
 import { wrapArtifact } from '../src/agent/artifact-harness.js';
-import { artifactStopFeedback } from '../src/agent/agent.js';
+import { ArtifactAnswerGate, artifactStopFeedback } from '../src/agent/agent.js';
 import {
 	answerCompletenessCallToAction,
 	artifactCallToAction,
@@ -470,6 +470,36 @@ check(
 check(
 	artifactStopFeedback('What is the TIG duty cycle at 175 A?', false, true) === null,
 	'a failed compliance retry is not blocked repeatedly',
+);
+
+group('agent: stop-hook retry does not duplicate the answer');
+const requiredAnswer = new ArtifactAnswerGate(true);
+check(
+	requiredAnswer.accept('First answer that tried to stop early.') === '',
+	'pre-artifact answer is held back while the stop hook can retry',
+);
+requiredAnswer.markArtifactCreated();
+check(
+	requiredAnswer.accept('Final answer after the artifact.') === 'Final answer after the artifact.',
+	'only the post-artifact answer is shown after a successful retry',
+);
+check(requiredAnswer.finish() === '', 'discarded first answer is not repeated at completion');
+
+const failedAnswer = new ArtifactAnswerGate(true);
+failedAnswer.accept('First answer before the bounded retry.');
+failedAnswer.endAttempt();
+failedAnswer.accept('Bounded retry still produced no artifact.');
+failedAnswer.endAttempt();
+check(
+	failedAnswer.finish() === 'Bounded retry still produced no artifact.',
+	'only the final prose is preserved when the bounded retry cannot create an artifact',
+);
+
+const ordinaryAnswer = new ArtifactAnswerGate(false);
+check(
+	ordinaryAnswer.accept('Ordinary lookup streams immediately.') ===
+		'Ordinary lookup streams immediately.',
+	'non-artifact answers keep normal token streaming',
 );
 
 group('tools: directly relevant figures surface without model compliance');

@@ -85,6 +85,45 @@ export function artifactStopFeedback(
 	);
 }
 
+/**
+ * Holds prose produced before a required artifact exists. A Stop-hook retry can
+ * otherwise stream one complete answer, create the artifact, and then append a
+ * second complete answer to the same UI message. If the bounded retry still
+ * fails, `finish()` releases the prose instead of leaving the user empty-handed.
+ */
+export class ArtifactAnswerGate {
+	private currentAttempt = '';
+	private latestAttempt = '';
+	artifactCreated = false;
+
+	constructor(private readonly required: boolean) {}
+
+	accept(text: string): string {
+		if (!this.required || this.artifactCreated) return text;
+		this.currentAttempt += text;
+		return '';
+	}
+
+	endAttempt(): void {
+		if (!this.required || this.artifactCreated || !this.currentAttempt) return;
+		this.latestAttempt = this.currentAttempt;
+		this.currentAttempt = '';
+	}
+
+	markArtifactCreated(): void {
+		this.artifactCreated = true;
+		this.currentAttempt = '';
+		this.latestAttempt = '';
+	}
+
+	finish(): string {
+		this.endAttempt();
+		const text = this.latestAttempt;
+		this.latestAttempt = '';
+		return text;
+	}
+}
+
 /** Pre-warms the SDK subprocess at boot so the first question isn't slow. */
 export async function warmUp(): Promise<void> {
 	try {
@@ -133,20 +172,24 @@ export async function* ask(opts: AskOptions): AsyncGenerator<AgentEvent> {
 	// SDK stream. We buffer them here and drain between SDK messages.
 	const pending: AgentEvent[] = [];
 	const tools = createManualTools({ emit: (e) => pending.push(e), userQuestion: opts.question });
-	let artifactCreated = false;
+	const answerGate = new ArtifactAnswerGate(Boolean(artifactRequirementForQuestion(opts.question)));
 	const trackArtifact: HookCallback = async (input) => {
 		if (
 			input.hook_event_name === 'PostToolUse' &&
 			(input as PostToolUseHookInput).tool_name === 'mcp__manual__create_artifact'
 		) {
-			artifactCreated = true;
+			answerGate.markArtifactCreated();
 		}
 		return {};
 	};
 	const requireArtifactBeforeStop: HookCallback = async (input) => {
 		if (input.hook_event_name !== 'Stop') return {};
 		const stop = input as StopHookInput;
-		const feedback = artifactStopFeedback(opts.question, artifactCreated, stop.stop_hook_active);
+		const feedback = artifactStopFeedback(
+			opts.question,
+			answerGate.artifactCreated,
+			stop.stop_hook_active,
+		);
 		return feedback
 			? { hookSpecificOutput: { hookEventName: 'Stop', additionalContext: feedback } }
 			: {};
@@ -208,7 +251,8 @@ export async function* ask(opts: AskOptions): AsyncGenerator<AgentEvent> {
 						ev.delta?.type === 'text_delta' &&
 						ev.delta.text
 					) {
-						yield { type: 'token', text: ev.delta.text };
+						const text = answerGate.accept(ev.delta.text);
+						if (text) yield { type: 'token', text };
 					}
 					break;
 				}
@@ -218,10 +262,13 @@ export async function* ask(opts: AskOptions): AsyncGenerator<AgentEvent> {
 							yield { type: 'tool', name: block.name, input: block.input };
 						}
 					}
+					answerGate.endAttempt();
 					break;
 				}
 				case 'result': {
 					while (pending.length) yield pending.shift()!;
+					const fallbackAnswer = answerGate.finish();
+					if (fallbackAnswer) yield { type: 'token', text: fallbackAnswer };
 					if (msg.subtype !== 'success') {
 						yield {
 							type: 'error',
@@ -242,8 +289,12 @@ export async function* ask(opts: AskOptions): AsyncGenerator<AgentEvent> {
 		}
 
 		while (pending.length) yield pending.shift()!;
+		const fallbackAnswer = answerGate.finish();
+		if (fallbackAnswer) yield { type: 'token', text: fallbackAnswer };
 		yield { type: 'done', sessionId };
 	} catch (err) {
+		const fallbackAnswer = answerGate.finish();
+		if (fallbackAnswer) yield { type: 'token', text: fallbackAnswer };
 		const message = err instanceof Error ? err.message : String(err);
 		const isAuth = /api[_ ]?key|401|unauthor|authentication/i.test(message);
 		yield { type: 'error', message, isConfigError: isAuth };
