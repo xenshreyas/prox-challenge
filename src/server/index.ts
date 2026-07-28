@@ -36,10 +36,17 @@ app.get('/api/health', (_req, res) => {
 		kbStats = null;
 	}
 	const usingProxy = Boolean(process.env.ANTHROPIC_BASE_URL);
+	const hasCredentials = Boolean(
+		process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN || usingProxy,
+	);
 	res.json({
 		ok: true,
-		configured: Boolean(process.env.ANTHROPIC_AUTH_TOKEN || process.env.ANTHROPIC_API_KEY),
+		// `hasApiKey` is the field name the frontend status pill reads. Any of the
+		// three credential paths counts as configured, including the dev proxy.
+		hasApiKey: hasCredentials,
+		configured: hasCredentials,
 		usingProxy,
+		model: usingProxy ? 'via proxy' : (process.env.ANTHROPIC_MODEL ?? 'claude-sonnet-4-5'),
 		kb: kbStats,
 	});
 });
@@ -64,7 +71,12 @@ app.get('/api/page-image/:doc/:page', (req, res) => {
 
 /** Chat endpoint. Streams `AgentEvent`s as named SSE events. */
 app.post('/api/chat', async (req: Request, res: Response) => {
-	const { question, sessionId, voltage, image } = req.body ?? {};
+	// Accept either `question` or `message` — the two obvious names for this
+	// field, and a contract mismatch here is a silent 400 that looks like the
+	// agent is broken.
+	const body = req.body ?? {};
+	const { sessionId, voltage, image } = body;
+	const question = typeof body.question === 'string' ? body.question : body.message;
 	if (typeof question !== 'string' || !question.trim()) {
 		res.status(400).json({ error: 'question is required' });
 		return;
@@ -82,8 +94,16 @@ app.post('/api/chat', async (req: Request, res: Response) => {
 
 	// Abort the agent if the browser goes away mid-turn, so we stop paying for
 	// tokens nobody will read.
+	//
+	// This MUST listen on `res`, not `req`. On Node >=16 an IncomingMessage emits
+	// 'close' as soon as the request body has been fully read — which for a
+	// buffered JSON POST is immediately — so `req.on('close')` aborts every turn
+	// the instant it starts. The response object is what tracks the actual client
+	// connection.
 	const ac = new AbortController();
-	req.on('close', () => ac.abort());
+	res.on('close', () => {
+		if (!res.writableEnded) ac.abort();
+	});
 
 	// Comment frames keep intermediaries from timing out during long tool turns.
 	const keepAlive = setInterval(() => res.write(': keep-alive\n\n'), 15000);

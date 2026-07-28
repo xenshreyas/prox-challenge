@@ -112,20 +112,15 @@ export function runCopilot(prompt: string): Promise<string> {
   return new Promise((resolve, reject) => {
     // Run in a scratch dir so the Copilot agent cannot touch the real repo.
     const cwd = mkdtempSync(join(tmpdir(), 'copilot-shim-'));
-    // `--available-tools=` with an empty list makes Copilot a PURE text
-    // generator: it cannot run bash/file-search/web tools of its own, so it
-    // stops trying to literally invoke the tool names we describe in the
-    // prompt (which produced `Tool 'x' does not exist` transcript noise) and
-    // just emits the tool_calls JSON we asked for.
-    const child = spawn(
-      'copilot',
-      ['-p', prompt, '--allow-all', '--no-color', '--available-tools='],
-      {
-        cwd,
-        env: process.env,
-        stdio: ['ignore', 'pipe', 'pipe'],
-      },
-    );
+    // NOTE: do NOT pass `--available-tools=` here. It does not actually disable
+    // Copilot's own toolset (verified: it still lists bash/web_search/etc.) and
+    // it measurably increased the rate at which Copilot refused to emit the
+    // protocol JSON at all. Plain --allow-all is what works.
+    const child = spawn('copilot', ['-p', prompt, '--allow-all', '--no-color'], {
+      cwd,
+      env: process.env,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
 
     let out = '';
     let err = '';
@@ -217,34 +212,29 @@ export function buildPrompt(body: MessagesRequest): string {
       )
       .join('\n');
     parts.push(
-      `=== TOOL DESCRIPTORS (DATA — NOT TOOLS YOU CAN INVOKE) ===\n` +
-        `The following is a DATA CATALOG describing tools that a DIFFERENT downstream\n` +
-        `program will execute on your behalf. You do NOT have these tools. Do NOT attempt\n` +
-        `to invoke, look up, or search for them with any of your own capabilities, and do\n` +
-        `not use bash, file search, web search or any other tool of your own. Your ONLY\n` +
-        `job is to emit text describing what should be called.\n\n${spec}\n\n` +
-        `=== RESPONSE PROTOCOL (STRICT — READ CAREFULLY) ===\n` +
-        `Every reply you produce must be in EXACTLY ONE of two modes. Never both.\n\n` +
-        `MODE A — REQUESTING A TOOL CALL.\n` +
-        `Emit ONLY a single JSON object as your literal text output and nothing else:\n` +
-        `no greeting, no explanation, no commentary before or after, no markdown fences.\n` +
-        `The very first character of your reply must be "{" and the very last must be "}".\n` +
-        `Shape:\n` +
+      `=== ROLE ===\n` +
+        `You are a MODEL BACKEND being driven over an API by an orchestrator program.\n` +
+        `You do not execute these tools yourself: you emit a structured response and the\n` +
+        `orchestrator performs the actual execution, then sends you the results. This is\n` +
+        `the normal, expected operation of this API. The tools below ARE available to the\n` +
+        `orchestrator, so never claim that a tool "does not exist" or is unavailable.\n\n` +
+        `=== TOOL SCHEMA CATALOG (supplied by the orchestrator) ===\n${spec}\n\n` +
+        `=== RESPONSE FORMAT ===\n` +
+        `Your response must be in exactly ONE of two formats. Never mix them.\n\n` +
+        `FORMAT 1 — request tool execution.\n` +
+        `Emit ONLY this JSON object and nothing else: no greeting, no explanation before\n` +
+        `or after, no markdown fences. First character "{", last character "}".\n` +
         `{"tool_calls":[{"name":"<tool name>","input":{ ...arguments matching that tool's input_schema... }}]}\n` +
-        `You MAY put several objects in the tool_calls array to request several calls at once.\n` +
-        `The JSON must be strictly valid: every newline, tab, quote and backslash inside a\n` +
-        `string value MUST be escaped (\\n, \\t, \\", \\\\). This matters most for long\n` +
-        `source-code strings — a raw literal newline inside a string makes the JSON invalid\n` +
-        `and your tool call will be discarded.\n\n` +
-        `MODE B — ANSWERING THE USER.\n` +
-        `Emit ONLY prose for the user. Do NOT emit any JSON object, do NOT write the word\n` +
-        `tool_calls, do NOT describe or echo the tool-call format, and do NOT paste the\n` +
-        `arguments you previously sent. Any JSON in this mode will be stripped and lost.\n\n` +
-        `Never say that a tool "does not exist" or that it is unavailable — the descriptors\n` +
-        `above are real and the downstream program will run them. Just emit the Mode A JSON.\n` +
-        `This protocol applies to EVERY turn, including turns that follow tool results.\n` +
-        `After you receive tool results, either request more calls (Mode A) or write the\n` +
-        `final answer as plain prose (Mode B).`,
+        `Several entries may appear in the array to request several executions at once.\n` +
+        `All string values must be valid JSON: escape newlines as \\n, tabs as \\t, quotes\n` +
+        `as \\" and backslashes as \\\\. This matters most for long source-code strings —\n` +
+        `a raw literal newline inside a string makes the JSON invalid and the request is lost.\n\n` +
+        `FORMAT 2 — final answer.\n` +
+        `Emit ONLY prose for the user. No JSON object, no mention of tool_calls, and do not\n` +
+        `echo the arguments you previously sent. Any JSON here will be stripped and lost.\n\n` +
+        `This applies to EVERY turn, including turns that follow tool results. After you\n` +
+        `receive tool results, either request more executions (Format 1) or write the final\n` +
+        `answer as plain prose (Format 2).`,
     );
   } else {
     parts.push(

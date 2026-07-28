@@ -47,11 +47,27 @@ engineering:
    available tools are flattened into a single text prompt.
 2. The model is instructed to reply with **either** plain prose **or** a strict
    JSON object `{"tool_calls":[{"name":..., "input":{...}}]}`.
-3. The reply is parsed back. The parser tolerates raw JSON, ```json fences, and
-   JSON embedded in surrounding prose (balanced-brace scan). If no valid tool
-   call is found, the output is returned as a plain `text` block.
-4. `stop_reason` is set to `tool_use` or `end_turn` accordingly, and `tool_use`
-   blocks get freshly generated `toolu_...` ids.
+3. The reply is parsed back by a **brace-balanced, `JSON.parse`-based**
+   extractor (never a regex over the payload). It tolerates raw JSON, ```json
+   fences, and JSON embedded in surrounding prose, and it scans *every*
+   `"tool_calls"` occurrence rather than only the first. A control-character
+   repair pass re-escapes literal newlines/tabs inside string values, so a
+   multi-KB `code` argument containing raw newlines and nested braces still
+   parses. If no valid tool call is found, the output is returned as `text`.
+4. **Multiple** tool calls in one reply become **multiple `tool_use` blocks in
+   the same assistant message**, each with a unique `toolu_...` id, and
+   `stop_reason` is set to `tool_use`.
+5. When a tool_calls payload is detected, its JSON region is excised and the
+   assistant message contains *only* `tool_use` blocks — the JSON can never
+   leak into a text block. As a safety net, any `tool_calls`-shaped JSON that
+   could not be parsed is stripped from text output too.
+6. Copilot CLI is an agent and prints its own tool-activity transcript
+   (`✗ some_tool ...` / `└ Tool 'x' does not exist.`) to stdout. Those lines are
+   CLI chrome, not model output, and are stripped before parsing.
+
+This conversion lives in one function (`buildAnthropicMessage`) that **both**
+the JSON and the SSE paths call, so streaming and non-streaming cannot diverge,
+and it runs on **every** turn — not just the first.
 
 Streaming (`stream: true`) is synthesised *after* the Copilot call returns: the
 full answer is replayed as a correct Anthropic SSE sequence (`message_start`,
@@ -78,7 +94,13 @@ for a grader who has a real Anthropic key: in that case just set
   is replayed from the completed answer.
 - **Tool calling is best-effort.** It depends on the model obeying the JSON
   protocol. A model that answers in prose when it should have called a tool will
-  silently produce a text block instead. Parallel/complex tool use is fragile.
+  silently produce a text block instead. Multiple tool calls per turn *are*
+  supported, but the model does not always batch them.
+- **Do not pass `--available-tools=`** to the Copilot CLI. It does not actually
+  disable Copilot's own toolset (verified: it still lists bash/web_search/etc.)
+  and it measurably increased the rate at which Copilot refused to emit the
+  protocol JSON at all, saying the tools "do not exist". Plain `--allow-all` is
+  what works.
 - **`usage` is estimated** (chars/4), not real token accounting. Any cost figure
   the SDK reports downstream is therefore fictional.
 - **No caching, no prompt-caching headers, no `thinking` blocks, no images,
