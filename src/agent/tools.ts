@@ -256,32 +256,48 @@ export function artifactCallToAction(
 	);
 }
 
+/** Recognizes requests for a complete cause/fix group rather than one diagnosis fact. */
+function asksForTroubleshootingEnumeration(question: string): boolean {
+	return (
+		/(?:\blist\b.*\bcauses?\b|\ball\b.*\bcauses?\b|\bgive\b.*\bcauses?\b)/i.test(question) ||
+		(/\btroubleshooting table\b/i.test(question) && /\bwhat are they\b/i.test(question))
+	);
+}
+
 /** Restates source-backed answer parts that a narrow model rewrite can obscure. */
 export function answerCompletenessCallToAction(query: string, userQuestion = query): string {
 	const intent = `${userQuestion} ${query}`;
-	if (/(?:\blist\b.*\bcauses?\b|\ball\b.*\bcauses?\b|\bgive\b.*\bcauses?\b)/i.test(userQuestion)) {
+	if (asksForTroubleshootingEnumeration(userQuestion)) {
 		// A model rewrite can collapse an exact matrix-row request into generic
 		// wire-feed terms, which exposes adjacent troubleshooting rows and invites
-		// mixing their causes. Recover the row selected by the user's own wording.
+		// mixing their causes. Recover the problem selected by the user's own wording.
+		// Some tables put all causes in one row; others repeat the problem label across
+		// one row per cause, so preserve every row with the selected label.
 		const matrix = search(userQuestion, { limit: 8 }).find((hit) => hit.chunk.kind === 'table');
 		if (matrix) {
 			const wanted = new Set(tokenize(userQuestion));
-			const row = matrix.chunk.text
+			const rows = matrix.chunk.text
 				.split('\n')
 				.filter((line) => /^\|.+\|$/.test(line) && !/^\|[-|]+\|$/.test(line.replace(/\s/g, '')))
 				.map((line) => {
-					const problemTerms = new Set(tokenize(line.split('|')[1] ?? ''));
+					const problem = (line.split('|')[1] ?? '').trim();
+					const problemTerms = new Set(tokenize(problem));
 					return {
 						line,
+						problem,
 						overlap: [...problemTerms].filter((term) => wanted.has(term)).length,
 					};
-				})
-				.sort((a, b) => b.overlap - a.overlap)[0];
-			if (row?.overlap) {
+				});
+			const selected = [...rows].sort((a, b) => b.overlap - a.overlap)[0];
+			if (selected?.overlap) {
+				const exactRows = rows
+					.filter((row) => row.problem.toLocaleLowerCase() === selected.problem.toLocaleLowerCase())
+					.map((row) => row.line)
+					.join('\n');
 				return (
-					`\n\n=== EXACT TROUBLESHOOTING ROW REQUIRED BY THE USER ===\n` +
-					`[${matrix.chunk.doc} p.${matrix.chunk.page} | table row]\n${row.line}\n\n` +
-					`Use this row only—not adjacent troubleshooting problems. List every requested cause ` +
+					`\n\n=== EXACT TROUBLESHOOTING ROWS REQUIRED BY THE USER ===\n` +
+					`[${matrix.chunk.doc} p.${matrix.chunk.page} | table rows]\n${exactRows}\n\n` +
+					`Use these rows only—not adjacent troubleshooting problems. List every requested cause ` +
 					`and preserve each paired check or fix in both the answer and the interactive troubleshooter.`
 				);
 			}
@@ -338,6 +354,17 @@ export function answerCompletenessCallToAction(query: string, userQuestion = que
 		`Do not add gas blend examples unless a retrieved passage explicitly states them; ` +
 		`the door Settings Chart, not general welding knowledge, is the source of the job-specific value.`
 	);
+}
+
+/** Keeps an artifact from replacing facts the user explicitly requested in prose. */
+export function artifactCompletionInstruction(question: string): string {
+	if (asksForTroubleshootingEnumeration(question)) {
+		return (
+			'The user explicitly asked for the troubleshooting list. In your final prose, also list every ' +
+			'retrieved cause and its paired check or fix with the page citation; do not only describe the artifact.'
+		);
+	}
+	return 'Briefly tell the user what it does and how to use it — do not repeat its contents in prose.';
 }
 
 export interface ToolContext {
@@ -605,7 +632,7 @@ export function createManualTools(ctx: ToolContext) {
 				content: [
 					{
 						type: 'text' as const,
-						text: `Artifact "${title}" is now rendered and interactive next to the chat. Briefly tell the user what it does and how to use it — do not repeat its contents in prose.`,
+						text: `Artifact "${title}" is now rendered and interactive next to the chat. ${artifactCompletionInstruction(ctx.userQuestion ?? '')}`,
 					},
 				],
 			};

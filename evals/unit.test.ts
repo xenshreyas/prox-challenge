@@ -26,6 +26,7 @@ import { ArtifactAnswerGate, artifactStopFeedback } from '../src/agent/agent.js'
 import {
 	answerCompletenessCallToAction,
 	artifactCallToAction,
+	artifactCompletionInstruction,
 	directlyRelevantFigure,
 	figureCallToAction,
 	markFigureShown,
@@ -484,6 +485,35 @@ check(
 		wireStopsCompleteness.includes('correct groove for wire diameter') &&
 		wireStopsCompleteness.includes('Check Feed Tensioner'),
 	'original q37 wording restores its complete matrix row after a narrow search rewrite',
+);
+
+const porosityQuestion =
+	'The Troubleshooting table lists Porosity in the Weld Metal with different causes than the Welding Tips page. What are they?';
+const porosityCompleteness = answerCompletenessCallToAction(
+	'porosity weld metal causes fixes',
+	porosityQuestion,
+);
+check(
+	porosityCompleteness.includes('Check gas regulator to ensure proper flow') &&
+		porosityCompleteness.includes('Check CTWD') &&
+		porosityCompleteness.includes('DCEP for MIG and DCEN for Flux-Cored') &&
+		porosityCompleteness.includes('free of rust and residues'),
+	'original q30 wording restores every repeated-label troubleshooting row after a narrow search rewrite',
+);
+check(
+	!porosityCompleteness.includes('Wire Feeds, but Arc Does Not Ignite'),
+	'q30 completeness block excludes adjacent troubleshooting problems',
+);
+check(
+	artifactCompletionInstruction(porosityQuestion).includes('also list every') &&
+		artifactCompletionInstruction(porosityQuestion).includes('do not only describe the artifact'),
+	'q30 artifact completion preserves the explicitly requested list in visible prose',
+);
+check(
+	artifactCompletionInstruction('What is the TIG duty cycle at 175 A?').includes(
+		'do not repeat its contents in prose',
+	),
+	'ordinary artifact answers stay concise',
 );
 
 group('agent: artifact-required turns cannot stop before creating one');
