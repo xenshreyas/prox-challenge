@@ -502,7 +502,15 @@ export function search(query: string, opts: SearchOptions = {}): SearchHit[] {
 		// --- process filter / preference -------------------------------------
 		if (wanted.length) {
 			const procs = c.processes ?? [];
-			const hit = procs.some((p) => wanted.includes(p));
+			// The OmniPro manual does not publish a separate flux-cored rating
+			// table; it explicitly shares the MIG/wire specifications. Treat MIG
+			// chunks as process-compatible for flux-cored duty/rating questions,
+			// while preserving the distinction for polarity and setup queries.
+			const sharedWireRating =
+				wanted.includes('flux-cored') &&
+				procs.includes('mig') &&
+				(q.terms.includes('duty') || q.terms.includes('rat'));
+			const hit = sharedWireRating || procs.some((p) => wanted.includes(p));
 			const general = procs.length === 0 || procs.includes('general');
 			if (hit) score *= PROC_HIT;
 			else if (general) score *= 1.0;

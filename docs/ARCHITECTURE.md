@@ -337,10 +337,10 @@ KB: 51 pages, 1063 chunks (143 figures, 16 tables)
 
 Retrieval recall over 39 golden questions:
   recall@1   74.4%
-  recall@3   92.3%
-  recall@5   97.4%
+  recall@3   94.9%
+  recall@5   100.0%
   recall@10 100.0%
-  MRR        0.8314
+  MRR        0.8406
 ```
 
 Retrieval is deterministic — no model, no network, no sampling — so repeated runs

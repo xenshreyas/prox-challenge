@@ -304,6 +304,17 @@ check(
 	'plain one-value lookup adds no artifact noise',
 );
 
+group('retrieval: shared MIG ratings remain reachable from a flux-cored query');
+// The manual publishes no separate FCAW duty-cycle table: the answer lives in
+// the shared MIG/wire specifications on pp. 7 and 19. A flux-cored process cue
+// must not let generic selection-chart and troubleshooting chunks crowd both
+// verified rating pages out of the useful top-five context window.
+const fluxDutyHits = search('What is the rated duty cycle for Flux-Cored welding specifically?', {
+	limit: 10,
+});
+const fluxDutyRank = fluxDutyHits.findIndex((hit) => [7, 19].includes(hit.chunk.page));
+check(fluxDutyRank >= 0 && fluxDutyRank < 5, 'shared MIG duty-cycle ratings rank in the top five');
+
 group('KB parser: tables retain bold subsection labels');
 // Regression: page 25 has adjacent 240 V and 120 V nameplate tables under one
 // markdown heading. Their voltage labels are standalone bold lines, which the
