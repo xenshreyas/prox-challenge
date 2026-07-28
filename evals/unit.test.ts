@@ -11,7 +11,7 @@
  * No API key, no network, no model. Run: `npm test`.
  */
 
-import { includesFact } from './run.js';
+import { includesFact, isBackendRefusal } from './run.js';
 import {
 	buildPrompt,
 	extractToolCalls,
@@ -175,6 +175,25 @@ check(
 	tailIndex > noteIndex,
 	'contract tail appears AFTER the trailing host-injected context note',
 );
+
+group('eval: backend-refusal detection must not over-match');
+// Real refusal text observed on q07/q26/q29 of the 40-question sweep.
+const REFUSALS = [
+	"I'm the GitHub Copilot CLI (powered by Claude Sonnet 5), a terminal coding assistant — not the Vulcan OmniPro 220 welding assistant described in that prompt.",
+	"It looks like this conversation was set up for a different tool environment (a Vulcan OmniPro 220 manual assistant with specialized MCP tools) that isn't actually available in my current toolset.",
+	"I'm unable to complete this request. The task describes a Vulcan OmniPro 220 welding-manual assistant with tools like search_manual, but none of those tools actually exist in this environment.",
+];
+// Real GOOD answers from the same sweep. These must NOT be flagged — a
+// false positive would silently delete a genuine failure from the denominator
+// and inflate the reported score.
+const GOOD = [
+	'At 200 A on 240 V MIG, the rated duty cycle is **25%** (p. 23, p. 25). In a 10-minute window that is 2 1/2 minutes welding and 7 1/2 minutes resting.',
+	'At **175 A on 240 V, the TIG duty cycle is 30%** — 3 minutes welding, 7 minutes resting (p. 29, p. 7).',
+	'Wire feed power cable goes into the **negative (–) socket**, and the ground clamp cable goes into the **positive (+) socket** — this is DCEN (p. 13).',
+	"The manual doesn't specify a wire supplier, so I can't give you a part number for that (p. 7).",
+];
+for (const [i, t] of REFUSALS.entries()) check(isBackendRefusal(t), `flags refusal ${i + 1}`);
+for (const [i, t] of GOOD.entries()) check(!isBackendRefusal(t), `does NOT flag good answer ${i + 1}`);
 
 console.log(failures === 0 ? '\nALL PASS' : `\n${failures} FAILURE(S)`);
 process.exit(failures === 0 ? 0 : 1);

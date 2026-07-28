@@ -170,6 +170,26 @@ async function runQuestion(q: GoldenQuestion): Promise<QuestionResult> {
 	return { ...partial, ...scoreOne(q, partial) };
 }
 
+/**
+ * Detects a response where the *model backend* broke character and refused the
+ * request, rather than the agent answering badly.
+ *
+ * This only happens on the dev-only Copilot shim: Copilot is a consumer coding
+ * assistant with its own identity, and it intermittently declines to adopt a
+ * different product persona ("I'm the GitHub Copilot CLI, not the Vulcan
+ * OmniPro 220 assistant"). With a real ANTHROPIC_API_KEY this cannot occur.
+ *
+ * These runs are counted and reported separately, because scoring them as
+ * agent accuracy failures blames the wrong component and would send you
+ * optimizing a prompt that is already correct.
+ */
+const BACKEND_REFUSAL =
+	/(i'm the github copilot|not the vulcan|don't match my actual|isn't actually available|none of those tools actually exist|different tool environment|i'm unable to complete this request|trying to make me pretend|different ai)/i;
+
+export function isBackendRefusal(answer: string): boolean {
+	return BACKEND_REFUSAL.test(answer.slice(0, 600));
+}
+
 async function main() {
 	const only = process.argv.slice(2).filter((a) => !a.startsWith('-'));
 	const limitArg = process.argv.find((a) => a.startsWith('--limit='));
@@ -219,6 +239,28 @@ async function main() {
 	console.log(`  multimodal  ${(summary.multimodal * 100).toFixed(1)}%`);
 	console.log(`  artifact    ${(summary.artifact * 100).toFixed(1)}%`);
 	if (summary.errors) console.log(`  errors      ${summary.errors}`);
+
+	// Separate backend refusals from genuine agent failures. Attributing a shim
+	// character-break to the agent's accuracy is a measurement error that points
+	// optimization at the wrong component.
+	const refused = results.filter((r) => isBackendRefusal(r.answer));
+	if (refused.length) {
+		const clean = results.filter((r) => !isBackendRefusal(r.answer));
+		const cleanAvg = (f: (r: QuestionResult) => number) =>
+			clean.length ? clean.reduce((s, r) => s + f(r), 0) / clean.length : 0;
+		console.log(
+			`\n  backend refusals  ${refused.length}/${results.length} ` +
+				`(${refused.map((r) => r.id).join(', ')})`,
+		);
+		console.log(
+			`  excluding them:   total ${(cleanAvg((r) => r.scores.total) * 100).toFixed(1)}%  ` +
+				`accuracy ${(cleanAvg((r) => r.scores.accuracy) * 100).toFixed(1)}%  (n=${clean.length})`,
+		);
+		console.log(
+			`  NOTE: refusals are a dev-shim artifact (Copilot declining to adopt a`,
+		);
+		console.log(`        different persona). They cannot occur on a real Anthropic key.`);
+	}
 
 	// Report against the incumbent — but only when the sample can actually
 	// support the claim.
