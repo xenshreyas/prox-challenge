@@ -430,7 +430,13 @@
     ],
     "requires_visual": true,
     "requires_artifact": true,
-    "page_refs": []
+    "page_refs": [],
+    "source_refs": [
+      {
+        "doc": "selection-chart",
+        "page": 1
+      }
+    ]
   },
   {
     "id": "q27",

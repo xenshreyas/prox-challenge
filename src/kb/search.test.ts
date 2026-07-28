@@ -8,6 +8,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { loadKB, search, REPO_ROOT, getPage, getFigure } from './search.js';
+import { hasReferences, matchesReference, referenceLabels, type SourceRef } from '../../evals/references.js';
 
 interface EvalQ {
 	id: string;
@@ -15,6 +16,7 @@ interface EvalQ {
 	must_include: string[];
 	requires_visual: boolean;
 	page_refs: number[];
+	source_refs?: SourceRef[];
 }
 
 const questions = JSON.parse(
@@ -31,32 +33,41 @@ interface Row {
 	hit5: boolean;
 	hit10: boolean;
 	rank: number | null;
-	refs: number[];
-	got: number[];
+	refs: string[];
+	got: string[];
+	coverage: number;
 }
 
 const rows: Row[] = [];
 
 for (const q of questions) {
-	const refs = new Set(q.page_refs ?? []);
-	if (refs.size === 0) {
-		console.warn(`(skipping ${q.id}: no page_refs in golden set)`);
+	if (!hasReferences(q)) {
+		console.warn(`(skipping ${q.id}: no references in golden set)`);
 		continue;
 	}
 	const hits = search(q.question, { limit: 10 });
-	const pages = hits.map((h) => h.chunk.page);
-	let rank: number | null = null;
-	pages.forEach((p, i) => {
-		if (rank === null && refs.has(p)) rank = i + 1;
-	});
+	const firstHit = hits.findIndex((hit) => matchesReference(hit.chunk, q));
+	const rank = firstHit < 0 ? null : firstHit + 1;
+	const accepted = q.source_refs?.length
+		? q.source_refs
+		: q.page_refs.map((page) => ({ doc: '', page }));
+	const coverage =
+		accepted.filter((reference) =>
+			hits.some(
+				(hit) =>
+					hit.chunk.page === reference.page &&
+					(reference.doc === '' || hit.chunk.doc === reference.doc),
+			),
+		).length / accepted.length;
 	rows.push({
 		id: q.id,
 		q: q.question,
 		hit5: rank !== null && rank <= 5,
 		hit10: rank !== null,
 		rank,
-		refs: [...refs],
-		got: pages,
+		refs: referenceLabels(q),
+		got: hits.map((hit) => `${hit.chunk.doc}#${hit.chunk.page}`),
+		coverage,
 	});
 }
 
@@ -65,18 +76,15 @@ const r5 = rows.filter((r) => r.hit5).length;
 const r10 = rows.filter((r) => r.hit10).length;
 const mrr = rows.reduce((s, r) => s + (r.rank ? 1 / r.rank : 0), 0) / n;
 
-// Page-level coverage: fraction of each question's page_refs present in top-10.
-const cov = rows.reduce((s, r) => {
-	const got = new Set(r.got);
-	return s + r.refs.filter((p) => got.has(p)).length / Math.max(1, r.refs.length);
-}, 0) / n;
+// Reference coverage: fraction of each question's accepted sources present in top-10.
+const cov = rows.reduce((sum, row) => sum + row.coverage, 0) / n;
 
 console.log(`KB: ${kb.chunks.length} chunks / ${kb.pages.length} pages, indexed in ${bootMs}ms`);
 console.log(`Questions: ${n}`);
 console.log(`recall@5  = ${(r5 / n * 100).toFixed(1)}%  (${r5}/${n})`);
 console.log(`recall@10 = ${(r10 / n * 100).toFixed(1)}%  (${r10}/${n})`);
 console.log(`MRR       = ${mrr.toFixed(3)}`);
-console.log(`page_refs coverage@10 = ${(cov * 100).toFixed(1)}%`);
+console.log(`reference coverage@10 = ${(cov * 100).toFixed(1)}%`);
 
 const bad = rows.filter((r) => !r.hit10).concat(rows.filter((r) => r.hit10 && !r.hit5));
 if (bad.length) {

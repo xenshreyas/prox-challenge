@@ -14,6 +14,7 @@
 import { readFileSync } from 'node:fs';
 
 import { classifyAgainstBest, groundingScore, includesFact, isBackendRefusal } from './run.js';
+import { matchesReference } from './references.js';
 import { wrapArtifact } from '../src/agent/artifact-harness.js';
 import {
 	answerCompletenessCallToAction,
@@ -266,6 +267,40 @@ check(
 	groundingScore('', [12], [12]) === 1,
 	'a figure visibly shown from a reference page is grounded',
 );
+check(
+	groundingScore(
+		'',
+		[],
+		[{ doc: 'owner-manual', page: 1 }],
+		[{ doc: 'selection-chart', page: 1 }],
+	) === 0.4,
+	'a same-number figure from the wrong document does not fully ground a source-qualified question',
+);
+check(
+	groundingScore(
+		'',
+		[],
+		[{ doc: 'selection-chart', page: 1 }],
+		[{ doc: 'selection-chart', page: 1 }],
+	) === 1,
+	'an exact document-and-page figure fully grounds a source-qualified question',
+);
+const selectionChartReference = {
+	page_refs: [1],
+	source_refs: [{ doc: 'selection-chart', page: 1 }],
+};
+check(
+	!matchesReference({ doc: 'owner-manual', page: 1 }, selectionChartReference),
+	'a same-number page from another document is not an accepted visual source',
+);
+check(
+	matchesReference({ doc: 'selection-chart', page: 1 }, selectionChartReference),
+	'the document-qualified visual source is accepted',
+);
+check(
+	matchesReference({ doc: 'quick-start-guide', page: 1 }, { page_refs: [1] }),
+	'legacy page-only references remain document-agnostic',
+);
 
 group('eval: golden references include every verified nameplate source');
 // The same physical nameplate is reproduced on pp. 16, 25, and 27. The golden
@@ -280,6 +315,7 @@ const goldenQuestions = JSON.parse(
 	question: string;
 	requires_visual: boolean;
 	page_refs: number[];
+	source_refs?: { doc: string; page: number }[];
 }[];
 for (const id of ['q06', 'q07', 'q08']) {
 	const question = goldenQuestions.find((q) => q.id === id);
@@ -478,9 +514,13 @@ check(
 	strongAutomaticFigures.every(
 		({ question, figure }) =>
 			figure &&
-			(question.page_refs.length === 0 || question.page_refs.includes(figure.chunk.page)),
+			(question.source_refs?.length
+				? question.source_refs.some(
+						(ref) => ref.doc === figure.chunk.doc && ref.page === figure.chunk.page,
+					)
+				: question.page_refs.includes(figure.chunk.page)),
 	),
-	'every automatically surfaced figure comes from an accepted reference page',
+	'every automatically surfaced figure comes from an accepted reference source',
 );
 
 group('retrieval: shared MIG ratings remain reachable from a flux-cored query');

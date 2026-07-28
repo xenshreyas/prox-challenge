@@ -98,7 +98,7 @@ Try asking:
                                  npm run kb:build (src/kb/parse.ts + build.ts)
                                               ▼
                                         kb/index.json
-                                1063 typed chunks over 51 pages
+                                1082 typed chunks over 51 pages
 
   RUNTIME
   ─────────────────────────────────────────────────────────────────────────
@@ -188,12 +188,12 @@ filename-derived page number.
 
 ### Four chunk kinds, and why granularity is mixed
 
-`npm run kb:build` turns 51 extracted pages into **1063 chunks**:
+`npm run kb:build` turns 51 extracted pages into **1082 chunks**:
 
 | Kind | Count | What it holds | The question it's for |
 |---|---|---|---|
-| `prose` | 108 | A section's body text | *"How does the synergic mode work?"* — needs surrounding context |
-| `table` | 16 | One whole table, verbatim | *"Duty cycle at 200A on 240V?"* — needs the matrix intact |
+| `prose` | 114 | A section's body text | *"How does the synergic mode work?"* — needs surrounding context |
+| `table` | 29 | One whole table, verbatim | *"Duty cycle at 200A on 240V?"* — needs the matrix intact |
 | `figure` | 143 | Caption + full description + seed questions | *"Which socket does the ground clamp go in?"* — needs a picture |
 | `fact` | 796 | One atomic self-contained statement | *"Max wire spool weight?"* — needs one line, undiluted |
 
@@ -365,25 +365,26 @@ have very different costs.
 ### 1. Retrieval recall — `npx tsx evals/recall.ts`
 
 No model, no API key, runs in about a second. It measures whether the correct
-manual page enters the top-k for each of the 40 golden questions
-(`research/eval-questions.json`), scored against hand-assigned `page_refs`.
+source enters the top-k for each of the 40 golden questions
+(`research/eval-questions.json`), scored against hand-assigned page references
+or document-qualified `source_refs` where page numbers are ambiguous.
 
 This is the fast inner loop for tuning retrieval, and it's the honest ceiling on
 end-to-end accuracy: if the right page never reaches the agent's context, no
 amount of prompt engineering saves the answer.
 
-**As measured on the current KB and retrieval config** (39 of the 40 questions
-carry `page_refs`):
+**As measured on the current KB and retrieval config** (all 40 questions carry
+an accepted source):
 
 ```
-KB: 51 pages, 1063 chunks (143 figures, 16 tables)
+KB: 51 pages, 1082 chunks (143 figures, 29 tables)
 
-Retrieval recall over 39 golden questions:
-  recall@1   74.4%
-  recall@3   94.9%
+Retrieval recall over 40 golden questions:
+  recall@1   75.0%
+  recall@3   95.0%
   recall@5   100.0%
   recall@10  100.0%
-  MRR        0.8406
+  MRR        0.8458
 ```
 
 These are measured numbers from actual runs of the command above, not estimates.
@@ -502,7 +503,7 @@ files/                    Source PDFs (owner manual 48pp, quick-start 2pp, selec
 kb/
   pages/                  51 page rasters (.png) + raw pdftotext layers (.txt)
   extracted/              51 vision-extracted structured markdown pages
-  index.json              Built KB: 1063 typed chunks + page metadata
+  index.json              Built KB: 1082 typed chunks + page metadata
 
 tools/
   extract_pages.py        Dev-time vision extraction pipeline (offline; already run)
@@ -560,9 +561,9 @@ research/                 Working notes produced while building
   refusals and zero runtime errors.
 - **The right source is not always ranked first.** Retrieval now reaches an
   accepted page for every referenced golden question by k=5 and k=10, but
-  recall@1 is 74.4%. Questions whose answer sits on a page that uses different
+  recall@1 is 75.0%. Questions whose answer sits on a page that uses different
   vocabulary can still require several hits of context. The measured current
-  figures are 74.4%@1, 94.9%@3, 100%@5, and 100%@10 (MRR 0.8406).
+  figures are 75.0%@1, 95.0%@3, 100%@5, and 100%@10 (MRR 0.8458).
 - **Extraction is a snapshot.** Vision extraction is not infallible, and there
   has been no page-by-page human audit of all 51 pages. Page 7 and page 14 were
   spot-checked against independent sources. `render_page` is the runtime mitigation:

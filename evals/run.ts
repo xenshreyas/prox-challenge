@@ -23,6 +23,7 @@ import 'dotenv/config';
 import { ask } from '../src/agent/agent.js';
 import { REPO_ROOT } from '../src/kb/search.js';
 import type { AgentEvent } from '../src/agent/events.js';
+import { matchesReference, type SourceRef } from './references.js';
 
 interface GoldenQuestion {
 	id: string;
@@ -32,6 +33,7 @@ interface GoldenQuestion {
 	requires_visual: boolean;
 	requires_artifact: boolean;
 	page_refs: number[];
+	source_refs?: SourceRef[];
 }
 
 interface QuestionResult {
@@ -70,13 +72,25 @@ export function inlineCitedPages(answer: string): number[] {
 export function groundingScore(
 	answer: string,
 	referencePages: number[],
-	figurePages: number[] = [],
+	figureSources: (SourceRef | number)[] = [],
+	sourceRefs: SourceRef[] = [],
 ): number {
-	const visiblePages = [...new Set([...inlineCitedPages(answer), ...figurePages])];
-	if (visiblePages.length === 0) return 0;
-	return referencePages.length === 0 || visiblePages.some((page) => referencePages.includes(page))
-		? 1
-		: 0.4;
+	const inlinePages = [...new Set(inlineCitedPages(answer))];
+	const figures = figureSources.map((source) =>
+		typeof source === 'number' ? { doc: '', page: source } : source,
+	);
+	if (inlinePages.length === 0 && figures.length === 0) return 0;
+
+	const references = { page_refs: referencePages, source_refs: sourceRefs };
+	const figureMatches = figures.some((source) => matchesReference(source, references));
+	// A bare "p. 1" cannot prove which of three documents supplied the fact.
+	// Source-qualified questions therefore require a structured, visible figure
+	// event carrying both the document and page; legacy questions still accept
+	// their inline page citations.
+	const inlineMatches =
+		sourceRefs.length === 0 && inlinePages.some((page) => referencePages.includes(page));
+	const hasNoReferences = sourceRefs.length === 0 && referencePages.length === 0;
+	return hasNoReferences || figureMatches || inlineMatches ? 1 : 0.4;
 }
 
 /** Normalizes for tolerant substring matching: "2-1/2" vs "2 1/2", "200A" vs "200 A". */
@@ -126,7 +140,7 @@ function scoreOne(q: GoldenQuestion, r: Omit<QuestionResult, 'scores' | 'missing
 	// actually grounded in — showing *a* picture isn't the same as showing the
 	// right one.
 	const relevantFigure = r.figures.some(
-		(f) => q.page_refs.length === 0 || q.page_refs.includes(f.page),
+		(f) => matchesReference(f, q),
 	);
 	const multimodal = q.requires_visual ? (relevantFigure ? 1 : 0) : r.figures.length ? 1 : 0.5;
 
@@ -135,7 +149,8 @@ function scoreOne(q: GoldenQuestion, r: Omit<QuestionResult, 'scores' | 'missing
 	const grounding = groundingScore(
 		r.answer,
 		q.page_refs,
-		r.figures.map((f) => f.page),
+		r.figures,
+		q.source_refs,
 	);
 
 	// Accuracy and grounding dominate: a beautiful artifact containing a wrong

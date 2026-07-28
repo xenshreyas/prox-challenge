@@ -12,11 +12,18 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import { search, loadKB, REPO_ROOT } from '../src/kb/search.js';
+import {
+	hasReferences,
+	matchesReference,
+	referenceLabels,
+	type SourceRef,
+} from './references.js';
 
 interface GoldenQuestion {
 	id: string;
 	question: string;
 	page_refs: number[];
+	source_refs?: SourceRef[];
 	requires_visual: boolean;
 }
 
@@ -33,29 +40,28 @@ async function main() {
 
 	const ks = [1, 3, 5, 10];
 	const hitsAt: Record<number, number> = Object.fromEntries(ks.map((k) => [k, 0]));
-	const worst: { id: string; question: string; got: number[]; want: number[] }[] = [];
+	const worst: { id: string; question: string; got: string[]; want: string[] }[] = [];
 	let rrSum = 0;
 
 	for (const q of questions) {
-		if (!q.page_refs?.length) continue;
+		if (!hasReferences(q)) continue;
 		const results = search(q.question, { limit: Math.max(...ks) });
-		const pages = results.map((r) => r.chunk.page);
 		for (const k of ks) {
-			if (pages.slice(0, k).some((p) => q.page_refs.includes(p))) hitsAt[k] += 1;
+			if (results.slice(0, k).some((result) => matchesReference(result.chunk, q))) hitsAt[k] += 1;
 		}
-		const firstHit = pages.findIndex((p) => q.page_refs.includes(p));
+		const firstHit = results.findIndex((result) => matchesReference(result.chunk, q));
 		if (firstHit >= 0) rrSum += 1 / (firstHit + 1);
-		if (!pages.slice(0, 10).some((p) => q.page_refs.includes(p))) {
+		if (!results.slice(0, 10).some((result) => matchesReference(result.chunk, q))) {
 			worst.push({
 				id: q.id,
 				question: q.question,
-				got: [...new Set(pages.slice(0, 6))],
-				want: q.page_refs,
+				got: [...new Set(results.slice(0, 6).map((result) => `${result.chunk.doc}#${result.chunk.page}`))],
+				want: referenceLabels(q),
 			});
 		}
 	}
 
-	const n = questions.filter((q) => q.page_refs?.length).length;
+	const n = questions.filter(hasReferences).length;
 	console.log(`Retrieval recall over ${n} golden questions:`);
 	for (const k of ks) {
 		console.log(`  recall@${String(k).padEnd(2)}  ${((hitsAt[k] / n) * 100).toFixed(1)}%`);
@@ -66,7 +72,7 @@ async function main() {
 		console.log(`\nMisses (${worst.length}) — right page not in top 10:`);
 		for (const w of worst) {
 			console.log(`  ${w.id}: ${w.question.slice(0, 92)}`);
-			console.log(`      want pages ${w.want.join(',')}  got ${w.got.join(',')}`);
+			console.log(`      want sources ${w.want.join(',')}  got ${w.got.join(',')}`);
 		}
 	} else {
 		console.log('\nNo misses at k=10.');
