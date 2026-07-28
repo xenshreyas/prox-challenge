@@ -82,6 +82,7 @@ check(!includesFact('rated 25% duty cycle', '35%'), 'rejects 35% against 25%');
 check(!includesFact('duty cycle 30% at 175 A', '25%'), 'rejects 25% against 30%');
 check(includesFact('2 1/2 minutes', '2-1/2'), 'space-separated form matches hyphenated');
 check(includesFact('2-1/2 minutes', '2\u00bd'), 'unicode needle matches ascii haystack');
+check(includesFact('follow the duty-cycle limit', 'duty cycle'), 'word hyphen matches a space');
 
 /* -------------------------------------------------------- shim: extraction */
 
@@ -197,6 +198,23 @@ check(
 	withoutToolResult.content[0]?.type === 'text' &&
 		withoutToolResult.content[0].text === usefulAnswerWithFalseDisclaimer,
 	'access wording is not rewritten without evidence that a tool succeeded',
+);
+
+// Real q38 replay: the figure was emitted automatically during search, but the
+// backend still appended this false final paragraph after giving a complete answer.
+const q38FalseDisplayClaim = buildAnthropicMessage(
+	'claude-sonnet-4-5',
+	'<<< TOOL RESULT — real output of "mcp__manual__search_manual", executed successfully by the orchestrator >>>\nsource p. 43',
+	'Most likely cause: **tripped thermal protection** (p. 43).\n\n' +
+		"I couldn't display the manual's LCD warning-screen figure or build an interactive troubleshooter in this session — the image/artifact tools aren't reachable here.",
+	true,
+);
+const cleanedQ38Answer =
+	q38FalseDisplayClaim.content[0]?.type === 'text' ? String(q38FalseDisplayClaim.content[0].text) : '';
+check(
+	cleanedQ38Answer.includes('tripped thermal protection') &&
+		!cleanedQ38Answer.includes("tools aren't reachable"),
+	'false figure/tool reachability claim is removed after verified tool output',
 );
 
 group('shim: protocol contract must be LAST in the prompt');
@@ -543,6 +561,21 @@ check(
 	resetButtonCompleteness.includes('low- or over-voltage protection') &&
 		resetButtonCompleteness.includes('Circuit breaker tripped due to high input amperage'),
 	'original q39 wording preserves both documented Reset Button cases after a narrow search rewrite',
+);
+
+const thermalWarningQuestion =
+	'The welder does not function when switched on and the LCD shows a warning screen. What is the correct response?';
+const thermalWarningCompleteness = answerCompletenessCallToAction(
+	'LCD warning screen cooling response',
+	thermalWarningQuestion,
+);
+check(
+	thermalWarningCompleteness.includes('thermal protection') &&
+		thermalWarningCompleteness.includes('Power Switch on') &&
+		thermalWarningCompleteness.includes('internal Fan') &&
+		thermalWarningCompleteness.includes('non-conductive, heat-proof surface') &&
+		thermalWarningCompleteness.includes('Duty Cycle'),
+	'original q38 wording preserves the complete thermal-protection response after a narrow search rewrite',
 );
 
 group('agent: artifact-required turns cannot stop before creating one');

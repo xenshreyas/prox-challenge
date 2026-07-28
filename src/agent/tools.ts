@@ -313,6 +313,42 @@ export function answerCompletenessCallToAction(query: string, userQuestion = que
 			);
 		}
 	}
+	const asksForThermalWarningResponse =
+		/\b(?:does not|doesn't|won't|not) function\b/i.test(userQuestion) &&
+		/\blcd\b.*\bwarning screen\b/i.test(userQuestion);
+	if (asksForThermalWarningResponse) {
+		// The troubleshooting row identifies the fault, while the duty-cycle prose
+		// carries the complete safety response. A narrow warning-screen rewrite can
+		// retrieve only the symptom and omit the crucial instruction to leave power
+		// on for the fan, plus where to rest the hot gun/torch while cooling.
+		const warningGuidance = search(userQuestion, { limit: 8 });
+		const thermalFault = warningGuidance.find(
+			(hit) =>
+				hit.chunk.doc === 'owner-manual' &&
+				hit.chunk.page === 43 &&
+				/tripped thermal protection/i.test(hit.chunk.text),
+		);
+		const coolingGuidance = search(
+			'LCD warning screen cooling Power Switch internal Fan non-conductive heat-proof surface duty cycle',
+			{ limit: 12 },
+		).find(
+			(hit) =>
+				hit.chunk.doc === 'owner-manual' &&
+				hit.chunk.kind === 'prose' &&
+				/non-conductive, heat-proof surface/i.test(hit.chunk.text) &&
+				/internal Fan/i.test(hit.chunk.text),
+		);
+		if (thermalFault && coolingGuidance) {
+			return (
+				`\n\n=== COMPLETE THERMAL-PROTECTION RESPONSE REQUIRED ===\n` +
+				`${renderHit(thermalFault)}\n\n${renderHit(coolingGuidance)}\n\n` +
+				`Identify tripped thermal protection, then preserve the complete response in the visible answer: ` +
+				`stop welding; rest the gun, torch, or holder on a non-conductive, heat-proof surface ` +
+				`clear of the ground clamp; leave the Power Switch on so the internal Fan cools the machine; ` +
+				`wait for automatic return to service; and reduce welding duration or frequency according to the Duty Cycle guidance.`
+			);
+		}
+	}
 	const asksWhenToUseResetButton =
 		/\breset button\b/i.test(userQuestion) &&
 		/\b(?:when|case|condition|press|use)\b/i.test(userQuestion);

@@ -158,6 +158,11 @@ export function includesFact(haystack: string, needle: string): boolean {
 	if (h.includes(n)) return true;
 	// Spaceless compare so "2-1/2 minutes" matches "2 1/2minutes".
 	if (h.replace(/ /g, '').includes(n.replace(/ /g, ''))) return true;
+	// Treat hyphens between words as ordinary word boundaries. A correct answer
+	// may write "duty-cycle" while the golden fact says "duty cycle"; numeric
+	// separators stay intact so this cannot blur distinct amperages or fractions.
+	const wordBoundaries = (x: string) => x.replace(/(?<=[a-z])-(?=[a-z])/g, ' ');
+	if (wordBoundaries(h).includes(wordBoundaries(n))) return true;
 	// Last resort: strip separators entirely, so "2-1/2" matches "21/2" and
 	// "2 1/2". Only applied to needles with a digit, to avoid false positives on
 	// short prose fragments.

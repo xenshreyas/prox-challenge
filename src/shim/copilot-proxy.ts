@@ -204,6 +204,7 @@ const REFUSAL_PATTERNS = [
   /\bare not responding\b/i,
   /\bis(?:n['’]t| not) (?:available|responding|accessible)\b/i,
   /\btools?\b[^.\n]{0,40}\bnot available\b/i,
+  /\btools?\b[^.\n]{0,40}\b(?:aren['’]t|are not|isn['’]t|is not) reachable\b/i,
   /\bdoes not exist\b/i,
   /\bcan['’]t look up\b/i,
   /\bcannot look up\b/i,
