@@ -13,7 +13,7 @@
 
 import { classifyAgainstBest, includesFact, isBackendRefusal } from './run.js';
 import { wrapArtifact } from '../src/agent/artifact-harness.js';
-import { figureCallToAction } from '../src/agent/tools.js';
+import { artifactCallToAction, figureCallToAction } from '../src/agent/tools.js';
 import { search } from '../src/kb/search.js';
 import {
 	buildPrompt,
@@ -246,6 +246,23 @@ check(
 		new Set(),
 	) === '',
 	'silent when the result set has no figures (adds no noise)',
+);
+
+group('tools: parameterized searches get an artifact call-to-action');
+// The prompt already requires an artifact for duty-cycle answers, but the latest
+// full sweep still omitted one on q01/q02/q06/q07. As with figures, the useful
+// instruction needs to be adjacent to the retrieved facts and last in the tool
+// result instead of competing with a long system prompt.
+const dutyHits = search('MIG 240 V 200 A rated duty cycle weld rest minutes', { limit: 8 });
+const dutyArtifactCta = artifactCallToAction(
+	'MIG at 240 V: duty cycle at 200 A and weld/rest minutes?',
+	dutyHits,
+);
+check(dutyArtifactCta.includes('create_artifact'), 'duty-cycle search explicitly requires create_artifact');
+check(dutyArtifactCta.includes('calculator'), 'duty-cycle search requests a calculator');
+check(
+	artifactCallToAction('What is the maximum open circuit voltage?', search('maximum open circuit voltage', { limit: 8 })) === '',
+	'plain one-value lookup adds no artifact noise',
 );
 
 group('eval: max-score verdict compares against previous runs');

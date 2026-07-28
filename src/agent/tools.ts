@@ -74,6 +74,41 @@ export function figureCallToAction(hits: SearchHit[], alreadyShown: Set<string>)
 	);
 }
 
+/** Restates the mechanical artifact rule beside parameterized search results. */
+export function artifactCallToAction(
+	query: string,
+	hits: SearchHit[],
+	alreadyCreated = false,
+): string {
+	if (alreadyCreated || hits.length === 0) return '';
+
+	const q = query.toLowerCase();
+	const dutyCycle = /duty[ -]?cycle|weld\/?rest|weld(?:ing)? (?:and|\/) rest/.test(q);
+	const settings =
+		/(?:setting|configure|select|choose|recommend).*(?:material|thickness|wire|electrode|amp|volt|gas)/.test(
+			q,
+		) ||
+		/(?:material|thickness|wire|electrode).*(?:setting|size|amp|volt|gas)/.test(q);
+	const troubleshooting =
+		/(?:troubleshoot|diagnos|causes?|checks?|fix(?:es)?|defect|symptom|won't|not working|problem)/.test(q);
+	const polarity = /polarity|cable (?:hookup|connection|routing)|which (?:cable|socket)/.test(q);
+	if (!dutyCycle && !settings && !troubleshooting && !polarity) return '';
+
+	const format = dutyCycle
+		? 'an interactive calculator with the retrieved ratings and a 10-minute weld/rest visualization'
+		: settings
+			? 'an interactive settings configurator using the retrieved manual values'
+			: troubleshooting
+				? 'a clickable troubleshooting flowchart for the retrieved causes and checks'
+				: 'an interactive polarity or cable-hookup diagram';
+
+	return (
+		`\n\n=== INTERACTIVE ARTIFACT REQUIRED FOR THIS ANSWER ===\n` +
+		`Before finishing, call create_artifact and build ${format}. ` +
+		`Do not merely say that a calculator, configurator, flowchart, or diagram would be useful.`
+	);
+}
+
 export interface ToolContext {
 	emit: EventSink;
 	/** Base URL the browser uses to fetch page images, e.g. "" for same-origin. */
@@ -87,6 +122,7 @@ export function createManualTools(ctx: ToolContext) {
 	// Figures already surfaced this turn, so the call-to-action nags only about
 	// ones the user genuinely has not seen.
 	const shownFigures = new Set<string>();
+	let artifactCreated = false;
 
 	const searchManual = tool(
 		'search_manual',
@@ -153,7 +189,8 @@ export function createManualTools(ctx: ToolContext) {
 						type: 'text' as const,
 						text:
 							hits.map(renderHit).join('\n\n---\n\n') +
-							figureCallToAction(hits, shownFigures),
+							figureCallToAction(hits, shownFigures) +
+							artifactCallToAction(query, hits, artifactCreated),
 					},
 				],
 			};
@@ -297,6 +334,7 @@ export function createManualTools(ctx: ToolContext) {
 				),
 		},
 		async ({ title, kind, code }) => {
+			artifactCreated = true;
 			const id = randomUUID();
 			const { html, mimeType } = wrapArtifact(kind as ArtifactKind, code);
 			ctx.emit({ type: 'artifact', id, title, kind: kind as ArtifactKind, mimeType, code: html });
