@@ -40,6 +40,9 @@ interface QuestionResult {
 	answer: string;
 	figures: { doc: string; page: number; slug: string | null }[];
 	artifacts: { title: string; kind: string }[];
+	/** Pages returned by search_manual; useful diagnostics, but not user-visible citations. */
+	retrievedPages: number[];
+	/** Pages cited in prose or visibly surfaced as figures. */
 	citedPages: number[];
 	toolCalls: string[];
 	scores: {
@@ -52,6 +55,28 @@ interface QuestionResult {
 	missing: string[];
 	durationMs: number;
 	error?: string;
+}
+
+/** Extracts page numbers that are visible in the answer itself. */
+export function inlineCitedPages(answer: string): number[] {
+	return [...answer.matchAll(/\bp\.?\s*(\d{1,2})\b/gi)].map((m) => Number(m[1]));
+}
+
+/**
+ * Scores citations the user actually received: inline prose citations and pages
+ * surfaced as figures. Retrieval citation events are intentionally excluded —
+ * they describe what the model searched, not what it cited in its answer.
+ */
+export function groundingScore(
+	answer: string,
+	referencePages: number[],
+	figurePages: number[] = [],
+): number {
+	const visiblePages = [...new Set([...inlineCitedPages(answer), ...figurePages])];
+	if (visiblePages.length === 0) return 0;
+	return referencePages.length === 0 || visiblePages.some((page) => referencePages.includes(page))
+		? 1
+		: 0.4;
 }
 
 /** Normalizes for tolerant substring matching: "2-1/2" vs "2 1/2", "200A" vs "200 A". */
@@ -107,8 +132,11 @@ function scoreOne(q: GoldenQuestion, r: Omit<QuestionResult, 'scores' | 'missing
 
 	const artifact = q.requires_artifact ? (r.artifacts.length ? 1 : 0) : r.artifacts.length ? 1 : 0.5;
 
-	const citedRight = r.citedPages.some((p) => q.page_refs.includes(p));
-	const grounding = r.citedPages.length === 0 ? 0 : citedRight ? 1 : 0.4;
+	const grounding = groundingScore(
+		r.answer,
+		q.page_refs,
+		r.figures.map((f) => f.page),
+	);
 
 	// Accuracy and grounding dominate: a beautiful artifact containing a wrong
 	// duty cycle is worse than useless on a machine that draws 240 V.
@@ -122,6 +150,7 @@ async function runQuestion(q: GoldenQuestion): Promise<QuestionResult> {
 	const figures: QuestionResult['figures'] = [];
 	const artifacts: QuestionResult['artifacts'] = [];
 	const citedPages = new Set<number>();
+	const retrievedPages = new Set<number>();
 	const toolCalls: string[] = [];
 	let error: string | undefined;
 
@@ -138,7 +167,7 @@ async function runQuestion(q: GoldenQuestion): Promise<QuestionResult> {
 				artifacts.push({ title: ev.title, kind: ev.kind });
 				break;
 			case 'citation':
-				citedPages.add(ev.page);
+				retrievedPages.add(ev.page);
 				break;
 			case 'tool':
 				toolCalls.push(ev.name);
@@ -151,10 +180,7 @@ async function runQuestion(q: GoldenQuestion): Promise<QuestionResult> {
 		}
 	}
 
-	// Also honour inline "(p. 19)" citations the model writes into prose.
-	for (const m of answer.matchAll(/\bp\.?\s*(\d{1,2})\b/gi)) {
-		citedPages.add(Number(m[1]));
-	}
+	for (const page of inlineCitedPages(answer)) citedPages.add(page);
 
 	const partial = {
 		id: q.id,
@@ -162,6 +188,7 @@ async function runQuestion(q: GoldenQuestion): Promise<QuestionResult> {
 		answer,
 		figures,
 		artifacts,
+		retrievedPages: [...retrievedPages].sort((a, b) => a - b),
 		citedPages: [...citedPages].sort((a, b) => a - b),
 		toolCalls,
 		durationMs: Date.now() - started,

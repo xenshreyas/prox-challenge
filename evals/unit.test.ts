@@ -11,7 +11,7 @@
  * No API key, no network, no model. Run: `npm test`.
  */
 
-import { classifyAgainstBest, includesFact, isBackendRefusal } from './run.js';
+import { classifyAgainstBest, groundingScore, includesFact, isBackendRefusal } from './run.js';
 import { wrapArtifact } from '../src/agent/artifact-harness.js';
 import { artifactCallToAction, figureCallToAction } from '../src/agent/tools.js';
 import { parsePage } from '../src/kb/parse.js';
@@ -198,6 +198,28 @@ const GOOD = [
 ];
 for (const [i, t] of REFUSALS.entries()) check(isBackendRefusal(t), `flags refusal ${i + 1}`);
 for (const [i, t] of GOOD.entries()) check(!isBackendRefusal(t), `does NOT flag good answer ${i + 1}`);
+
+group('eval: grounding requires a citation the user actually received');
+// Regression: search_manual emits citation events for its top five retrieval
+// hits before the model answers. The grader treated those hidden retrieval
+// events as answer citations, so merely searching the manual could earn 100%
+// grounding even when the final prose cited nothing.
+check(
+	groundingScore('', [7, 19, 23]) === 0,
+	'retrieved pages alone do not earn grounding credit',
+);
+check(
+	groundingScore('Rated at 25% (p. 23).', [7, 19, 23]) === 1,
+	'an inline citation to a reference page earns full credit',
+);
+check(
+	groundingScore('Rated at 25% (p. 99).', [7, 19, 23]) === 0.4,
+	'an inline citation to a different page earns partial credit',
+);
+check(
+	groundingScore('', [12], [12]) === 1,
+	'a figure visibly shown from a reference page is grounded',
+);
 
 group('artifact harness: TypeScript-flavoured source must compile TS-first');
 // Regression, found by rendering in a real browser rather than unit-testing the
