@@ -271,6 +271,16 @@ export function isBackendRefusal(answer: string): boolean {
 	return BACKEND_REFUSAL.test(answer.slice(0, 600));
 }
 
+/**
+ * Only completed evals are evidence worth retaining. A total credential or
+ * transport failure used to overwrite `last-run.json`, append a fake regression
+ * to history, and still exit successfully. Partial runtime failures remain valid
+ * measurements and are persisted with their error count.
+ */
+export function shouldPersistEvalRun(run: { n: number; errors: number }): boolean {
+	return run.n > 0 && run.errors < run.n;
+}
+
 export interface EvalSummaryForComparison {
 	at: string;
 	n: number;
@@ -415,6 +425,15 @@ async function main() {
 		console.log(`              rejecting a change.`);
 	}
 	console.log('─────────────────────────────────────\n');
+
+	if (!shouldPersistEvalRun(summary)) {
+		console.error(
+			`  INVALID RUN — ${summary.errors}/${summary.n} questions failed; ` +
+				`last-run.json and history.jsonl were left unchanged.`,
+		);
+		process.exitCode = 1;
+		return;
+	}
 
 	const evalDir = path.join(REPO_ROOT, 'evals');
 	await mkdir(evalDir, { recursive: true });

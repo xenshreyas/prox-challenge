@@ -13,7 +13,13 @@
 
 import { readFileSync } from 'node:fs';
 
-import { classifyAgainstBest, groundingScore, includesFact, isBackendRefusal } from './run.js';
+import {
+	classifyAgainstBest,
+	groundingScore,
+	includesFact,
+	isBackendRefusal,
+	shouldPersistEvalRun,
+} from './run.js';
 import { matchesReference } from './references.js';
 import { wrapArtifact } from '../src/agent/artifact-harness.js';
 import {
@@ -675,6 +681,17 @@ check(
 	classifyAgainstBest(incumbent, [incumbent]).kind === 'first',
 	'a first run has no fabricated comparison',
 );
+
+group('eval: invalid runs do not replace measured evidence');
+check(
+	!shouldPersistEvalRun({ n: 40, errors: 40 }),
+	'an all-error run is rejected instead of overwriting last-run.json',
+);
+check(
+	shouldPersistEvalRun({ n: 40, errors: 1 }),
+	'a completed run with an observed runtime error remains honest measured evidence',
+);
+check(!shouldPersistEvalRun({ n: 0, errors: 0 }), 'an empty filtered run is rejected');
 
 console.log(failures === 0 ? '\nALL PASS' : `\n${failures} FAILURE(S)`);
 process.exit(failures === 0 ? 0 : 1);
