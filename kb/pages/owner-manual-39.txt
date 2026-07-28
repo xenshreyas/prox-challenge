@@ -1,0 +1,76 @@
+Stick Weld Penetration (Workpiece Heat Control)
+
+
+                                                                                                                    Safety
+    EXCESS PENETRATION OR                  PROPER PENETRATION                INADEQUATE PENETRATION
+         BURN-THROUGH                    Weld is visible underneath and      Weld does not contact the joint
+     Weld droops on top and                 bulges slightly on top.            fully, just on the surface.
+    underneath or falls through
+      entirely, making a hole.
+
+
+
+
+                                                                                                                    CONTROLS
+                                                 PROFILE VIEWS
+
+    POSSIBLE CAUSES AND SOLUTIONS FOR                         POSSIBLE CAUSES AND SOLUTIONS FOR
+   EXCESS PENETRATION OR BURN-THROUGH                              INADEQUATE PENETRATION
+1. Workpiece overheating:                                1. Incorrect welding technique:
+   Reduce current.                                          Keep arc on leading edge of weld puddle.
+2. Welding speed too slow:                                  Hold torch at proper angles.
+   Increase welding speed and ensure                     2. Insufficient weld heat:
+   that welding speed is kept steady.                       Slow down so fill material has time to melt
+                                                                                                                    Wire
+                                                            into the weld location. Increase current.
+                                                         3. Workpieces too thick/close:
+                                                            Bevel thick workpieces, allow slight
+                                                            gap, and weld in several passes.
+                                                         4. Insufficient weld material:
+                                                            Increase amount of fill material.
+
+
+Stick Weld – Weld Not Adhering Properly
+
+                                                                                                                    TIG / Stick
+Gaps present between weld and previous bead or between weld and workpiece. See areas below.
+
+        POSSIBLE CAUSES AND SOLUTIONS                    2. Insufficient weld heat:
+                                                            Increase current.
+                                                         3. Dirty workpiece:
+      PROFILE                                               Clean workpiece down to bare metal.
+       VIEW                                              4. Insufficient weld material:
+                                                            Increase amount of fill material.
+
+
+
+
+                                                                                                                     Welding Tips
+                                                         5. Distance between workpieces to large:
+1. Incorrect welding technique:                             Decrease distance and increase bevel.
+   Place stringer bead at correct place in joint.
+   Adjust workpiece position or weld angle to permit
+   proper welding to bottom of piece.
+   Keep arc on leading edge of weld puddle.
+   Hold Electrode and fill material at proper angles.
+
+
+Stick Weld – Bend at Joint
+        POSSIBLE CAUSES AND SOLUTIONS                    1. Improper clamping:
+
+
+
+
+                                                                                                                      MAINTENANCE
+                                                            Clamp workpieces securely.
+                                                            Make tack welds to hold workpieces.
+      PROFILE                                            2. Excessive heat:
+       VIEW                                                 Weld a small portion and allow to cool before
+                                                            proceeding.
+                                                            Increase weld speed.
+
+
+
+
+  Item 57812                   For technical questions, please call 1-800-444-3353.                       Page 39
+

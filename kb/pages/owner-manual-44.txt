@@ -1,0 +1,64 @@
+                Troubleshooting – TIG / Stick Welding
+
+
+ Safety
+                                                                      IMPORTANT!
+                              Be CERTAIN to shut off the Welder, disconnect it from power, and discharge the
+                                   electrode to ground before adjusting, cleaning, or repairing the unit.
+
+
+                     Problem                  Possible Causes                                     Likely Solutions
+                Welder Does Not       1. Tripped thermal protection device.    1. Reduce duration or frequency of welding periods
+                Function When                                                     to help reduce wear on the welder. Refer to
+                Switched On                                                       Duty Cycle (Duration of Use) on page 29.
+                                      2. Faulty or improperly                  2. Qualified technician must check and
+
+
+
+
+  CONTROLS
+                                         connected Trigger.                       secure/replace Trigger.
+                                      3. Ground Clamp not attached             3. Attach Ground Clamp to workpiece.
+                                         to workpiece.
+                                     4. Shielding Gas not connected.           4. Connect shielding gas to Welder.
+                LCD Display Does Not 1. Unit is not connected                  1. Verify the voltage at the outlet and
+                Light When Welder       to outlet properly.                       the connection to the outlet.
+                is Switched On       2. Outlet is unpowered.                   2. Check circuit breaker/GFCI devices; if any are tripped,
+                                                                                  determine and remedy cause before resetting. Verify
+                                                                                  that the circuit is designed to supply the required input
+                                                                                  amperage as detailed in Specifications on page 7.
+                Weak Arc Strength     1. Incorrect line voltage.               1. Check the line voltage and, if insufficient, have
+                                                                                  a licensed electrician remedy the situation.
+  Wire                                2. Improper gauge or length of cord.     2. Do not use an extension cord on this Welder. Use
+                                                                                  only one of the supplied power cords for this
+                                                                                  Welder or an identical replacement cord.
+                Welding Arc           1. Loose electrode cable                 1. Check to ensure that all connections are tight.
+                Not Stable.              or ground cable.
+                                      2. Damaged electrode holder or loose     2. Have a qualified technician inspect and
+                                         connection within electrode holder.      repair/replace as necessary.
+                                      3. Adjust current setting.               3. Make sure setting matches
+                                                                                  recommended setting on chart.
+
+
+
+  TIG / Stick
+                                      4. Shielding gas getting low.            4. Replace shielding gas cylinder.
+
+
+                          Follow all safety precautions whenever diagnosing or servicing the equipment.
+
+
+
+
+Welding Tips
+
+
+
+
+MAINTENANCE
+
+
+
+
+                Page 44                      For technical questions, please call 1-800-444-3353.                              Item 57812
+

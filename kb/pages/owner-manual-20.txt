@@ -1,0 +1,75 @@
+                4. Turn the Power Switch to the OFF position,
+                   then plug the Power Cord into a properly
+
+
+ Safety
+                   grounded, GFCI protected 120 VAC (20 amp                                            Power
+                   rated) or 240 VAC receptacle that matches                                           Switch
+                   the plug. The circuit must be equipped with
+                   delayed action-type circuit breaker or fuses.
+
+                5. Set MIG Gun down on nonconductive, nonflammable
+                   surface away from any grounded objects.
+
+                6. Turn the Power Switch ON.
+
+
+
+  CONTROLS      Settings
+
+                                                                             b. Set Wire Diameter and Material Thickness:
+                             ®
+                                                                               • Turn Left Knob to set wire diameter.
+                                                                               • Turn Right Knob to set material thickness.
+
+
+
+  Wire
+
+                                                                                            .025"             24Ga
+
+                           Left         Main           Right
+                           Knob        Control         Knob
+                                        Knob                                 c. Auto Weld Settings:
+
+
+
+  TIG / Stick
+                1. Press Home Button on Control Panel.                         • Turn Left Knob to adjust Wire
+                                                                                 Feed Speed (Amperage).
+                2. Turn Main Control Knob until desired
+                   process appears on LCD display screen.                      • Turn Right Knob to adjust Voltage.
+
+                3. Press Main Control Knob to select process.
+                Note: Press Main Control Knob to go to next screen.
+                                                                                      121                       13.8
+                Press Back Button to return to the previous screen.
+                                                                                             0                   0.0
+                4. Adjust settings for the selected process.                                                                      Wire
+
+
+
+
+Welding Tips
+                                                                        Process                                  .030"
+                    a. Polarity and Gas Settings:                                                                               Diameter
+                                                                                                                 24Ga
+                                                                        Gas Type                                                 Material
+                      • Plug cables in according to screen.                            25        5                       0.0    Thickness
+                      • Connect gas according to screen.                      Run-In WFS         Inductance        Spot Timer
+                      • Set SCFH between 20-30.
+                                                                         Note: If the Wire Feed Speed or Voltage settings are
+                                                                         adjusted manually, the white mark on the line shows
+                                                                         the recommended setting for your wire/electrode
+                                                                         diameter and workpiece thickness.
+
+
+
+
+MAINTENANCE
+
+
+
+
+                Page 20                      For technical questions, please call 1-800-444-3353.                        Item 57812
+

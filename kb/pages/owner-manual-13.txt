@@ -1,0 +1,81 @@
+                                                           Wire Feed
+                                                           Mechanism
+13. Loosen the Knob on the Wire Feed
+
+
+                                                                                                                     Safety
+    mechanism, then insert the Gun Cable                                                           Gun Cable
+    Connector through the hole on the Welder                                                       Connector
+    front and into the socket on the Wire Feed.
+                                                             Knob
+
+
+
+
+14. Ensure that the Gun Cable Connector
+
+
+
+                                                                                                                     CONTROLS
+    is fully inserted into the socket on
+    the Wire Feed mechanism as shown,
+                                                                    Incorrect – Connector not fully inserted
+    then tighten the Knob securely.
+    If Connector is not fully inserted, the gas
+    connection will leak, preventing shielding
+    gas from reaching the welding arc.
+
+NOTICE: To prevent damage, do
+not overtighten the Knob.
+                                                                                                         Wire
+                                                                                                         Feed
+
+                                                                                                                     Wire
+                                                                                                        Control
+                                                                                                         Cable
+
+
+15. Insert the Wire Feed Control Cable through
+    the hole on the Welder front and connect it
+    to the Wire Feed Control Socket inside the
+    machine, then tighten the lock ring on the Cable
+    plug. Note that the plug on the Cable fits into
+    the Socket in one specific orientation only.
+
+
+
+                                                                                                                     TIG / Stick
+                                                                      Correct – Connector fully inserted
+
+
+
+
+                                                           DCEN
+                                                   Flux-Cored (Gasless)
+                                                      Polarity Setup
+
+
+
+
+                                                                                                                      Welding Tips
+                                                         Wire Feed
+                                                       Power Cable in
+16. DCEN Direct Current Electrode                      Negative Socket
+    Negative Wire Setup for Flux-Cored
+    (gasless) welding:
+    Plug Ground Clamp Cable into Positive (+)
+    Socket. Plug Wire Feed Power Cable
+    into Negative (–) Socket. Twist cables
+    clockwise all the way to lock in place.
+
+
+
+
+                                                                                     Ground Clamp Cable                MAINTENANCE
+                                                                                      in Positive Socket
+
+
+
+
+  Item 57812                    For technical questions, please call 1-800-444-3353.                       Page 13
+

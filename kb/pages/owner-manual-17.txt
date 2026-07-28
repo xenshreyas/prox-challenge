@@ -1,0 +1,88 @@
+27. To check the wire’s drive tension, press and hold
+    Trigger to feed the wire against a piece of wood
+    from 2 to 3 inches away.
+
+
+                                                                                                                      Safety
+    Note: After pressing Trigger, wire will stop
+    feeding after 3 seconds if there is no arc.
+    Check tension for less than 3 seconds.
+                                                                               Incrementally
+    If the wire stops instead of bending, unplug                             increase tension
+    the Welder, slightly tighten the Feed Tensioner                                 until
+                                                                                wire bends.                   2–3"
+    clockwise, and try again. If the wire bends
+    from the feed pressure, then the tension
+
+
+
+
+                                                                                                                      CONTROLS
+    is set properly. Before proceeding, turn
+    OFF the Power Switch and unplug the
+    Power Cord from its electrical outlet.
+28. Turn OFF the Power Switch and unplug the
+    Power Cord from its electrical outlet.
+29. Close the Door. Make sure
+    Door is securely latched.
+                                                                                                MIG Gun
+30. Select a Contact Tip that is compatible with
+    the welding wire used. Slide the Contact                  Nozzle     Contact
+    Tip over the wire and thread it clockwise into
+                                                                           Tip
+    the MIG Gun. Tighten the Contact Tip.
+31. Replace the Nozzle and cut the wire                                                                               Wire
+    off at 1/2" from tip (1/2" stickout).
+
+Optional Spool Gun Setup
+1. To set up optional Spool Gun (sold separately), plug Ground Clamp Cable into Negative (–) Socket. Plug
+   Wire Feed Power Cable into Positive (+) Socket. Twist cables clockwise all the way to lock in place.
+
+
+
+
+                                                                                                                      TIG / Stick
+2. Loosen the Knob on the Wire Feed
+   mechanism, then insert the Spool
+   Gun Cable Connector through the
+   hole on the Welder front and into                         Spool Gun
+   the socket on the Wire Feed.                            Cable Connector
+3. Ensure Cable Connector is fully             Spool Gun                Wire Feed
+   inserted and tighten the Knob                                         Control
+   securely. If Connector is not fully                                    Cable
+   inserted, the gas connection will
+   leak, preventing shielding gas
+
+
+
+
+                                                                                                                       Welding Tips
+   from reaching the welding arc.
+NOTICE: To prevent damage, do                                                                       Spool Gun
+not overtighten the Knob.                                                                           Gas Outlet
+
+4. Insert the Wire Feed Control Cable
+   through hole on Welder front and
+   connect to the Wire Feed Control Socket
+   inside the machine, then tighten lock
+   ring on the Cable plug. Note that the
+   plug on the Cable fits into the Socket                  Gas Hose
+                                                                           Ground
+   in one specific orientation only.
+
+
+
+
+                                                                                                                        MAINTENANCE
+                                                                        Clamp Cable           Wire Feed
+5. Connect Gas Hose on Spool Gun Cable                                   in Negative        Power Cable in
+   Connector to Spool Gun Gas Outlet on front                              Socket           Positive Socket
+   of Welder. Refer to paragraph 17 on page 14
+   for further shielding gas setup information.
+6. Refer to Spool Gun manual for
+   operational information.
+
+
+
+  Item 57812                    For technical questions, please call 1-800-444-3353.                        Page 17
+

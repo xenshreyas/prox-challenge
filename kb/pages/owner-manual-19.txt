@@ -1,0 +1,96 @@
+Duty Cycle (Duration of Use)
+Avoid damage to the Welder by not welding for more
+
+
+                                                                                                                        Safety
+than the prescribed duty cycle time. The Duty Cycle                       Rated Duty Cycle
+defines the number of minutes, within a 10 minute
+                                                                                    120 VAC
+period, during which a given welder can produce a
+                                                                                 40% Use at 100 A
+particular welding current without overheating.
+                                                                            For 10 Continuous Minutes
+For example, a welder with a 40% duty cycle at
+100 A welding current must be allowed to rest for at least                  4                       6
+6 minutes after every 4 minutes of continuous welding.                   Minutes                 Minutes
+                                                                         Welding                 Resting
+Failure to carefully observe duty cycle limitations
+can easily over-stress a welder’s power generation
+
+
+                                                                                                                        CONTROLS
+system contributing to premature welder failure.                           100% Continuous Use at 75 A
+This Welder has an internal thermal protection system
+to help prevent this sort of over-stress. When the
+Welder overheats, it automatically shuts down and a                       Rated Duty Cycle
+warning screen appears in the LCD Display window.                                   240 VAC
+The Welder automatically returns to service after                                25% Use at 200 A
+cooling off. Should this occur, rest the MIG Gun on an                      For 10 Continuous Minutes
+electrically non-conductive, heat‑proof surface, such
+as a concrete slab, well clear of the ground clamp.                       2-1/2                   7-1/2
+                                                                         Minutes                 Minutes
+Allow the Welder to cool with the Power Switch on,                       Welding                 Resting
+
+                                                                                                                        Wire
+so that the internal Fan will help cool the Welder.
+When normal operation resumes, use shorter welding                        100% Continuous Use at 115 A
+periods and longer rest periods to prevent needless wear.
+
+
+Setting Up The Weld
+                          clamps                             2. Use clamps (not included) to hold the workpieces
+                        workpieces                              in position so that you can concentrate on proper
+
+
+
+                                                                                                                        TIG / Stick
+                                                                welding technique. The distance (if any) between the
+                       Clean surfaces                           two workpieces must be controlled properly to allow
+                       to bare metal.                           the weld to hold both sides securely while allowing
+                                                                the weld to penetrate fully into the joint. The edges
+                  Chamfer thick workpieces.                     of thicker workpieces may need to be chamfered
+                                                                (or beveled) to allow proper weld penetration.
+1. Make practice welds on pieces of scrap the
+   same thickness as your intended workpiece                 Notice: When welding equipment on a vehicle,
+   to practice technique before welding anything             disconnect the vehicle battery power from both the
+   of value. Clean the weld surfaces thoroughly              positive connection and the ground before welding.
+
+
+
+
+                                                                                                                         Welding Tips
+   with a wire brush or angle grinder; there                 This prevents damage to some vehicle electrical
+   must be no rust, paint, oil, or other materials           systems and electronics due to the high voltage
+   on the weld surfaces, only bare metal.                    and high frequency bursts common in welding.
+
+
+
+
+                                                                     ®
+
+
+
+
+                                                                                                         Workpiece
+
+3. Clamp Ground Cable to bare metal on the
+
+
+
+
+                                                                                                                          MAINTENANCE
+   workpiece near the weld area, or to metal work                                                            Clean
+   bench where the workpiece is clamped.                                                                 surface to
+                                                                                            Ground      bare metal.
+                                                                                            Clamp
+
+
+
+                                                             Ground connection depends
+                                                             on desired welding polarity
+
+
+
+
+  Item 57812                     For technical questions, please call 1-800-444-3353.                       Page 19
+

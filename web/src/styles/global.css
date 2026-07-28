@@ -1,0 +1,289 @@
+/* ============================================================
+   OmniPro 220 Manual Agent — design tokens & base styles
+   Dark industrial palette: graphite steel + arc-orange accent.
+   ============================================================ */
+
+:root {
+  /* surfaces */
+  --bg-0: #08090c;
+  --bg-1: #0d1117;
+  --bg-2: #12161d;
+  --bg-3: #161b22;
+  --bg-4: #1c222b;
+
+  /* lines */
+  --line: #232a34;
+  --line-soft: #1b212a;
+  --line-strong: #303a47;
+
+  /* text */
+  --fg: #e6edf3;
+  --fg-mute: #93a1b1;
+  --fg-dim: #6b7684;
+
+  /* arc accent */
+  --arc: #ff8a3d;
+  --arc-hi: #ffb27d;
+  --arc-dim: rgba(255, 138, 61, 0.14);
+  --arc-line: rgba(255, 138, 61, 0.38);
+
+  /* semantic */
+  --ok: #3fb950;
+  --warn: #e3b341;
+  --bad: #f85149;
+
+  /* geometry */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 22px;
+
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-2: 0 8px 28px rgba(0, 0, 0, 0.45);
+  --shadow-3: 0 24px 70px rgba(0, 0, 0, 0.6);
+
+  --topbar-h: 58px;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-0);
+  color: var(--fg);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overscroll-behavior: none;
+
+  /* subtle industrial texture: hairline grid + a warm arc glow up top */
+  background-image:
+    radial-gradient(900px 460px at 50% -180px, rgba(255, 138, 61, 0.07), transparent 70%),
+    linear-gradient(var(--line-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+  background-size: 100% 100%, 46px 46px, 46px 46px;
+  background-attachment: fixed;
+}
+
+a {
+  color: var(--arc);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--arc-hi);
+  text-decoration: underline;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+
+code,
+pre,
+kbd {
+  font-family: var(--mono);
+  font-size: 0.86em;
+}
+
+kbd {
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 1px 5px;
+  font-size: 11px;
+  color: var(--fg-mute);
+}
+
+:focus-visible {
+  outline: 2px solid var(--arc);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* --- scrollbars --- */
+*::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: 99px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #45525f;
+  background-clip: content-box;
+}
+
+/* ============================================================
+   Markdown prose (rendered by lib/markdown.ts)
+   ============================================================ */
+
+.md-p {
+  margin: 0 0 0.85em;
+}
+.md-p:last-child {
+  margin-bottom: 0;
+}
+
+.md-h {
+  margin: 1.5em 0 0.55em;
+  line-height: 1.3;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+.md-h:first-child {
+  margin-top: 0;
+}
+.md-h1 {
+  font-size: 1.42em;
+}
+.md-h2 {
+  font-size: 1.22em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--line);
+}
+.md-h3 {
+  font-size: 1.08em;
+  color: var(--arc-hi);
+}
+.md-h4,
+.md-h5,
+.md-h6 {
+  font-size: 1em;
+  color: var(--fg-mute);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.md-list {
+  margin: 0 0 0.85em;
+  padding-left: 1.3em;
+}
+.md-list li {
+  margin: 0.28em 0;
+}
+.md-list li::marker {
+  color: var(--arc);
+}
+
+.md-code-inline {
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 0.1em 0.38em;
+  color: var(--arc-hi);
+  white-space: nowrap;
+}
+
+.md-pre {
+  position: relative;
+  margin: 0 0 1em;
+  padding: 14px 16px;
+  background: var(--bg-0);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  overflow-x: auto;
+  font-size: 12.5px;
+  line-height: 1.62;
+}
+.md-pre::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.md-pre code {
+  color: #c9d7e4;
+}
+
+.md-quote {
+  margin: 0 0 1em;
+  padding: 2px 0 2px 14px;
+  border-left: 3px solid var(--arc-line);
+  color: var(--fg-mute);
+}
+.md-quote .md-p:last-child {
+  margin-bottom: 0;
+}
+
+.md-hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 1.4em 0;
+}
+
+.md-table-wrap {
+  margin: 0 0 1em;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--bg-2);
+}
+.md-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13.5px;
+}
+.md-table th,
+.md-table td {
+  text-align: left;
+  padding: 9px 13px;
+  border-bottom: 1px solid var(--line-soft);
+  white-space: nowrap;
+}
+.md-table th {
+  background: var(--bg-3);
+  color: var(--fg-mute);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.md-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.md-table tbody tr:hover td {
+  background: rgba(255, 138, 61, 0.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

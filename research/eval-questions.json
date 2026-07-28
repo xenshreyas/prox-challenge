@@ -1,0 +1,672 @@
+[
+  {
+    "id": "q01",
+    "question": "Duty cycle: MIG at 240 V, what is the rated duty cycle at 200 A, and how does that translate into minutes of welding and resting in a 10-minute period?",
+    "expected_answer": "25% duty cycle at 200 A on 240 VAC. In any 10-minute period that is 2-1/2 minutes welding and 7-1/2 minutes resting.",
+    "must_include": [
+      "25%",
+      "200 A",
+      "2-1/2",
+      "7-1/2",
+      "10"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      7,
+      19,
+      23
+    ]
+  },
+  {
+    "id": "q02",
+    "question": "What is the highest MIG output current the OmniPro 220 can sustain at 100% duty cycle on 120 V, and on 240 V?",
+    "expected_answer": "75 A at 100% duty cycle on 120 VAC, and 115 A at 100% duty cycle on 240 VAC.",
+    "must_include": [
+      "75 A",
+      "115 A",
+      "100%"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      7,
+      19,
+      23
+    ]
+  },
+  {
+    "id": "q03",
+    "question": "What is the TIG duty cycle at 175 A on 240 V, and how many minutes weld/rest does that mean?",
+    "expected_answer": "30% at 175 A on 240 VAC, which is 3 minutes welding and 7 minutes resting per 10-minute period.",
+    "must_include": [
+      "30%",
+      "175 A",
+      "3",
+      "7"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      7,
+      29
+    ]
+  },
+  {
+    "id": "q04",
+    "question": "What are the Stick duty cycle ratings on 120 V?",
+    "expected_answer": "40% at 80 A (4 minutes welding, 6 minutes resting per 10 minutes) and 100% continuous at 60 A. The 120 V Stick current range is 10-80 A.",
+    "must_include": [
+      "40%",
+      "80 A",
+      "100%",
+      "60 A"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      7,
+      29
+    ]
+  },
+  {
+    "id": "q05",
+    "question": "What are the Stick duty cycle ratings on 240 V?",
+    "expected_answer": "25% at 175 A (2-1/2 minutes welding, 7-1/2 minutes resting) and 100% continuous at 100 A. The 240 V Stick range is 10-175 A.",
+    "must_include": [
+      "25%",
+      "175 A",
+      "100%",
+      "100 A"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      7,
+      29
+    ]
+  },
+  {
+    "id": "q06",
+    "question": "The Specifications table only gives 40%/25%/30% and 100% points. What does the machine's nameplate give for the 60% duty cycle point for MIG on 240 V?",
+    "expected_answer": "On the nameplate the 240 V MIG column shows X=60% at I2 = 130 A, U2 = 20.5 V (versus 25% at 200 A/24 V and 100% at 115 A/19.75 V).",
+    "must_include": [
+      "60%",
+      "130 A",
+      "20.5"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      16,
+      27
+    ]
+  },
+  {
+    "id": "q07",
+    "question": "What is the 60% duty cycle output for TIG and Stick on 240 V per the nameplate?",
+    "expected_answer": "TIG 240 V at 60%: I2 = 125 A, U2 = 15 V. Stick 240 V at 60%: I2 = 115 A, U2 = 24.6 V.",
+    "must_include": [
+      "125 A",
+      "115 A",
+      "60%"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      16,
+      27
+    ]
+  },
+  {
+    "id": "q08",
+    "question": "What is the maximum open circuit voltage of the OmniPro 220, and does it differ by process?",
+    "expected_answer": "86 VDC maximum OCV, identical for MIG, TIG and Stick (U0 = 86 V on the nameplate).",
+    "must_include": [
+      "86",
+      "OCV"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      7,
+      16
+    ]
+  },
+  {
+    "id": "q09",
+    "question": "What is the rated duty cycle for Flux-Cored welding specifically?",
+    "expected_answer": "The manual does not publish a duty cycle separate from MIG. Flux-Cored is covered by the MIG/Flux-Cored chapter and the MIG ratings on page 7 govern (40% @ 100 A / 100% @ 75 A on 120 V; 25% @ 200 A / 100% @ 115 A on 240 V). A distinct FCAW rating is not stated in the manual.",
+    "must_include": [
+      "not",
+      "MIG"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      7,
+      19
+    ]
+  },
+  {
+    "id": "q10",
+    "question": "For gas-shielded solid-core MIG, which cable goes into which socket and what is the polarity called?",
+    "expected_answer": "DCEP (Direct Current Electrode Positive): Wire Feed Power Cable into the Positive (+) socket, Ground Clamp Cable into the Negative (-) socket. Twist cables clockwise all the way to lock.",
+    "must_include": [
+      "DCEP",
+      "Positive",
+      "Negative",
+      "Wire Feed Power Cable",
+      "Ground Clamp"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      14
+    ]
+  },
+  {
+    "id": "q11",
+    "question": "For self-shielded flux-cored (gasless) welding, which cable goes where?",
+    "expected_answer": "DCEN (Direct Current Electrode Negative): Wire Feed Power Cable into the Negative (-) socket, Ground Clamp Cable into the Positive (+) socket. Twist clockwise to lock.",
+    "must_include": [
+      "DCEN",
+      "Negative",
+      "Positive",
+      "Wire Feed Power Cable",
+      "Ground Clamp"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      13
+    ]
+  },
+  {
+    "id": "q12",
+    "question": "Describe the TIG cable hookup on the OmniPro 220.",
+    "expected_answer": "Ground Clamp Cable into the Positive socket; TIG Torch Cable into the Negative socket (electrode negative). Both twisted clockwise all the way to lock. The Foot Pedal cable passes through the front hole to the Foot Pedal Socket inside the machine, secured by turning the collar clockwise.",
+    "must_include": [
+      "Ground",
+      "Positive",
+      "TIG Torch",
+      "Negative"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      24
+    ]
+  },
+  {
+    "id": "q13",
+    "question": "Describe the Stick cable hookup.",
+    "expected_answer": "Ground Clamp Cable into the Negative socket; Electrode Holder Cable into the Positive socket (electrode positive). Twist clockwise all the way to lock.",
+    "must_include": [
+      "Ground",
+      "Negative",
+      "Electrode Holder",
+      "Positive"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      27
+    ]
+  },
+  {
+    "id": "q14",
+    "question": "How is an optional Spool Gun wired for polarity, and what else must be connected?",
+    "expected_answer": "Same as gas-shielded MIG: Ground Clamp Cable into the Negative (-) socket, Wire Feed Power Cable into the Positive (+) socket, twisted clockwise. The Spool Gun cable connector goes into the wire feed socket (knob loosened then tightened), the Wire Feed Control Cable to the control socket, and the Spool Gun gas hose to the dedicated Spool Gun Gas Outlet on the front panel.",
+    "must_include": [
+      "Negative",
+      "Positive",
+      "Spool Gun Gas Outlet"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      8,
+      17
+    ]
+  },
+  {
+    "id": "q15",
+    "question": "A user reports an unstable MIG arc. What does the troubleshooting table say about polarity specifically?",
+    "expected_answer": "Cause 6 under 'Welding Arc Not Stable' is incorrect polarity for the process being run; the solution states to ensure DCEP for MIG welding and DCEN for Flux-Cored self-shielded welding.",
+    "must_include": [
+      "DCEP",
+      "DCEN"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      42
+    ]
+  },
+  {
+    "id": "q16",
+    "question": "What Feed Tensioner setting numbers does the manual specify, and why do they differ?",
+    "expected_answer": "Tension should be 3-5 for solid wire and 2-3 for flux-cored wire. Too much force on flux-cored wire will crush it and may cause feeding issues.",
+    "must_include": [
+      "3",
+      "5",
+      "2",
+      "crush"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      15
+    ]
+  },
+  {
+    "id": "q17",
+    "question": "Describe the exact procedure and pass/fail criterion for checking wire drive tension.",
+    "expected_answer": "Press and hold the Trigger and feed wire against a piece of wood held 2 to 3 inches away. Because the wire stops feeding after 3 seconds if there is no arc, check tension in less than 3 seconds. If the wire stops instead of bending, unplug the welder, slightly tighten the Feed Tensioner clockwise, and try again. If the wire bends from the feed pressure, the tension is set properly. Then turn the Power Switch OFF and unplug before proceeding.",
+    "must_include": [
+      "2",
+      "3 inches",
+      "3 seconds",
+      "bends",
+      "clockwise"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      17
+    ]
+  },
+  {
+    "id": "q18",
+    "question": "Which direction must the wire spool unwind, and what happens if the wingnut is too loose?",
+    "expected_answer": "The spool must be set so it unwinds clockwise. If the wire spool can spin freely the wingnut is too loose, which lets the welding wire unravel and unspool, causing tangling and feeding problems.",
+    "must_include": [
+      "clockwise",
+      "unravel",
+      "tangl"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      10,
+      11
+    ]
+  },
+  {
+    "id": "q19",
+    "question": "What is different about mounting a 10-12 lb spool versus a 1-2 lb spool?",
+    "expected_answer": "The 10-12 lb spool additionally requires a Spool Adapter placed over the Spool Spindle against the Spool Brake Pad, with the pin on the adapter lined up with the hole in the spool, and a Spool Knob screwed into the Spool Adapter after the spacer and wingnut. The 1-2 lb spool mounts directly on the spindle with just spacer and wingnut. Maximum capacity is a 12 lb spool.",
+    "must_include": [
+      "Spool Adapter",
+      "pin",
+      "Spool Knob",
+      "12 lb"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      7,
+      10,
+      11
+    ]
+  },
+  {
+    "id": "q20",
+    "question": "How do you change the feed roller and what distinguishes a solid-wire roller from a flux-cored roller?",
+    "expected_answer": "Unscrew the Feed Roller Knob counterclockwise, remove it to expose the roller, flip or replace the roller, then screw the knob back to secure. Solid core wire uses a V-groove roller; flux-cored wire uses a knurled-groove roller. The number showing must match the wire diameter on the spool. Grooves shown: solid roller 0.030/0.035 and 0.025; flux-cored roller 0.045 and 0.030/0.035.",
+    "must_include": [
+      "counterclockwise",
+      "V-groove",
+      "knurled",
+      "0.045"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      12
+    ]
+  },
+  {
+    "id": "q21",
+    "question": "How much wire should be fed into the inlet liner during threading, and how must the wire end be prepared?",
+    "expected_answer": "Cut off all bent and crimped wire; the cut end must have no burrs or sharp edges (cut again if needed). Keeping tension on the wire, guide at least 12 inches of wire into the Wire Inlet Liner and Feed Guide.",
+    "must_include": [
+      "12 inches",
+      "burrs"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      15
+    ]
+  },
+  {
+    "id": "q22",
+    "question": "What is the consequence of not fully inserting the MIG Gun Cable Connector into the wire feed mechanism?",
+    "expected_answer": "The gas connection will leak, preventing shielding gas from reaching the welding arc. Troubleshooting adds that the connector must be fully inserted with no O-Rings exposed. Also do not overtighten the knob.",
+    "must_include": [
+      "leak",
+      "shielding gas",
+      "O-Ring"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      13,
+      42
+    ]
+  },
+  {
+    "id": "q23",
+    "question": "What SCFH gas flow does the manual specify for MIG, and for TIG? What gas does TIG require?",
+    "expected_answer": "MIG: set SCFH between 20-30. TIG: set SCFH between 10-25, using a 100% Argon cylinder. Flux-cored and Stick use no shielding gas.",
+    "must_include": [
+      "20",
+      "30",
+      "10",
+      "25",
+      "Argon"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      20,
+      25,
+      30
+    ]
+  },
+  {
+    "id": "q24",
+    "question": "Where does the manual tell you to look for the specific shielding gas type and settings for a given job?",
+    "expected_answer": "The Settings Chart on the inside of the Welder door (for gas type and SCFH), plus the LCD Gas Type field on the Polarity and Gas Settings screen. For tungsten electrode sizing it points to the Settings Chart on top of the Welder. For porosity it also says to use the shielding gas recommended by the wire supplier. Specific gas blend names are not given in the manual body.",
+    "must_include": [
+      "Settings Chart",
+      "door",
+      "wire supplier"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      14,
+      21,
+      26,
+      37
+    ]
+  },
+  {
+    "id": "q25",
+    "question": "How does the OmniPro 220 handle wire/electrode size versus material thickness selection?",
+    "expected_answer": "It is set on the machine: the Left Knob sets wire (or rod or electrode) diameter and the Right Knob sets material thickness; the machine then presents Auto Weld Settings (Left = Wire Feed Speed/amperage, Right = voltage, or Left = output amperage for TIG/Stick). If WFS or voltage is adjusted manually, a white mark on the line shows the recommended setting for that wire/electrode diameter and workpiece thickness. Numeric per-gauge tables are on the physical Settings Charts, not reproduced in the manual.",
+    "must_include": [
+      "Left Knob",
+      "Right Knob",
+      "white mark"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      20,
+      30,
+      32
+    ]
+  },
+  {
+    "id": "q26",
+    "question": "What are the material thickness ranges each process covers according to the Harbor Freight selection chart?",
+    "expected_answer": "Flux-Cored/FCAW 18 Gauge to 5/16\"; MIG/GMAW 22 Gauge to 3/8\"; Stick/SMAW 10 Gauge to 1/2\"; TIG/GTAW 24 Gauge to 3/16\". These come from the selection chart, not the owner's manual.",
+    "must_include": [
+      "18",
+      "5/16",
+      "22",
+      "3/8",
+      "10",
+      "1/2",
+      "24",
+      "3/16"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": []
+  },
+  {
+    "id": "q27",
+    "question": "Describe correct tungsten electrode preparation for TIG on this machine.",
+    "expected_answer": "Consult the Settings Chart on top of the welder for tungsten size vs material thickness; match collet and collet body to the electrode size. Grind on a dedicated fine grit wheel, grinding direction parallel to the length of the electrode, rotating until a blunt point forms; the conical portion of the ideal tip is 2-1/2 times as long as the electrode diameter. Re-insert into the collet with the tip protruding 1/8\" to 1/4\" beyond the ceramic nozzle and retighten the back cap. Pull the electrode from the front of the torch (pulling from the rear damages the collet and burrs the electrode). Wear a respirator and ANSI-approved goggles when grinding.",
+    "must_include": [
+      "2-1/2",
+      "1/8",
+      "1/4",
+      "parallel",
+      "front"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      26
+    ]
+  },
+  {
+    "id": "q28",
+    "question": "What CTWD does the manual require, and what defects result from exceeding it?",
+    "expected_answer": "Maintain CTWD (contact tip to work distance) of 1/2\" or less. Too long a CTWD causes porosity, excessive spatter, a crooked/wavy bead, and inadequate penetration, and its bead appearance is the same column as wrong polarity on the diagnosis chart. Initial wire stickout is set at 1/2\" by cutting the wire 1/2\" from the tip.",
+    "must_include": [
+      "1/2",
+      "porosity",
+      "spatter"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      17,
+      22,
+      35,
+      36,
+      37
+    ]
+  },
+  {
+    "id": "q29",
+    "question": "List all six causes of porosity in a wire weld given in the Welding Tips section, with fixes.",
+    "expected_answer": "1. Incorrect polarity - check polarity is correct for the type of welding. 2. Insufficient shielding gas (MIG only) - increase gas flow, clean nozzle, maintain proper CTWD. 3. Incorrect shielding gas (MIG only) - use gas recommended by the wire supplier. 4. Dirty workpiece or welding wire - clean workpiece to bare metal, wire free of oil, coatings and residues. 5. Inconsistent travel speed - maintain steady travel speed. 6. CTWD too long - reduce CTWD.",
+    "must_include": [
+      "polarity",
+      "shielding gas",
+      "Dirty",
+      "travel speed",
+      "CTWD"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      37
+    ]
+  },
+  {
+    "id": "q30",
+    "question": "The Troubleshooting table lists Porosity in the Weld Metal with different causes than the Welding Tips page. What are they?",
+    "expected_answer": "1. Shielding gas bottle empty - check and replenish. 2. Not enough or too much shielding gas - check regulator for proper flow. 3. Dirty workpiece - clean to bare metal. 4. Gun used too far from workpiece - check CTWD procedure. 5. Polarity incorrect for the application - ensure DCEP for MIG and DCEN for Flux-Cored. 6. Dirty welding wire introducing contamination - ensure wire is clean and free of rust and residues.",
+    "must_include": [
+      "bottle",
+      "regulator",
+      "CTWD",
+      "DCEP",
+      "DCEN",
+      "rust"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      43
+    ]
+  },
+  {
+    "id": "q31",
+    "question": "What causes excessive spatter in a wire weld, and what level of spatter is acceptable?",
+    "expected_answer": "Fine spatter is normal; spatter that is grainy and large is a problem. Causes: 1. dirty workpiece or welding wire (clean to bare metal, wire free of oil/coatings/residues); 2. incorrect polarity; 3. insufficient shielding gas, MIG only (increase flow, clean nozzle, maintain CTWD); 4. wire feeding too fast (reduce wire feed speed); 5. CTWD too long (reduce CTWD).",
+    "must_include": [
+      "Fine spatter is normal",
+      "polarity",
+      "wire feed speed",
+      "CTWD"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      37
+    ]
+  },
+  {
+    "id": "q32",
+    "question": "What causes burn-through in wire welding and in stick welding, and what are the fixes?",
+    "expected_answer": "Wire: 1. workpiece overheating - reduce current and/or wire feed speed; 2. travel speed too slow - increase travel speed and keep it steady; 3. excessive material at weld - reduce wire feed speed. Stick: 1. workpiece overheating - reduce current; 2. welding speed too slow - increase and keep steady; 3. excessive material at weld - reduce amount of fill material.",
+    "must_include": [
+      "overheating",
+      "reduce",
+      "travel speed"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      37,
+      40
+    ]
+  },
+  {
+    "id": "q33",
+    "question": "How do you increase heat and penetration for thicker wire-welded workpieces, and how do you reduce it for thinner ones?",
+    "expected_answer": "Increase: (a) increase weld current, (b) decrease travel speed, (c) use faster wire feed, (d) use shorter CTWD. Reduce: (e) decrease weld current, (f) increase travel speed, (g) use slower wire feed, (h) use longer CTWD. For stick, increase = increase current and weld more slowly; reduce = decrease current and weld more quickly.",
+    "must_include": [
+      "current",
+      "travel speed",
+      "wire feed",
+      "CTWD"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      35,
+      38
+    ]
+  },
+  {
+    "id": "q34",
+    "question": "Does the manual document undercut as a defect?",
+    "expected_answer": "No. The manual never uses the term 'undercut' and provides no undercut cause/fix list. The nearest documented conditions are 'Weld Not Adhering Properly' (lack of fusion) and 'Excess Penetration or Burn-Through'. An undercut-specific answer would be unsupported by the manual.",
+    "must_include": [
+      "not",
+      "undercut"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      35,
+      36,
+      37,
+      38,
+      39,
+      40
+    ]
+  },
+  {
+    "id": "q35",
+    "question": "Wire feed motor runs but wire does not feed properly. Give the four documented causes and fixes.",
+    "expected_answer": "1. Insufficient wire feed pressure - increase properly per step 27 on page 17. 2. Incorrect wire feed roller size - flip the roll to the correct size per the feed roller instructions on page 12. 3. Damaged MIG gun, cable, or liner assembly - have a qualified technician inspect and replace. 4. Feed Tensioner too tight - loosen it so it applies only enough pressure to prevent continued spinning after the gun trigger is released.",
+    "must_include": [
+      "pressure",
+      "roller",
+      "liner",
+      "too tight"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      42
+    ]
+  },
+  {
+    "id": "q36",
+    "question": "What causes a bird's nest at the wire feeder, per the troubleshooting matrix?",
+    "expected_answer": "1. Excess wire feed pressure - adjust properly per step 27 on page 17. 2. Incorrect contact tip size - replace with the proper tip. 3. MIG Gun Cable Connector not fully inserted into the wire feed mechanism - insert properly per steps 13 and 14 on page 13. 4. Damaged liner - qualified technician inspects and repairs/replaces.",
+    "must_include": [
+      "Excess",
+      "Contact Tip",
+      "not fully inserted",
+      "liner"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      42
+    ]
+  },
+  {
+    "id": "q37",
+    "question": "Wire stops during welding. List all six causes.",
+    "expected_answer": "1. Gun cable severely bent so the feed mechanism cannot feed wire - straighten the cable. 2. Gun liner clogged or worn - check for obstruction, replace. 3. Gun liner too small for the wire - verify correct size. 4. Wire tangled on the spool - check for cross winding. 5. Wire not making contact with the feed rollers - ensure the correct groove for the wire diameter. 6. Feed roller not making enough contact or crushing flux-cored wire - check the Feed Tensioner is set properly.",
+    "must_include": [
+      "bent",
+      "liner",
+      "tangled",
+      "groove",
+      "Tensioner"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      42
+    ]
+  },
+  {
+    "id": "q38",
+    "question": "The welder does not function when switched on and the LCD shows a warning screen. What is the correct response?",
+    "expected_answer": "Thermal protection has tripped. Stop and wait with the Power Switch ON so the internal fan cools the machine; it automatically returns to service after cooling. Rest the gun/torch on a non-conductive heat-proof surface such as a concrete slab, clear of the ground clamp. Reduce the duration or frequency of welding periods and follow the duty cycle guidance on page 19 (MIG) or page 29 (TIG/Stick).",
+    "must_include": [
+      "thermal",
+      "Power Switch ON",
+      "fan",
+      "duty cycle"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      19,
+      23,
+      29,
+      42,
+      43,
+      44
+    ]
+  },
+  {
+    "id": "q39",
+    "question": "When should the Reset Button on the back of the machine be pressed?",
+    "expected_answer": "Two documented cases: when the machine is in low- or over-voltage protection (after verifying input voltage is correct), and when the circuit breaker has tripped due to high input amperage causing the LCD not to light.",
+    "must_include": [
+      "Reset Button",
+      "over-voltage",
+      "circuit breaker"
+    ],
+    "requires_visual": true,
+    "requires_artifact": false,
+    "page_refs": [
+      43
+    ]
+  },
+  {
+    "id": "q40",
+    "question": "Wire feeds but the arc does not ignite. What are the four causes?",
+    "expected_answer": "1. Improper ground connection - ensure the ground clamp properly contacts the workpiece and that the workpiece is cleaned near both the clamp and the weld location. 2. Improperly sized contact tip - verify and replace with the proper size and type. 3. Excessively worn contact tip - check the hole is not deformed or enlarged, replace. 4. Dirty contact tip - clean it properly.",
+    "must_include": [
+      "ground",
+      "Contact Tip",
+      "worn",
+      "Dirty"
+    ],
+    "requires_visual": false,
+    "requires_artifact": false,
+    "page_refs": [
+      43
+    ]
+  }
+]

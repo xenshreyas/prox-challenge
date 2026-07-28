@@ -1,0 +1,72 @@
+Wire Weld – Porosity                                       Wire Weld – Excessive Spatter
+           Small cavities or holes in the bead.                            Fine spatter is normal.
+
+
+                                                                                                                   Safety
+                                                                Spatter that is grainy and large is a problem.
+
+ TOP
+ VIEW                                                        TOP
+                                                             VIEW
+
+           POSSIBLE CAUSES AND SOLUTIONS
+1.    Incorrect polarity:                                           POSSIBLE CAUSES AND SOLUTIONS
+      Check that polarity is set correctly                 1.   Dirty workpiece or welding wire:
+
+
+
+                                                                                                                   CONTROLS
+      for type of welding.                                      Clean workpiece down to bare metal.
+2.    Insufficient shielding gas (MIG only):                    Make certain that wire is clean and free
+      Increase flow of gas.                                     from oil, coatings, and other residues.
+      Clean nozzle.                                        2.   Incorrect polarity:
+      Maintain proper CTWD.                                     Check that polarity is set correctly
+3.    Incorrect shielding gas (MIG only):                       for type of welding.
+      Use shielding gas recommended by wire supplier.      3.   Insufficient shielding gas (MIG only):
+4.    Dirty workpiece or welding wire:                          Increase flow of gas.
+      Clean workpiece down to bare metal.                       Clean nozzle.
+      Make certain that wire is clean and free                  Maintain proper CTWD.
+      from oil, coatings, and other residues.              4.   Wire feeding too fast:
+5.    Inconsistent travel speed:                                Reduce wire feed speed.
+      Maintain steady travel speed.                        5.   CTWD too long:                                     Wire
+6.    CTWD too long:                                            Reduce CTWD.
+      Reduce CTWD.
+
+
+
+
+                                                                                                                   TIG / Stick
+
+Wire Weld – Crooked/Wavy Bead                              Wire Weld – Burn-Through
+                                                                         Base material melts away,
+                                                                         leaving a hole in the weld.
+ TOP
+
+
+
+
+                                                                                                                    Welding Tips
+ VIEW
+                                                             TOP
+                                                             VIEW
+
+      POSSIBLE CAUSES AND SOLUTIONS
+1. Inaccurate welding:                                           POSSIBLE CAUSES AND SOLUTIONS
+   Use two hands or rest hand on steady surface.           1. Workpiece overheating:
+2. Inconsistent travel speed:                                 Reduce current and/or wire feed speed.
+   Maintain steady travel speed.                           2. Travel speed too slow:
+3. CTWD too long:                                             Increase travel speed and ensure
+   Reduce CTWD.                                               that travel speed is kept steady.
+
+
+
+
+                                                                                                                     MAINTENANCE
+                                                           3. Excessive material at weld:
+                                                              Reduce wire feed speed.
+
+
+
+
+     Item 57812                 For technical questions, please call 1-800-444-3353.                     Page 37
+

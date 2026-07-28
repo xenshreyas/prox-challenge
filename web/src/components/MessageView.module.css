@@ -1,0 +1,227 @@
+/* ---------- user ---------- */
+.userRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.userBubble {
+  max-width: min(85%, 620px);
+  padding: 11px 16px;
+  border-radius: var(--r-lg) var(--r-lg) 5px var(--r-lg);
+  background: linear-gradient(160deg, #232b36, #1a2028);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-1);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 14.5px;
+}
+
+/* ---------- assistant ---------- */
+.assistantRow {
+  display: flex;
+  gap: 13px;
+  align-items: flex-start;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  flex: none;
+  margin-top: 2px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  color: var(--arc);
+  background: var(--bg-3);
+  border: 1px solid var(--arc-line);
+  box-shadow: inset 0 0 12px rgba(255, 138, 61, 0.12);
+}
+
+.body {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.prose {
+  font-size: 14.8px;
+  overflow-wrap: anywhere;
+}
+
+.caret {
+  display: inline-block;
+  width: 7px;
+  height: 15px;
+  margin-left: 2px;
+  vertical-align: -2px;
+  background: var(--arc);
+  border-radius: 1px;
+  animation: blink 1.05s steps(2, start) infinite;
+}
+@keyframes blink {
+  to {
+    opacity: 0;
+  }
+}
+
+/* ---------- thinking ---------- */
+.thinking {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--fg-dim);
+  font-size: 13px;
+}
+.thinking span {
+  width: 6px;
+  height: 6px;
+  border-radius: 99px;
+  background: var(--arc);
+  animation: pulse 1.25s ease-in-out infinite;
+}
+.thinking span:nth-child(2) {
+  animation-delay: 0.16s;
+}
+.thinking span:nth-child(3) {
+  animation-delay: 0.32s;
+}
+.thinking em {
+  margin-left: 6px;
+  font-style: normal;
+}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+/* ---------- tool trace ---------- */
+.tools {
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  font-size: 12.5px;
+}
+.tools > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 11px;
+  cursor: pointer;
+  color: var(--fg-mute);
+  list-style: none;
+  user-select: none;
+}
+.tools > summary::-webkit-details-marker {
+  display: none;
+}
+.tools > summary:hover {
+  color: var(--fg);
+}
+.tools > summary em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--fg-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toolList {
+  margin: 0;
+  padding: 4px 11px 11px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--line-soft);
+}
+.toolName {
+  color: var(--arc-hi);
+  font-size: 11.5px;
+}
+.toolInput {
+  margin: 5px 0 0;
+  padding: 8px 10px;
+  background: var(--bg-0);
+  border: 1px solid var(--line-soft);
+  border-radius: 6px;
+  font-size: 11.5px;
+  color: var(--fg-mute);
+  overflow-x: auto;
+  max-height: 190px;
+}
+
+/* ---------- figures ---------- */
+.figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+/* ---------- artifact refs ---------- */
+.artifactRefs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.artifactRef {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 13px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--arc-line);
+  background: linear-gradient(135deg, rgba(255, 138, 61, 0.13), rgba(255, 138, 61, 0.04));
+  color: var(--arc-hi);
+  font-size: 13px;
+  font-weight: 550;
+  transition: transform 0.13s, box-shadow 0.13s, background 0.13s;
+}
+.artifactRef:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 138, 61, 0.18);
+  box-shadow: 0 6px 20px rgba(255, 138, 61, 0.16);
+}
+.artName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 240px;
+}
+.artOpen {
+  font-size: 11px;
+  color: var(--fg-dim);
+}
+
+/* ---------- error ---------- */
+.error {
+  display: flex;
+  gap: 11px;
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  border: 1px solid rgba(248, 81, 73, 0.36);
+  background: rgba(248, 81, 73, 0.08);
+  color: #ffb3ac;
+  font-size: 13px;
+}
+.error strong {
+  display: block;
+  margin-bottom: 2px;
+  color: #ff9b93;
+}
+.error p {
+  margin: 0;
+  color: var(--fg-mute);
+  overflow-wrap: anywhere;
+}

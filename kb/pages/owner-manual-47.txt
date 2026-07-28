@@ -1,0 +1,66 @@
+Assembly Diagram
+
+
+                                                                                                                                       Safety
+
+                                  7        6             5             4        3        2         1
+                                                                                                                             61
+
+
+
+
+                                                                                                                                       CONTROLS
+                                                                                              60        59        58    57   56
+
+
+                                                                                                                             55
+
+                                                                                                                             54
+
+ 16                15   14   13       12       11   10       9    8                                                          53
+
+
+ 17                                                                                                                          52
+
+
+ 18
+                                                                                                                             51
+                                                                                                                                       Wire
+
+ 19                                                                                                                          50
+
+                                                                                                                             49
+ 20
+                                                                                                                             48
+ 21
+                                                                                                                             47
+
+
+
+                                                                                                                                       TIG / Stick
+ 22
+                                                                                                                             46
+ 23
+                                                                                                                             45
+ 24
+
+ 25                                                                                                                          44
+
+
+ 26   27      28   29   30   31        32           33       34   35       36       37       38    39        40    41   42   43
+
+
+
+
+                                                                                                                                        Welding Tips
+
+
+
+
+                                                                                                                                         MAINTENANCE
+
+
+
+
+ Item 57812                  For technical questions, please call 1-800-444-3353.                                            Page 47
+

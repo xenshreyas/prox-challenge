@@ -1,0 +1,93 @@
+Duty Cycle (Duration of Use)
+avoid damage to the Welder by not welding for more              This Welder has an internal thermal protection system to
+
+
+                                                                                                                                  SaFety
+than the prescribed duty cycle time. The Duty Cycle             help prevent this sort of over-stress. When the Welder
+defines the number of minutes, within a 10 minute               overheats, it automatically shuts down and a warning
+period, during which a given welder can produce a               screen appears in the LCD Display window. The Welder
+particular welding current without overheating.                 automatically returns to service after cooling off. Should
+For example, a welder with a 40% duty                           this occur, rest the Tig Torch or Electrode Holder on an
+cycle at 125 A welding current must be                          electrically non-conductive, heat-proof surface, such
+allowed to rest for at least 6 minutes after                    as a concrete slab, well clear of the ground clamp.
+every 4 minutes of continuous welding.                          allow the Welder to cool with the power Switch on,
+Failure to carefully observe duty cycle limitations             so that the internal Fan will help cool the Welder.
+
+
+
+                                                                                                                                  cOntROlS
+can easily over-stress a welder’s power generation              When normal operation resumes, use
+system contributing to premature welder failure.                shorter welding periods and longer rest
+                                                                periods to prevent needless wear.
+
+                 tig Rated duty cycles                                             Stick Rated duty cycles
+           240 VAC                         120 VAC                             240 VAC                    120 VAC
+        30% Use at 175 A                40% Use at 125 A                    25% Use at 175 A           40% Use at 80 A
+   For 10 continuous Minutes      For 10 continuous Minutes         For 10 continuous Minutes      For 10 continuous Minutes
+
+      3                  7           4                 6             2-1/2               7-1/2        4                 6
+   Minutes            Minutes     Minutes           Minutes         Minutes             Minutes    Minutes           Minutes
+   Welding            Resting     Welding           Resting         Welding             Resting    Welding           Resting
+
+   100% Continuous Use at 105 A   100% Continuous Use at 90 A       100% Continuous Use at 100 A   100% Continuous Use at 60 A    WiRe
+
+
+
+Setting up the Weld
+                             clamps                             2. Use clamps (not included) to hold the workpieces
+                           workpieces                              in position so that you can concentrate on
+
+
+
+                                                                                                                                  tig / Stick
+                                                                   proper welding technique. The distance (if
+                         clean surfaces                            any) between the two workpieces must be
+                         to bare metal.                            controlled properly to allow the weld to hold
+                                                                   both sides securely while allowing the weld
+                    chamfer thick workpieces.                      to penetrate fully into the joint. The edges of
+                                                                   thicker workpieces may need to be chamfered
+1. Make practice welds on pieces of scrap the                      (or beveled) to allow proper weld penetration.
+   same thickness as your intended workpiece
+   to practice technique before welding anything                nOtice: When welding equipment on a vehicle,
+   of value. Clean the weld surfaces thoroughly                 disconnect the vehicle battery power from both the
+
+
+
+
+                                                                                                                                   Welding tipS
+   with a wire brush or angle grinder; there                    positive connection and the ground before welding.
+   must be no rust, paint, oil, or other materials              This prevents damage to some vehicle electrical
+   on the weld surfaces, only bare metal.                       systems and electronics due to the high voltage
+                                                                and high frequency bursts common in welding.
+
+
+
+
+                                                                        ®
+
+
+
+
+                                                                                                                   Workpiece
+
+
+
+
+                                                                                                                                    Maintenance
+3. Clamp Ground Cable to bare metal on the
+                                                                                                                        clean
+   workpiece near the weld area, or to metal work
+                                                                                                                    surface to
+   bench where the workpiece is clamped.
+                                                                                                     ground        bare metal.
+                                                                                                     clamp
+
+
+
+                                                                ground connection depends
+                                                                on desired welding polarity
+
+
+
+  Item 57812                          For technical questions, please call 1-800-444-3353.                              Page 29
+

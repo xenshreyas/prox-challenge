@@ -1,0 +1,78 @@
+    d. Optional Settings:
+
+
+                                                                                                 Safety
+      • Press Main Control Knob to
+        enter Optional Settings.
+
+      • Turn Main Control Knob until desired
+        setting appears on screen.
+      • Press Main Control Knob to
+        select desired setting.
+
+      • Turn Main Control Knob to adjust setting.
+
+
+
+                                                                                                 CONTROLS
+        Available Optional Settings:
+
+      • Run-In WFS – Adjust wire speed before it
+        contacts workpiece. This setting represents
+        a % of the pre-set wire feed speed (WFS).
+
+      • Inductance – Adjust length of arc.
+        Increase for more fluid puddle and flatter
+        bead. Decrease for colder puddle.
+
+      • Spot Timer – Set timer for spot welding.
+
+      • Recall Setting – Retrieve saved settings.                                                Wire
+      • Save Setting – Program up to 5 different
+        configurations. Turn Main Control Knob to
+        scroll between 5 available slots. Press Main
+        Control Knob to access OVERWRITE MEMORY
+        SETTING screen and turn Main Control Knob
+        to choose YES selection. Press Main Control
+        Knob to save current Welder settings.
+
+
+
+                                                                                                 TIG / Stick
+Note: The initial settings may need to be
+adjusted after stopping and carefully inspecting
+the weld. Proper welding takes experience.
+
+
+
+
+Gas Shielded, Solid-Core Wire Only
+DANGER! TO PREVENT DEATH
+
+
+
+
+                                                                                                  Welding Tips
+FROM ASPHYXIATION:
+Do not open gas without proper ventilation. Fix gas
+leaks immediately.
+Shielding gas can displace air and cause rapid loss of
+consciousness and death.
+Shielding gas without carbon dioxide can be
+even more hazardous because asphyxiation
+can start without feeling shortness of breath.
+
+
+
+
+                                                                                                   MAINTENANCE
+1. Open gas cylinder valve all the way.
+
+2. Set Flow Gauge to SCFH value
+   indicated on Settings Chart.
+
+
+
+
+  Item 57812                    For technical questions, please call 1-800-444-3353.   Page 21
+

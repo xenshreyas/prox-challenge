@@ -1,0 +1,124 @@
+Connect Shielding Gas
+
+
+
+
+                                                                                                                                                                                                     Safety
+1. With assistance, place an 100% Argon cylinder                                     1
+   (not included) onto a cabinet or cart near the
+   Welder and secure the cylinder in place with
+   two straps (not included) to prevent tipping.
+                                                                                                                                     Briefly open valve
+                                                                                                                                   2
+
+                                                                                                                                                                                                     CONTROLS
+                                                                                                                                               to clean,
+2. Remove the cylinder’s cap. Stand to the                                                                                                   then close
+   side of the valve opening, then open the                                                                                                       valve.
+   valve briefly to blow dust and dirt from the
+   valve opening. Close the cylinder valve.
+
+
+3. Locate the Regulator (included) and close its
+   valve until it is loose, then thread Regulator
+   onto cylinder and wrench-tighten connection.
+
+
+
+                                                                                                                                                                                                     Wire
+4. Connect Shielding Gas Hose on TIG                            4
+   Torch Cable Connector to the Regulator’s                              3
+   Outlet and wrench-tighten connection.
+
+
+
+
+                                                                                                                                                                                                     TIG / Stick
+
+
+Connect Power Cord
+
+
+
+
+                                                                                                                                                                                                      Welding Tips
+Plug either 120 VAC or 240 VAC Power                           Power
+                                                                                                              Date:                       Vulcan OMNIPRO 220
+                                                                                                                                       Conforms to ANSI/IEC Std. 60974-1
+                                                                                                                                       UPC 193175422590        57812        25d   264149
+
+                                                                                                                                                30A/15.5V to 220A/25V
+                                                                                                                                          X           25%          60%            100%
+
+
+
+
+                                                               Input
+                                                                                                                                          I2         200A          130A           115A
+                                                                                                                            U0 = 86V     U2           24V          20.5V          19.75V
+
+
+
+
+Cord into Power Input Socket.
+                                                                                                                                                10A/20.4V to 175A/27V
+                                                                                                Power Input                               X           25%           60%           100%
+                                                                                                                                          I2          175A         115A           100A
+                                                                                                                            U0 = 86V      U2          27V          24.6V           24V
+                                                                                                                                                10A/10.4V to 175A/17V
+                                                                                                                                          X           30%           60%           100%
+                                                                                                                                          I2          175A         125A           105A
+                                                                                                                            U0 = 86V      U2          17V           15V           14.2V
+                                                                                                                                                   I1max = 25.5A          I1eff = 12.8A
+                                                                                                                               U1 = 240V                   23.7A                  11.9A
+                                                                                                                1~50/60Hz                                  15.6A                   8.5A
+
+                                                                                                                                                30A/15.5V to 140A/21V
+                                                                                                                                          X           40%           60%           100%
+
+
+
+
+Note: Plug will only fit one way.
+                                                                                                                                          I2          100A          85A            75A
+                                                                                                                            U0 = 86V      U2          19V          18.25V         17.75V
+                                                                                                                                               10A/20.4V to 80A/23.2V
+                                                                                                                                          X           40%           60%           100%
+                                                                                                                                          I2          80A           70A            60A
+                                                                                                                            U0 = 86V      U2          23.2V        22.8V          22.4V
+                                                                                                                                                10A/10.4V to 125A/15V
+                                                                                                                                          X           40%           60%           100%
+                                                                                                                                          I2          125A         105A            90A
+                                                                                                                            U0 = 86V
+                                                                                               Reset                                      U2          15V
+                                                                                                                                                I1max = 20.8A
+                                                                                                                                                                   14.2V          13.6V
+                                                                                                                                                                          I1eff = 13.1A
+                                                                                                                               U1 = 120V                19.5A                     12.3A
+                                                                                   Gas Inlet                    1~50/60Hz                               20.6A                     13A
+
+                                                                                                                                               1
+                                                                                                               IP21S           S                     f1
+
+
+
+
+WARNING! TO PREVENT SERIOUS INJURY
+                                                                                                                                                          f2
+
+
+
+
+FROM ACCIDENTAL OPERATION: Do not
+
+
+
+
+                                                                                                                                                                                                       MAINTENANCE
+plug cord into wall outlet at this time.
+
+
+
+
+  Item 57812                        For technical questions, please call 1-800-444-3353.                                                                                                   Page 25
+

@@ -1,0 +1,81 @@
+                Wire Weld Penetration (Workpiece Heat Control)
+
+
+ Safety
+                      EXCESS PENETRATION OR                 PROPER PENETRATION                  INADEQUATE PENETRATION
+                           BURN-THROUGH                   Weld is visible underneath and         Weld does not penetrate the
+                        Weld droops on top and               bulges slightly on top.            joint fully, just on the surface.
+                      underneath, or falls through
+                        entirely, making a hole.
+
+
+
+
+  CONTROLS
+                                                                   PROFILE VIEWS
+
+
+                         POSSIBLE CAUSES AND SOLUTIONS                             POSSIBLE CAUSES AND SOLUTIONS
+                  1. Workpiece overheating:                               4.    Incorrect welding technique:
+                     Reduce wire feed speed.                                    Maintain 1/2" or less CTWD.
+                     Decrease weld current.                                     Keep arc on leading edge of weld puddle.
+                  2. Travel speed too slow:                                     Hold MIG Gun at proper angles.
+                     Increase travel speed and ensure                     5.    Insufficient weld heat:
+                     that travel speed is kept steady.                          Reduce travel speed.
+  Wire            3. Excessive material at weld:                                Increase weld current.
+                     Reduce wire feed speed.                              6.    Workpieces too thick/close:
+                                                                                Bevel thick workpieces, allow slight
+                                                                                gap, and weld in several passes.
+                Bend at Joint
+                                                                          7.    Insufficient weld material:
+                                                                                Increase wire feed speed.
+
+                PROFILE
+                 VIEW
+
+
+
+  TIG / Stick
+                                                                         Weld Not Adhering Properly
+                      POSSIBLE CAUSES AND SOLUTIONS                       Gaps present between weld and previous bead or
+                1. Improper clamping:                                      between weld and workpiece. See areas below.
+                   Clamp workpieces securely.
+                   Make tack welds to hold workpieces.
+                2. Excessive heat:                                             PROFILE
+                   Weld a small portion and allow to cool before                VIEW
+                   proceeding.
+                   Increase travel speed.
+
+
+
+
+Welding Tips
+                   Reduce wire feed speed.
+                                                                                    POSSIBLE CAUSES AND SOLUTIONS
+                                                                         1.     Incorrect welding technique:
+                Coat of Slag Over Weld                                          Place stringer bead at correct place in joint.
+                                                                                Adjust workpiece position or weld angle to permit
+                                                                                proper welding to bottom of piece.
+                                                                                Pause briefly at sides during weave bead.
+                 TOP                                                            Keep arc on leading edge of weld puddle.
+                 VIEW                                                           Hold MIG Gun at proper angles.
+                                                                         2.     Insufficient weld heat:
+                   PARTIALLY CHIPPED AWAY TO SHOW WELD                          Increase current.
+                                                                                Increase wire feed speed.
+
+
+
+
+MAINTENANCE
+                Slag is a necessary part of a flux-cored wire            3.     Dirty workpiece:
+                weld. It shields the weld from impurities.                      Clean workpiece down to bare metal.
+                Clean off the slag with a Chipping Hammer                4.     Insufficient weld material:
+                and Wire Brush after welding.                                   Increase wire feed speed.
+                Gas-shielded MIG welds are protected by the              5.     Workpiece gap too narrow:
+                shielding gas and do not need slag to protect them.             Widen groove or increase bevel.
+
+
+
+
+                Page 36                     For technical questions, please call 1-800-444-3353.                      Item 57812
+

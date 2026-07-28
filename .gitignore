@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+.DS_Store
+evals/last-run.json
+evals/history.jsonl
+kb/extract.log

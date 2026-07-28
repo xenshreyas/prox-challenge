@@ -1,0 +1,84 @@
+                 Grounding
+
+
+  Safety                   TO PREVENT ELECTRIC SHOCK AND DEATH
+                           FROM INCORRECT GROUNDING WIRE CONNECTION:
+                           Check with a qualified electrician if you are in doubt as to whether the outlet is
+                           properly grounded. Do not use the welder if the power cord or plug is damaged. If damaged,
+                have it repaired by a service facility before use. If the plug will not fit the outlet, have a proper outlet
+                installed by a qualified electrician, do not use adapter plugs.
+                1. The green wire inside the cord is connected to          2. Make sure the tool is connected to an outlet having
+
+
+
+  CONTROLS
+                   the grounding system in the Welder. The green              the same configuration as the plug. If the tool must
+                   wire in the cord must be the only wire connected           be reconnected for use on a different type of electric
+                   to the Welder’s grounding system and must                  circuit, the reconnection should be made by qualified
+                   never be attached to an electrically “live” terminal.      service personnel; and after reconnection, the tool
+                   Never leave the grounding wire disconnected                should comply with all local codes and ordinances.
+                   or modify either Power Cord Plug in any way.
+
+                Extension Cords
+                Do not use an extension cord on this welder.
+
+                Replacement Cords
+  Wire
+                1. Use only one of the supplied power cords for            3. Do not patch cords of any length
+                   this welder or an identical replacement cord.              together for this item, patches may allow
+                2. Do not install a thinner or longer                         moisture to penetrate the insulation,
+                   cord on this welder.                                       resulting in electric shock.
+
+
+                 Symbology
+
+
+
+  TIG / Stick
+                                          Wire Feed (Speed)
+                                                                                 IPM                 Inches Per Minute
+
+
+                                          Workpiece Ground Cable                 AWG                 American Wire Gauge
+
+
+                                                                                                     Electric Shock Hazard.
+                                          Torch Cable                                                Do not touch energized parts.
+
+
+
+
+Welding Tips
+                                          Overheat Shutdown Indicator                                Inhalation Hazard.
+                                                                                                     Keep head out of fumes
+                                                                                                     and use proper ventilation.
+                                          Cooling Fan
+
+                                                                                                     Read manual before
+                                          Housing Ground Point                                       setup and/or use.
+
+
+                       VAC                Volts Alternating Current                                  Fire Hazard.
+                                                                                                     Keep flammable materials
+
+                        A
+                                                                                                     away during welding. Spatter
+
+
+
+
+MAINTENANCE
+                                          Amperes                                                    can cause accidental fires.
+                                                                                                     Arc Ray Hazard.
+                       OCV                Open Circuit Voltage                                       Wear welding helmet with
+                                                                                                     properly rated filter lens.
+
+                       KVA                Kilovolt Amperes
+                                          (Volts / 1000 * Amperes)
+                                                                                                     Pacemaker Hazard.
+                                                                                                     Welding processes may
+                                                                                                     interfere with pacemakers.
+                                                                                                     Consult doctor before use.
+
+                Page 6                        For technical questions, please call 1-800-444-3353.                     Item 57812
+

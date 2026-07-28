@@ -1,0 +1,74 @@
+                 Parts List and Diagram
+
+
+ Safety
+                PLEASE READ THE FOLLOWING CAREFULLY
+                THE MANUFACTURER AND/OR DISTRIBUTOR HAS PROVIDED THE PARTS LIST AND ASSEMBLY DIAGRAM
+                IN THIS MANUAL AS A REFERENCE TOOL ONLY. NEITHER THE MANUFACTURER OR DISTRIBUTOR
+                MAKES ANY REPRESENTATION OR WARRANTY OF ANY KIND TO THE BUYER THAT HE OR SHE IS
+                QUALIFIED TO MAKE ANY REPAIRS TO THE PRODUCT, OR THAT HE OR SHE IS QUALIFIED TO REPLACE
+                ANY PARTS OF THE PRODUCT. IN FACT, THE MANUFACTURER AND/OR DISTRIBUTOR EXPRESSLY
+                STATES THAT ALL REPAIRS AND PARTS REPLACEMENTS SHOULD BE UNDERTAKEN BY CERTIFIED AND
+                LICENSED TECHNICIANS, AND NOT BY THE BUYER. THE BUYER ASSUMES ALL RISK AND LIABILITY
+
+
+  CONTROLS
+                ARISING OUT OF HIS OR HER REPAIRS TO THE ORIGINAL PRODUCT OR REPLACEMENT PARTS
+                THERETO, OR ARISING OUT OF HIS OR HER INSTALLATION OF REPLACEMENT PARTS THERETO.
+
+                Parts List
+                 Part                Description                   Qty      Part                 Description                  Qty
+                   1    Right Cover                                 1         32   Polarity Cable                              1
+                   2    Handle Base                                 1         33   Output Inductor                             1
+                   3    Handle Cover                                1         34   Air Connector                               2
+                   4    Hinge-Right                                 2         35   Solenoid Valve                              2
+                   5    Hinge-left                                  2         36   Bottom Housing                              1
+  Wire             6    Left Cover                                  1         37   Board Insulation Paper                      1
+                   7    Latch                                       1         38   Main PCB                                    1
+                   8    Middle Bracket                              1         39   Control PCB                                 1
+                   9    PFC Inductance                              1         40   Fast Recovery Diode                         6
+                  10    Spool                                       1         41   Metal Case Air Way                          1
+                  11    Remote Control PCB                          1         42   Rectifier Radiator Support Bar              1
+                  12    Wire Feeder                                 1         43   Rectifier Radiator                          1
+                  13    Aviation Plug Wire                          1         44   Fan                                         1
+                  14    Miller Plug Connector                       1         45   Transformer                                 1
+
+
+
+  TIG / Stick
+                  15    Protective Cover                            1         46   IGBT                                        6
+                  16    Display PCB                                 1         47   Bridge Rectifier Heatsink                   1
+                  17    Screen Cover                                1         48   Fast Recovery Diode                         2
+                  18    Screen Frame                                1         49   IGBT Heat Sink Support Bar                  1
+                  19    MIG Welding Torch                           1         50   IGBT Radiator                               1
+                  20    Front Handle Cover                          1         51   Bridge Rectifiers                           2
+                  21    Front Panel                                 1         52   IGBT Radiator                               2
+                  22    Display                                     1         53   Fan                                         1
+                  23    Knob                                        2         54   Y-Type Threaded Tee                         1
+                  24    Knob                                        1         55   120 VAC Power Cord                          1
+
+
+
+
+Welding Tips
+                  25    Storage Door                                1         56   Rear Panel                                  1
+                  26    Switch                                      1         57   Rear Handle Cover                           1
+                  27    American Air Fitting                        2         58   American Power Socket                       1
+                  28    Air Connector                               3         59   Overload Protector                          1
+                  29    Quick Connector                             2         60   Rear Panel                                  1
+                  30    Grounding Clamp Assembly                    1         61   240 VAC Power Cord                          1
+                  31    Welding Clamp Assembly                      1
+
+
+
+
+MAINTENANCE
+                Record Product’s Date Code Here:
+                Note: If product has no Date Code, record month and year of purchase instead.
+
+                Note: Some parts are listed and shown for illustration purposes only, and are not available individually as
+                replacement parts. Parts may not be interchangeable. Specify UPC 193175422590 when ordering parts.
+
+
+                Page 46                      For technical questions, please call 1-800-444-3353.                      Item 57812
+

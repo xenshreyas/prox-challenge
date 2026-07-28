@@ -1,0 +1,57 @@
+                Stick Weld Diagnosis – Workpiece Heat Control / Weld Penetration
+                                                                                               EXCESS PENETRATION OR
+
+
+ Safety
+                  INADEQUATE PENETRATION                  PROPER PENETRATION
+                                                                                                   BURN-THROUGH
+
+
+
+
+                          Not hot enough                           Ideal heat                             Too hot
+
+
+
+  CONTROLS
+                      How to increase workpiece heat                              How to reduce workpiece heat
+                        and increase penetration:                                    and limit penetration:
+                     (to weld THICKER workpieces properly)                       (to weld THINNER workpieces properly)
+                      a. Increase current. b. Weld more slowly.                  c. Decrease current. d. Weld more quickly.
+
+
+
+
+                Example Stick Weld Diagrams
+                                                         CLEAN WELDS FIRST!
+  Wire
+                                 Stick welds will have a coat of slag over them until cleaned.
+
+
+
+
+  TIG / Stick
+
+
+
+                    Good          Current           Current        Weld Speed     Weld Speed       Arc Length       Arc Length
+                    Weld          Too Low          Too High         Too Fast       Too Slow        Too Short         Too Long
+
+
+
+
+Welding Tips
+                                TO CORRECT:     TO CORRECT:       TO CORRECT:     TO CORRECT:    TO CORRECT:      TO CORRECT:
+                                 Increase the      Decrease        Weld slower     Weld faster     Increase         Decrease
+                                    current       the current                                       distance         distance
+
+
+
+
+MAINTENANCE
+
+
+
+
+                Page 38                     For technical questions, please call 1-800-444-3353.                    Item 57812
+

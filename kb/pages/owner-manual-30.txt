@@ -1,0 +1,85 @@
+                TIG Welding
+
+
+ Safety
+                TO PREVENT SERIOUS INJURY AND DEATH:
+                Do not weld without Grounding Clamp.
+                When the operator is not holding the Torch, it must be sitting on a nonconductive, nonflammable surface.
+                Only hold TIG Rod with an electrically insulated welding glove.
+
+
+
+                TO PREVENT DEATH FROM ASPHYXIATION:
+                Do not open gas without proper ventilation. Fix gas leaks immediately. Shielding gas can displace
+
+
+
+  CONTROLS
+                air and cause rapid loss of consciousness and death. Shielding gas without carbon dioxide can be
+                even more hazardous because asphyxiation can start without feeling shortness of breath.
+                NOTICE: TIG welding is a complicated process,           9. Adjust settings for the TIG process.
+                requiring experience and skill to achieve                   a. Polarity and Gas Settings:
+                successful results. Training beyond the scope of
+                this manual is required to TIG weld properly.                 • Plug cables in according to screen.
+                                                                              • Connect gas according to screen.
+                1. Open gas cylinder’s valve all the way.
+                                                                              • Set SCFH between 10-25.
+                2. Set Flow Gauge to SCFH value indicated on the
+                   Settings Chart on the inside of the Welder door.
+  Wire
+                3. Turn the Power Switch to the OFF position, then
+                   plug the Welder into a properly grounded, GFCI
+                   protected, 120 VAC (20 amp rated) outlet or
+                   240 V outlet. The circuit must be equipped with
+                   delayed action-type circuit breaker or fuses.
+
+                4. Set TIG Torch down on nonconductive,
+                   nonflammable surface away from
+                                                                            b. Set Rod Diameter and Material Thickness:
+
+
+
+  TIG / Stick
+                   any grounded objects.
+                                                                              • Turn Left Knob to set rod diameter.
+                5. Turn the Power Switch ON.
+                                                                              • Turn Right Knob to set material thickness.
+                6. Press Home Button on Control Panel.
+
+                7. Turn Main Control Knob until TIG process
+                   appears on LCD display screen.
+
+                8. Press Main Control Knob to select TIG process.
+                Note: Press Main Control Knob to go to next screen.
+
+
+
+
+Welding Tips
+                Press Back Button to return to the previous screen.
+
+
+                             ®
+
+
+                                          TIG                               c. Auto Weld Settings:
+                                                                              • Turn Left Knob to adjust output amperage.
+                                                                              • Turn Right Knob to ON to energize TIG Torch.
+                                                                        WARNING! TO PREVENT SERIOUS
+                                                                        INJURY: Welder is now energized and
+                                                                        Open Circuit Voltage is present.
+
+
+
+
+MAINTENANCE
+                          Left          Main          Right
+                          Knob         Control        Knob
+                                        Knob                                                                                Rod
+                                                                       Process                                            Diameter
+                                                                       Gas Type                                            Material
+                                                                                                                          Thickness
+
+
+                Page 30                     For technical questions, please call 1-800-444-3353.                      Item 57812
+

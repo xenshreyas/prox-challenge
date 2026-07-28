@@ -1,0 +1,131 @@
+                                                                                DANGER
+
+ Safety
+                                                                PARTS MAY BE AT WELDING VOLTAGE
+                                                             TO PREVENT ELECTRIC SHOCK AND DEATH:
+                                                    1. Keep hands away from Wire Feed mechanism.
+                                                    2. Close door before plugging in, unless using Cold
+                                                       Wire Feed to feed wire through to gun.
+                                                    3. Do not touch Trigger while feeding wire through to gun.
+
+
+
+  CONTROLS
+                                                                            Power                                          Date:                       Vulcan OMNIPRO 220
+                                                                                                                                                    Conforms to ANSI/IEC Std. 60974-1
+                                                                                                                                                    UPC 193175422590        57812
+                                                                                                                                                             30A/15.5V to 220A/25V
+                                                                                                                                                                                         25d   264149
+
+
+
+
+                                                                            Input
+                                                                                                                                                       X           25%          60%            100%
+                                                                                                                                                       I2         200A          130A           115A
+                                                                                                                                         U0 = 86V
+
+
+
+
+                24. Plug either 120 VAC or 240 VAC Power
+                                                                                                                                                      U2           24V          20.5V          19.75V
+                                                                                                                                                             10A/20.4V to 175A/27V
+                                                                                                             Power Input                               X           25%           60%           100%
+                                                                                                                                                       I2          175A         115A           100A
+                                                                                                                                         U0 = 86V      U2          27V          24.6V           24V
+                                                                                                                                                             10A/10.4V to 175A/17V
+                                                                                                                                                       X           30%           60%           100%
+                                                                                                                                                       I2          175A         125A           105A
+                                                                                                                                         U0 = 86V      U2          17V           15V           14.2V
+
+
+
+
+                    Cord into Power Input Socket.
+                                                                                                                                                                I1max = 25.5A          I1eff = 12.8A
+                                                                                                                                            U1 = 240V                   23.7A                  11.9A
+                                                                                                                             1~50/60Hz                                  15.6A                   8.5A
+
+                                                                                                                                                             30A/15.5V to 140A/21V
+                                                                                                                                                       X           40%           60%           100%
+                                                                                                                                                       I2          100A          85A            75A
+                                                                                                                                         U0 = 86V      U2          19V          18.25V         17.75V
+                                                                                                                                                            10A/20.4V to 80A/23.2V
+                                                                                                                                                       X           40%           60%           100%
+                                                                                                                                                       I2          80A           70A            60A
+                                                                                                                                         U0 = 86V      U2          23.2V        22.8V          22.4V
+                                                                                                                                                             10A/10.4V to 125A/15V
+                                                                                                                                                       X           40%           60%           100%
+                                                                                                                                                       I2          125A         105A            90A
+                                                                                                                                         U0 = 86V
+                                                                                                            Reset                                      U2          15V
+                                                                                                                                                             I1max = 20.8A
+                                                                                                                                                                                14.2V          13.6V
+                                                                                                                                                                                       I1eff = 13.1A
+                                                                                                                                            U1 = 120V                19.5A                     12.3A
+                                                                                                Gas Inlet
+
+
+
+
+                Note: Plug will only fit one way.
+                                                                                                                             1~50/60Hz                               20.6A                     13A
+
+                                                                                                                                                            1
+                                                                                                                            IP21S           S                     f1
+                                                                                                                                                                       f2
+
+
+
+
+  Wire
+
+
+
+
+                                                                                          Power
+
+
+
+  TIG / Stick
+                                                                                          Switch
+                25. Do not touch the Gun’s Trigger. Plug the Power
+                    Cord into a properly grounded, GFCI protected
+                    120 VAC (20 amp rated) or 240 VAC receptacle that
+                    matches the plug and turn the Power Switch ON.
+                    The circuit must be equipped with delayed
+                    action-type circuit breaker or fuses.
+
+
+
+
+Welding Tips
+                26. Point the Gun away from
+                    all objects. Press and                                 Cold Wire
+                    hold the Cold Wire Feed                               Feed Switch
+                    Switch until the wire feeds
+                                                                                                                                                                                                          MIG Gun
+                    through two inches.                                                            2"
+                    The wire liner may come
+                    out with the welding
+                    wire. This is normal,
+                    just push the wire liner
+                    back into the Gun.                                                         Welding
+
+
+
+
+MAINTENANCE
+                                                                                                Wire
+                    If the wire does not feed
+                    properly and the Spool
+                    is stationary, turn OFF
+                    and unplug the Welder
+                    and slightly tighten the
+                    Feed Tensioner clockwise
+                    before retrying.
+
+
+                Page 16                       For technical questions, please call 1-800-444-3353.                                                                                                      Item 57812
+

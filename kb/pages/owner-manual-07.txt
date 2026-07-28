@@ -1,0 +1,64 @@
+Specifications
+
+
+                                                                                                                Safety
+                                                  MIG
+ Power Input                                120 VAC / 60 Hz                         240 VAC / 60 Hz
+ Current Input at Output                    20.8 A at 100 A                          25.5 A at 200 A
+ Welding Current Range                         30 –140 A                                 30 –220 A
+                                             40% @ 100 A                             25% @ 200 A
+ Rated Duty Cycles
+                                             100% @ 75 A                             100% @ 115 A
+ Maximum OCV                                                        86 VDC
+
+
+
+                                                                                                                CONTROLS
+                                                         Mild Steel, Stainless Steel
+ Weldable Materials
+                                                    Aluminum (with optional Spool Gun)
+                                                     Solid Core: 0.025" / 0.030" / 0.035"
+ Welding Wire Capacity
+                                                     Flux Cored: 0.030" / 0.035" / 0.045"
+ Wire Speed                                                      50 – 500 IPM
+ Wire Spool Capacity                                           Up to 12 lb spool
+
+
+
+                                                  TIG
+ Power Input                                120 VAC / 60 Hz                         240 VAC / 60 Hz             Wire
+ Current Input at Output                     20.6 A at 125 A                         15.6 A at 175 A
+ Welding Current Range                        10 A –125 A                              10 A –175 A
+                                             40% @ 125 A                              30% @ 175 A
+ Rated Duty Cycles
+                                             100% @ 90 A                             100% @ 105 A
+ Maximum OCV                                                        86 VDC
+ Weldable Materials                               Mild Steel, Stainless Steel, Chrome Moly
+
+
+
+                                                 Stick                                                          TIG / Stick
+ Power Input                                 120 VAC / 60 Hz                         240 VAC / 60 Hz
+ Current Input at Output                      19.5 A at 80 A                         23.7 A at 175 A
+ Welding Current Range                          10 A – 80 A                            10 A –175 A
+                                               40% @ 80 A                             25% @ 175 A
+ Rated Duty Cycles
+                                              100% @ 60 A                            100% @ 100 A
+
+
+
+
+                                                                                                                 Welding Tips
+ Maximum OCV                                                         86 VDC
+ Weldable Materials                                        Mild Steel, Stainless Steel
+
+
+
+
+                                                                                                                  MAINTENANCE
+
+
+
+
+Item 57812                 For technical questions, please call 1-800-444-3353.                        Page 7
+

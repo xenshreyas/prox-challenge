@@ -1,0 +1,143 @@
+                                                                                                   DCEP
+                                                                         Solid Core (Gas Shielded)
+                                                                               Polarity Setup
+
+
+ Safety
+                17. DCEP Direct Current Electrode Positive Wire
+                    Setup for Solid Core (gas shielded) welding:
+                                                                          Ground Clamp Cable
+                                                                           in Negative Socket
+                   a. Plug Ground Clamp Cable into Negative (–)
+                      Socket. Plug Wire Feed Power Cable
+                      into Positive (+) Socket. Twist cables
+                      clockwise all the way to lock in place.
+
+
+
+
+  CONTROLS         b. Determine which type of shielding
+                      gas would be appropriate for
+                      the welding you will do. Refer
+                      to the Settings Chart on the                                                                                                                                              Wire Feed
+                      inside of the Welder door.                                                                                                                                              Power Cable in
+                                                                                                                                                                                              Positive Socket
+
+
+
+                   c. With assistance, set the cylinder (not included)
+  Wire
+                      onto a cabinet or cart near the Welder
+                      and secure the cylinder in place with two
+                      straps (not included) to prevent tipping.                                                                                                                           c
+
+
+                   d. Remove the cylinder’s cap. Stand to the
+                      side of the valve opening, then open the                                                                                                                                       Briefly open valve
+                      valve briefly to blow dust and dirt from the                                                                                                                               d             to clean,
+
+
+
+  TIG / Stick
+                      valve opening. Close the cylinder valve.                                                                                                                                               then close
+                                                                                                                                                                                                                  valve.
+
+
+                   e. Locate the Regulator (included) and close its
+                      valve until it is loose, then thread Regulator
+                      onto cylinder and wrench-tighten connection.
+
+                Note: When using C100 shielding gas, connect the
+                enclosed CGA 580/320 adapter to the inlet connection
+
+
+
+
+Welding Tips
+                of the Regulator and wrench-tighten. Thread the
+                adapter onto the gas cylinder and wrench-tighten.                                    f
+                                                                                                                                                                                      e
+
+                   f. Attach the Gas Hose (included)
+                      to the Regulator’s outlet and                                                      Date:
+
+
+
+
+                                                                                                                       U0 = 86V
+                                                                                                                                     Vulcan OMNIPRO 220
+                                                                                                                                  Conforms to ANSI/IEC Std. 60974-1
+                                                                                                                                  UPC 193175422590
+
+
+
+                                                                                                                                     X
+                                                                                                                                     I2
+                                                                                                                                                          57812
+                                                                                                                                           30A/15.5V to 220A/25V
+                                                                                                                                                 25%
+                                                                                                                                                200A
+                                                                                                                                                              60%
+                                                                                                                                                              130A
+                                                                                                                                                                       25d   264149
+
+
+
+                                                                                                                                                                             100%
+                                                                                                                                                                             115A
+
+
+
+
+                      the Welder’s gas inlet. Wrench-
+                                                                                                                                    U2           24V          20.5V          19.75V
+                                                                                                                                           10A/20.4V to 175A/27V
+                                                                                           Power Input                               X           25%           60%           100%
+                                                                                                                                     I2          175A         115A           100A
+                                                                                                                       U0 = 86V      U2          27V          24.6V           24V
+                                                                                                                                           10A/10.4V to 175A/17V
+                                                                                                                                     X           30%           60%           100%
+                                                                                                                                     I2          175A         125A           105A
+                                                                                                                       U0 = 86V      U2          17V           15V           14.2V
+                                                                                                                                              I1max = 25.5A          I1eff = 12.8A
+                                                                                                                          U1 = 240V                   23.7A                  11.9A
+                                                                                                           1~50/60Hz                                  15.6A                   8.5A
+
+                                                                                                                                           30A/15.5V to 140A/21V
+                                                                                                                                     X           40%           60%           100%
+                                                                                                                                     I2          100A          85A            75A
+                                                                                                                       U0 = 86V      U2          19V          18.25V         17.75V
+
+
+
+
+                      tighten both connections.
+                                                                                                                                          10A/20.4V to 80A/23.2V
+                                                                                                                                     X           40%           60%           100%
+                                                                                                                                     I2          80A           70A            60A
+                                                                                                                       U0 = 86V      U2          23.2V        22.8V          22.4V
+                                                                                                                                           10A/10.4V to 125A/15V
+                                                                                                                                     X           40%           60%           100%
+                                                                                                                                     I2          125A         105A            90A
+                                                                                                                       U0 = 86V
+                                                                                          Reset                                      U2          15V
+                                                                                                                                           I1max = 20.8A
+                                                                                                                                                              14.2V          13.6V
+                                                                                                                                                                     I1eff = 13.1A
+                                                                                                                          U1 = 120V                19.5A                     12.3A
+                                                                              Gas Inlet                    1~50/60Hz                               20.6A                     13A
+
+                                                                                                                                          1
+                                                                                                          IP21S           S                     f1
+                                                                                                                                                     f2
+
+
+
+
+MAINTENANCE
+
+
+
+
+                Page 14                      For technical questions, please call 1-800-444-3353.                                                                                                         Item 57812
+

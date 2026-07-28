@@ -1,0 +1,64 @@
+Wire Weld Diagnosis – Workpiece Heat Control / Weld Penetration
+                                                                            EXCESS PENETRATION OR
+
+
+                                                                                                              Safety
+  INADEQUATE PENETRATION                 PROPER PENETRATION
+                                                                                BURN-THROUGH
+
+
+
+
+        Not hot enough                           Ideal heat                             Too hot
+
+
+
+
+                                                                                                              CONTROLS
+      How to increase workpiece heat                           How to reduce workpiece heat
+        and increase penetration:                                 and limit penetration:
+     (to weld THICKER workpieces properly)                    (to weld THINNER workpieces properly)
+ a. Increase weld current c. Use faster wire feed       e. Decrease weld current g. Use slower wire feed
+ b. Decrease travel speed d. Use shorter CTWD           f. Increase travel speed h. Use longer CTWD
+
+
+
+
+Example Wire Weld Diagrams
+                                                                                                              Wire
+
+
+
+
+                                                                                                              TIG / Stick
+
+
+    Good             Voltage            Voltage         Travel Speed      Travel Speed          CTWD
+    Weld           Too Low or         Too High or         Too Fast          Too Slow           Too Long
+                    Wire Feed          Wire Feed                                                  or
+                    Too Slow           Too Fast                                              Wrong Polarity
+
+
+
+
+                                                                                                               Welding Tips
+                 TO CORRECT:         TO CORRECT:       TO CORRECT:       TO CORRECT:         TO CORRECT:
+                   Increase           Decrease                                               Check Polarity
+                 Output Voltage     Output Voltage                                               and
+                        or                 or                                                     maintain
+                                                                                                    less
+                  Increase Wire      Decrease Wire
+                                                               travel               travel        than 1/2"
+                   Feed Speed         Feed Speed                                                   CTWD
+                                                               slower               faster
+
+
+
+
+                                                                                                                MAINTENANCE
+
+
+
+
+ Item 57812                  For technical questions, please call 1-800-444-3353.                   Page 35
+

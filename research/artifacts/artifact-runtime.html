@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Artifact</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+<style>html,body,#root{height:100%;margin:0}body{font-family:ui-sans-serif,system-ui,sans-serif}</style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@19.1.0",
+    "react/": "https://esm.sh/react@19.1.0/",
+    "react-dom": "https://esm.sh/react-dom@19.1.0?external=react",
+    "react-dom/": "https://esm.sh/react-dom@19.1.0&external=react/"
+  }
+}
+</script>
+</head>
+<body>
+<div id="root"></div>
+<pre id="err" hidden style="margin:0;padding:16px;color:#dc2626;white-space:pre-wrap;font:12px ui-monospace,monospace"></pre>
+<script type="module">
+const HOST = '*';
+const post = (t, p) => parent.postMessage({ source: 'artifact', type: t, ...p }, HOST);
+const rootEl = document.getElementById('root');
+const errEl = document.getElementById('err');
+const showError = (e) => {
+  errEl.textContent = String((e && e.stack) || (e && e.message) || e);
+  errEl.hidden = false;
+};
+const clearError = () => { errEl.hidden = true; errEl.textContent = ''; };
+
+// ---- console + error forwarding -------------------------------------------
+for (const lvl of ['log','warn','error','info','debug']) {
+  const orig = console[lvl].bind(console);
+  console[lvl] = (...args) => {
+    orig(...args);
+    post('console', { level: lvl, args: args.map(safe) });
+  };
+}
+function safe(v){ try { return typeof v === 'string' ? v : JSON.parse(JSON.stringify(v)); } catch { return String(v); } }
+window.addEventListener('error', e => post('error', { message: e.message, stack: e.error && e.error.stack }));
+window.addEventListener('unhandledrejection', e => post('error', { message: String(e.reason), stack: e.reason && e.reason.stack }));
+
+// ---- size reporting --------------------------------------------------------
+new ResizeObserver(() => post('resize', { height: document.documentElement.scrollHeight }))
+  .observe(document.documentElement);
+
+// ---- bare-specifier rewriting ---------------------------------------------
+const MAPPED = new Set(['react','react-dom','react-dom/client','react/jsx-runtime']);
+const CDN = 'https://esm.sh/';
+function resolveSpec(spec) {
+  if (/^(https?:|\.|\/|data:|blob:)/.test(spec) || MAPPED.has(spec)) return spec;
+  return CDN + spec + '?external=react,react-dom';
+}
+// rewrite `from '<spec>'`, `import '<spec>'`, and dynamic import('<spec>')
+function rewriteImports(code) {
+  return code
+    .replace(/(\bfrom\s*)(['"])([^'"]+)\2/g, (m,a,q,s) => a+q+resolveSpec(s)+q)
+    .replace(/(\bimport\s*)(['"])([^'"]+)\2/g, (m,a,q,s) => a+q+resolveSpec(s)+q)
+    .replace(/(\bimport\s*\(\s*)(['"])([^'"]+)\2/g, (m,a,q,s) => a+q+resolveSpec(s)+q);
+}
+
+// ---- render ----------------------------------------------------------------
+let root = null;
+async function renderReact(code) {
+  const out = Babel.transform(code, {
+    filename: 'artifact.tsx',
+    presets: [['react',{runtime:'automatic'}], 'typescript'],
+    sourceMaps: false,
+  }).code;
+  const src = rewriteImports(out);
+  const url = URL.createObjectURL(new Blob([src], { type: 'text/javascript' }));
+  let mod;
+  try { mod = await import(/* @vite-ignore */ url); }
+  finally { URL.revokeObjectURL(url); }
+  const Comp = mod.default || Object.values(mod).find(v => typeof v === 'function');
+  if (!Comp) throw new Error('Artifact has no default export');
+  const React = await import('react');
+  const { createRoot } = await import('react-dom/client');
+  if (!root) root = createRoot(rootEl);
+  root.render(React.createElement(
+    class EB extends React.Component {
+      constructor(p){ super(p); this.state={e:null}; }
+      static getDerivedStateFromError(e){ return {e}; }
+      componentDidCatch(e){ post('error',{ message:e.message, stack:e.stack }); }
+      render(){ return this.state.e
+        ? React.createElement('pre',{className:'p-4 text-red-600 whitespace-pre-wrap text-sm'}, String(this.state.e.stack||this.state.e))
+        : this.props.children; }
+    },
+    null,
+    React.createElement(Comp)
+  ));
+}
+
+function renderHTML(code) {
+  if (root) { root.unmount(); root = null; }
+  rootEl.innerHTML = '';
+  const f = document.createElement('iframe');
+  f.style.cssText = 'width:100%;height:100%;border:0';
+  f.setAttribute('sandbox','allow-scripts allow-forms allow-modals allow-popups');
+  f.srcdoc = code;
+  rootEl.appendChild(f);
+}
+
+window.addEventListener('message', async (e) => {
+  const d = e.data;
+  if (!d || d.source !== 'host') return;
+  if (d.type === 'render') {
+    clearError();
+    try {
+      if (d.mimeType === 'application/vnd.ant.react') await renderReact(d.code);
+      else renderHTML(d.code);
+      post('ready', { identifier: d.identifier });
+    } catch (err) {
+      post('error', { message: err.message, stack: err.stack });
+      showError(err);
+    }
+  }
+});
+post('mounted', {});
+</script>
+</body>
+</html>

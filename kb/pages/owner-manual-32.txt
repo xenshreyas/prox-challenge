@@ -1,0 +1,79 @@
+                Stick Welding
+
+
+ Safety
+                TO PREVENT SERIOUS INJURY AND DEATH:
+                Do not weld without Grounding Clamp.
+                When the operator is not holding the Electrode Holder, it must be
+                sitting on a nonconductive, nonflammable surface.
+
+                1. Turn the Power Switch to the OFF position, then             b. Set Electrode type:
+                   plug the Welder into a properly grounded, GFCI                • Turn Main Control Knob to set electrode type.
+                   protected, 120 VAC (20 amp rated) outlet or
+
+
+
+
+  CONTROLS
+                   240 V outlet. The circuit must be equipped with
+                   delayed action-type circuit breaker or fuses.
+
+                2. Set Electrode Holder down on
+                   nonconductive, nonflammable surface
+                   away from any grounded objects.
+
+                3. Turn the Power Switch ON.
+
+                4. Press Home Button on Control Panel.
+
+                5. Turn Main Control Knob until Stick process                  c. Set Electrode Diameter and Material Thickness:
+                   appears on LCD display screen.
+  Wire
+                                                                                 • Turn Left Knob to set electrode diameter.
+                6. Press Main Control Knob to select STICK process.              • Turn Right Knob to set material thickness.
+                Note: Press Main Control Knob to go to next screen.
+                Press Back Button to return to the previous screen.
+
+
+
+                                           Stick
+
+
+
+
+  TIG / Stick
+                                                                               d. Auto Weld Settings:
+                                                                                 • Turn Left Knob to adjust output amperage.
+                                                                                 • Turn Right Knob to ON to
+                                                                                   energize Electrode Holder.
+                          Left             Main        Right
+                          Knob            Control      Knob               WARNING! TO PREVENT SERIOUS
+
+
+
+
+Welding Tips
+                                           Knob                           INJURY: Welder is now energized and
+                                                                          Open Circuit Voltage is present.
+
+                7. Adjust settings for the STICK process.
+                   a. Polarity Setting:
+                     • Plug cables in according to screen.
+                                                                          Process                                          Electrode
+                                                                                                                           Diameter
+                                                                          Electrode
+                                                                                                                            Material
+                                                                            Type
+                                                                                                                           Thickness
+
+
+
+
+MAINTENANCE
+                                                                          Hot Start                                        Arc Force
+
+
+
+
+                Page 32                       For technical questions, please call 1-800-444-3353.                    Item 57812
+

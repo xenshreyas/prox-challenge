@@ -1,0 +1,145 @@
+.wrap {
+  padding: 26px 0 10px;
+  animation: rise 0.35s ease;
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 34px;
+}
+
+.mark {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  color: var(--arc);
+  background: var(--bg-3);
+  border: 1px solid var(--arc-line);
+  box-shadow: 0 0 0 6px rgba(255, 138, 61, 0.05), inset 0 0 22px rgba(255, 138, 61, 0.14);
+}
+.mark svg {
+  width: 24px;
+  height: 24px;
+}
+
+.title {
+  margin: 0 0 10px;
+  font-size: clamp(26px, 4.4vw, 36px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+}
+.title span {
+  background: linear-gradient(100deg, var(--arc-hi), var(--arc));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.sub {
+  max-width: 560px;
+  margin: 0 auto;
+  color: var(--fg-mute);
+  font-size: 14.5px;
+  line-height: 1.68;
+}
+.sub em {
+  color: var(--fg);
+  font-style: italic;
+}
+
+.badges {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 18px;
+}
+.badges span {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  color: var(--fg-dim);
+}
+.mockBadge {
+  border-color: rgba(227, 179, 65, 0.4) !important;
+  background: rgba(227, 179, 65, 0.09) !important;
+  color: var(--warn) !important;
+}
+
+.gridLabel {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.gridLabel::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 11px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  padding: 14px 15px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  transition: border-color 0.15s, transform 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.card:hover {
+  border-color: var(--arc-line);
+  background: var(--bg-3);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+}
+
+.tag {
+  align-self: flex-start;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--arc-dim);
+  color: var(--arc-hi);
+}
+
+.q {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--fg);
+}
+
+.hint {
+  font-size: 11.5px;
+  color: var(--fg-dim);
+}

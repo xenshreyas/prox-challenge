@@ -1,0 +1,90 @@
+Note: If Welder is used too long, a
+warning screen appears in the LCD                                                    LCD
+                                                                                    Display         Warning
+Display window and the unit automatically                                                           Screen
+                                                      ®
+
+
+
+
+                                                                                                                                Safety
+shuts down. The Welder automatically
+returns to service after cooling off.
+Should this occur, rest the MIG Gun
+on an electrically non-conductive,
+heat‑proof surface, such as a concrete
+slab, away from the ground clamp.
+Allow the Welder to cool with the
+Power Switch on, so that the internal
+Fan will help cool the Welder.                                                      Power
+
+
+
+                                                                                                                                CONTROLS
+When normal operation resumes, use                                                  Switch
+shorter welding periods and longer rest
+periods to help prevent needless wear.
+
+                                                               After practice welding for a few seconds,
+7. After welding the test weld on a piece                       STOP and examine your weld using the
+   of scrap for a few seconds, stop, and                         guidelines starting on the next page.
+   check your progress. Clean, then compare
+   your weld’s appearance with the diagrams                             FOLLOW DUTY CYCLE!
+   and descriptions in the Welding Tips section
+                                                                      120 VAC                        240 VAC
+   starting on the next page. After making any
+                                                                                                                                Wire
+                                                                   40% Use at 100 A               25% Use at 200 A
+   necessary adjustments, continue to weld                     For 10 Continuous Minutes      For 10 Continuous Minutes
+   while carefully following the DUTY CYCLE
+                                                                 4                  6          2-1/2              7-1/2
+   guidelines as explained on page 19.                        Minutes            Minutes      Minutes            Minutes
+                                                              Welding            Resting      Welding            Resting
+CAUTION! Weld will be hot, do not touch.
+                                                              100% Continuous Use at 75 A     100% Continuous Use at 115 A
+
+
+
+
+                                                                                                                                TIG / Stick
+                                                          MIG Gun
+8. When welding is complete, set the MIG
+   Gun down on a heat-proof, electrically
+   non‑conductive surface.
+   Turn the Power Switch OFF.
+
+
+9. Allow Welder to cool down, then                           concrete slab
+   unplug the Power Cord.                                   (or other heat-proof,
+                                                          non-conductive surface)
+
+
+
+
+                                                                                                                                 Welding Tips
+10. Remove Ground Clamp from workpiece
+    or table and disconnect MIG Gun.                                                   Power
+                                                                                       Switch
+11. Respool wire by clipping wire, removing gas
+    nozzle/contact tip on MIG gun, releasing Idler
+    Arm on Wire Feed mechanism, and rotating
+    the Wire Spool counterclockwise. Be sure
+    to securely hold wire as it is being respooled
+    because the end of wire has a tendency to
+
+
+
+
+                                                                                                                                  MAINTENANCE
+    quickly unravel once it clears the wire feeder.
+
+
+12. MIG ONLY:
+    Close shielding gas cylinder valve
+    securely. Remove Regulator and
+    replace cap. Disconnect Gas Hose from
+    Welder. Store and secure gas cylinder.
+
+
+  Item 57812                    For technical questions, please call 1-800-444-3353.                                  Page 23
+

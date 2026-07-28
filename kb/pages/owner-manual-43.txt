@@ -1,0 +1,88 @@
+     Problem                         Possible Causes                                       Likely Solutions
+                      1. Tripped thermal protection device.               1. If a warning screen appears in the LCD Display
+
+
+
+                                                                                                                                     Safety
+                                                                             window, Welder may have overheated and shut
+                                                                             down. Stop and wait with the Power Switch ON
+                                                                             for the Welder to cool. The Welder automatically
+                                                                             returns to service after cooling off. Reduce
+                                                                             duration or frequency of welding periods to
+                                                                             help reduce wear on the Welder. Refer to
+                                                                             Duty Cycle (Duration of Use) on page 19.
+                      2. Circuit supplies insufficient input voltage or   2. Verify that the circuit is designed to supply the
+Welder Does Not          amperage.                                           required input voltage and amperage as detailed
+Function When                                                                on the Specifications table. If a warning screen
+Switched On
+
+
+
+                                                                                                                                     CONTROLS
+                                                                             appears in the LCD Display window, check the
+                                                                             input voltage to ensure it is within specified range.
+                      3. Faulty or improperly connected Trigger.          3. Ensure the gun connection is properly
+                                                                             seated on machine. Qualified technician
+                                                                             must check and secure/replace Trigger.
+                      4. Machine is in low- or                            4. Check input voltage and ensure it falls within
+                         over-voltage protection.                            the specified range. If input voltage is correct,
+                                                                             press Reset Button on back of machine.
+                      5. Machine is in the incorrect mode.                5. Ensure the correct process has been selected.
+                      1. Unit is not connected to outlet properly.        1. Verify the voltage at the outlet and
+                                                                             the connection to the outlet.
+                      2. Outlet is unpowered.                             2. Check circuit breaker/GFCI devices;
+
+LCD Display
+                                                                             if any are tripped, determine and
+                                                                             remedy cause before resetting.
+                                                                                                                                     Wire
+Does Not Light
+                      3. Plug does not have correct rating.               3. Make sure installed plug is correct rating.
+When Welder is
+                                                                             See Specifications on page 7.
+Switched On
+                      4. Circuit breaker has tripped due                  4. Press Reset Button on back of
+                         to high input amperage.                             machine to reset circuit breaker.
+                      5. Input Power Cord is not seated properly.         5. Ensure the twist lock input Power
+                                                                             Cord is fully secured.
+                      1. Improper ground connection.                      1. Make certain that the workpiece is contacted
+
+
+
+                                                                                                                                     TIG / Stick
+                                                                             properly by the Ground Clamp and that
+                                                                             the workpiece is properly cleaned near the
+                                                                             ground clamp and the welding location.
+                      2. Improperly sized Contact Tip.                    2. Verify that Contact Tip is the proper size
+Wire Feeds, but Arc                                                          for welding wire. If needed, replace
+Does Not Ignite                                                              Contact Tip with proper size and type.
+                      3. Excessively worn Contact Tip.                    3. Check that the hole in the tip is not
+                                                                             deformed or enlarged. If needed, replace
+                                                                             Contact Tip with proper size and type.
+                      4. Dirty Contact Tip.                               4. Properly clean Contact Tip.
+
+
+
+
+                                                                                                                                      Welding Tips
+                      1. Shielding gas bottle is empty.                   1. Check gas bottle and replenish as necessary.
+                      2. Not enough or too much shielding gas.            2. Check gas regulator to ensure proper flow.
+                      3. Dirty workpiece.                                 3. Clean workpiece down to bare metal.
+Porosity in the       4. Gun is being used too far                        4. Check CTWD (contact tip to work
+Weld Metal               away from workpiece.                                distance) for the proper procedure.
+                      5. Polarity is incorrect for the application.       5. Check the polarity and ensure it is DCEP
+                                                                             for MIG and DCEN for Flux-Cored.
+                      6. Dirty welding wire is introducing                6. Make certain that welding wire is clean
+                         contamination into the weld.                        and free of rust and residues.
+
+
+
+
+                                                                                                                                       MAINTENANCE
+             Follow all safety precautions whenever diagnosing or servicing the equipment.
+
+
+
+
+ Item 57812                        For technical questions, please call 1-800-444-3353.                                    Page 43
+

@@ -1,0 +1,79 @@
+                Basic Wire Welding Technique
+
+
+ Safety
+                1. Press (and hold) Trigger and contact the area
+                   to be welded with electrode wire to ignite arc.                stringer bead                  weave bead
+                2. For a narrow weld, you can usually draw the wire
+                   in a steady straight line.
+                   This is called a stringer bead.
+
+                    For a wider weld, draw the wire back and forth
+                    across the joint.
+                    This is called a weave bead and takes
+
+
+
+  CONTROLS
+                    practice to perform properly.
+
+
+
+
+                                                                                 Weld MIG Gun angles,
+                                                                             viewed from front of weld joint.
+
+
+                3. Direct the welding wire straight into the joint.
+                   This gives an angle of 90° (straight up and
+                   down) for butt (end to end) welds, and an
+
+  Wire
+                   angle of 45° for fillet (T-shaped) welds.
+
+                                                                                                                                 90°
+                                                                                         45°
+
+                                                                                fillet weld joint                 butt weld joint
+
+
+
+
+  TIG / Stick
+                                                                         Push Angle                           Drag Angle
+                                                                              0-15°                                 0-15°
+                4. For MIG welding using solid wire and
+                   shielding gas, the end of the MIG Gun should
+                   be tilted so that wire is angled anywhere
+                   in-between straight on and 15° away                                     Weld                               Weld
+                   from the direction you are welding. The                               Direction                          Direction
+                   amount of tilt is called the push angle.
+
+
+
+
+Welding Tips
+                                                                        Solid Wire with Shielding Gas   Flux-Cored Wire without Gas
+                5. When using flux-cored wire without
+                   shielding gas, the end of the MIG Gun
+                   should be tilted so that wire is angled
+                   anywhere in-between straight on and
+                   15° in the direction you are welding. The
+                   amount of tilt is called the drag angle.
+                                                                                                            CTWD
+
+
+
+
+MAINTENANCE
+                                                                                                          (up to 1/2")
+
+                6. The Contact Tip should remain within 1/2″
+                   of the work surface. This distance is called
+                   CTWD - Contact Tip to Work Distance.
+
+
+
+
+                Page 22                        For technical questions, please call 1-800-444-3353.                         Item 57812
+

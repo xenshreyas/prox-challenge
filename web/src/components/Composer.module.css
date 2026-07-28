@@ -1,0 +1,103 @@
+.wrap {
+  flex: none;
+  padding: 12px 22px 16px;
+  background: linear-gradient(to top, var(--bg-0) 55%, transparent);
+}
+
+.shell {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 9px;
+  padding: 8px 8px 8px 16px;
+  border-radius: var(--r-xl);
+  border: 1px solid var(--line-strong);
+  background: var(--bg-2);
+  box-shadow: var(--shadow-2);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.shell:focus-within {
+  border-color: var(--arc-line);
+  box-shadow: 0 0 0 3px rgba(255, 138, 61, 0.1), var(--shadow-2);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  resize: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 14.5px;
+  line-height: 1.55;
+  padding: 6px 0;
+  max-height: 200px;
+}
+.input::placeholder {
+  color: var(--fg-dim);
+}
+.input:disabled {
+  color: var(--fg-dim);
+}
+
+.send {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 99px;
+  color: #1a0d04;
+  background: linear-gradient(145deg, var(--arc-hi), var(--arc));
+  box-shadow: 0 3px 14px rgba(255, 138, 61, 0.3);
+  transition: transform 0.13s, opacity 0.13s, box-shadow 0.13s;
+}
+.send:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(255, 138, 61, 0.4);
+}
+.send:disabled {
+  opacity: 0.32;
+  box-shadow: none;
+}
+
+.stop {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 99px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-4);
+  color: var(--fg-mute);
+  font-size: 13px;
+  font-weight: 550;
+  transition: color 0.13s, border-color 0.13s;
+}
+.stop:hover {
+  color: #ffb3ac;
+  border-color: rgba(248, 81, 73, 0.5);
+}
+
+.hint {
+  max-width: 860px;
+  margin: 9px auto 0;
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--fg-dim);
+}
+
+@media (max-width: 620px) {
+  .wrap {
+    padding: 8px 12px 12px;
+  }
+  .hint {
+    display: none;
+  }
+}
