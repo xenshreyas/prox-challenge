@@ -15,7 +15,11 @@ import { readFileSync } from 'node:fs';
 
 import { classifyAgainstBest, groundingScore, includesFact, isBackendRefusal } from './run.js';
 import { wrapArtifact } from '../src/agent/artifact-harness.js';
-import { artifactCallToAction, figureCallToAction } from '../src/agent/tools.js';
+import {
+	artifactCallToAction,
+	directlyRelevantFigure,
+	figureCallToAction,
+} from '../src/agent/tools.js';
 import { parsePage } from '../src/kb/parse.js';
 import { search } from '../src/kb/search.js';
 import {
@@ -310,6 +314,25 @@ check(
 		'settings configurator',
 	),
 	'process-comparison ranges request an interactive settings configurator',
+);
+
+group('tools: directly relevant figures surface without model compliance');
+// Regression: q26 retrieved the complete image-only selection chart and built a
+// correct artifact, but the model still ignored show_figure. The user therefore
+// never saw the primary source and the measured multimodal score was zero.
+const q26Figure = directlyRelevantFigure(rangeQuestion, search(rangeQuestion, { limit: 8 }));
+check(
+	q26Figure?.chunk.doc === 'selection-chart' &&
+		q26Figure.chunk.page === 1 &&
+		q26Figure.chunk.figure?.slug === 'how-to-choose-a-welder-chart',
+	'q26 deterministically surfaces the image-only process selection chart',
+);
+check(
+	directlyRelevantFigure(
+		'What is the maximum open circuit voltage?',
+		search('What is the maximum open circuit voltage?', { limit: 8 }),
+	) === null,
+	'an unrelated low-scoring figure is not auto-surfaced for an ordinary lookup',
 );
 
 group('retrieval: shared MIG ratings remain reachable from a flux-cored query');

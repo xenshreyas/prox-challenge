@@ -74,6 +74,17 @@ export function figureCallToAction(hits: SearchHit[], alreadyShown: Set<string>)
 	);
 }
 
+/** Select a figure relevant enough to surface without another model tool call. */
+export function directlyRelevantFigure(query: string, hits: SearchHit[]): SearchHit | null {
+	const bestPassageScore = hits[0]?.score ?? 0;
+	if (bestPassageScore <= 0) return null;
+	const candidate = search(query, { limit: 1, kinds: ['figure'] })[0];
+	if (!candidate?.chunk.figure) return null;
+	// Numeric searches intentionally down-rank figures. This threshold recovers
+	// strong visual evidence while rejecting incidental manual artwork.
+	return candidate.score >= bestPassageScore * 0.6 ? candidate : null;
+}
+
 /** Restates the mechanical artifact rule beside parameterized search results. */
 export function artifactCallToAction(
 	query: string,
@@ -168,6 +179,27 @@ export function createManualTools(ctx: ToolContext) {
 						},
 					],
 				};
+			}
+			// Measured evals repeatedly found that the model read a relevant figure
+			// description but skipped the follow-up display call. Surface one strong
+			// visual match deterministically and retain show_figure for additional images.
+			const figure = directlyRelevantFigure(query, hits);
+			if (figure?.chunk.figure) {
+				const c = figure.chunk;
+				const meta = c.figure!;
+				const key = `${c.doc}#${c.page}#${meta.slug}`;
+				if (!shownFigures.has(key)) {
+					shownFigures.add(key);
+					ctx.emit({
+						type: 'figure',
+						doc: c.doc,
+						page: c.page,
+						slug: meta.slug,
+						caption: meta.caption,
+						description: meta.description,
+						imageUrl: imageUrl(c.doc, c.page),
+					});
+				}
 			}
 			// Emit citations so the UI can show source chips even before the model
 			// writes them into prose.
