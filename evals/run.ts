@@ -190,6 +190,45 @@ export function isBackendRefusal(answer: string): boolean {
 	return BACKEND_REFUSAL.test(answer.slice(0, 600));
 }
 
+export interface EvalSummaryForComparison {
+	at: string;
+	n: number;
+	total: number;
+	ci95?: number;
+}
+
+export type EvalComparison =
+	| { kind: 'first' }
+	| {
+			kind: 'new-best' | 'inconclusive' | 'regression';
+			best: EvalSummaryForComparison;
+			delta: number;
+			noiseFloor: number;
+	  };
+
+/**
+ * Classifies a run against the best *previous* run with the same sample size.
+ *
+ * History is allowed to contain `current` because the harness persists a result
+ * before rendering its verdict. Excluding it here is essential: otherwise a
+ * current new best selects itself as the incumbent and no verdict is printed.
+ */
+export function classifyAgainstBest(
+	current: EvalSummaryForComparison,
+	history: EvalSummaryForComparison[],
+): EvalComparison {
+	const previous = history.filter((h) => h.n === current.n && h.at !== current.at);
+	if (previous.length === 0) return { kind: 'first' };
+
+	const best = previous.reduce((a, b) => (b.total > a.total ? b : a));
+	const delta = (current.total - best.total) * 100;
+	const noiseFloor = Math.hypot((current.ci95 ?? 0) * 100, (best.ci95 ?? 0) * 100);
+	if (Math.abs(delta) <= noiseFloor) {
+		return { kind: 'inconclusive', best, delta, noiseFloor };
+	}
+	return { kind: delta > 0 ? 'new-best' : 'regression', best, delta, noiseFloor };
+}
+
 async function main() {
 	const only = process.argv.slice(2).filter((a) => !a.startsWith('-'));
 	const limitArg = process.argv.find((a) => a.startsWith('--limit='));
@@ -313,27 +352,25 @@ async function main() {
 		const hist = (await readFile(path.join(evalDir, 'history.jsonl'), 'utf8'))
 			.trim()
 			.split('\n')
-			.map((l) => JSON.parse(l) as typeof summary & { ci95?: number })
-			.filter((h) => h.n === summary.n);
-		const best = hist.reduce((a, b) => (b.total > a.total ? b : a), hist[0]);
-		if (best && best.at !== summary.at) {
-			const delta = (summary.total - best.total) * 100;
-			// Only call it a real move if it clears the noise floor of BOTH runs.
-			const noiseFloor = Math.hypot(ci95, (best.ci95 ?? 0) * 100);
-			if (Math.abs(delta) < noiseFloor) {
-				console.log(
-					`  INCONCLUSIVE (${delta >= 0 ? '+' : ''}${delta.toFixed(1)} pts vs best ` +
-						`${(best.total * 100).toFixed(1)}%, within ±${noiseFloor.toFixed(1)} noise) — ` +
-						`not evidence either way`,
-				);
-			} else {
-				console.log(
-					delta >= 0
-						? `  NEW BEST (+${delta.toFixed(1)} pts over ${best.at}, exceeds ±${noiseFloor.toFixed(1)} noise)`
-						: `  REGRESSION (${delta.toFixed(1)} pts vs best ${(best.total * 100).toFixed(1)}%, ` +
-							`exceeds ±${noiseFloor.toFixed(1)} noise) — keep the previous approach`,
-				);
-			}
+			.map((l) => JSON.parse(l) as EvalSummaryForComparison);
+		const comparison = classifyAgainstBest({ ...summary, ci95: ci95 / 100 }, hist);
+		if (comparison.kind === 'inconclusive') {
+			console.log(
+				`  INCONCLUSIVE (${comparison.delta >= 0 ? '+' : ''}${comparison.delta.toFixed(1)} pts vs best ` +
+					`${(comparison.best.total * 100).toFixed(1)}%, within ±${comparison.noiseFloor.toFixed(1)} noise) — ` +
+					`not evidence either way`,
+			);
+		} else if (comparison.kind === 'new-best') {
+			console.log(
+				`  NEW BEST (+${comparison.delta.toFixed(1)} pts over ${comparison.best.at}, ` +
+					`exceeds ±${comparison.noiseFloor.toFixed(1)} noise)`,
+			);
+		} else if (comparison.kind === 'regression') {
+			console.log(
+				`  REGRESSION (${comparison.delta.toFixed(1)} pts vs best ` +
+					`${(comparison.best.total * 100).toFixed(1)}%, exceeds ±${comparison.noiseFloor.toFixed(1)} ` +
+					`noise) — keep the previous approach`,
+			);
 		}
 	} catch {
 		/* first run */

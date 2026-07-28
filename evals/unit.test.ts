@@ -11,7 +11,7 @@
  * No API key, no network, no model. Run: `npm test`.
  */
 
-import { includesFact, isBackendRefusal } from './run.js';
+import { classifyAgainstBest, includesFact, isBackendRefusal } from './run.js';
 import { wrapArtifact } from '../src/agent/artifact-harness.js';
 import { figureCallToAction } from '../src/agent/tools.js';
 import { search } from '../src/kb/search.js';
@@ -246,6 +246,33 @@ check(
 		new Set(),
 	) === '',
 	'silent when the result set has no figures (adds no noise)',
+);
+
+group('eval: max-score verdict compares against previous runs');
+// Regression: the harness appended the current run, selected the best run from
+// that history (including current), then skipped comparison when the best was
+// current. A genuine new best therefore produced no NEW BEST verdict at all.
+const incumbent = {
+	at: '2026-07-28T05:03:09.754Z',
+	n: 40,
+	total: 0.7617,
+	ci95: 0.01,
+};
+const improved = {
+	at: '2026-07-28T06:00:00.000Z',
+	n: 40,
+	total: 0.8017,
+	ci95: 0.01,
+};
+const verdict = classifyAgainstBest(improved, [incumbent, improved]);
+check(verdict.kind === 'new-best', 'current run can be classified as a genuine new best');
+check(
+	verdict.kind !== 'first' && verdict.best.at === incumbent.at,
+	'comparison incumbent excludes the current run',
+);
+check(
+	classifyAgainstBest(incumbent, [incumbent]).kind === 'first',
+	'a first run has no fabricated comparison',
 );
 
 console.log(failures === 0 ? '\nALL PASS' : `\n${failures} FAILURE(S)`);
