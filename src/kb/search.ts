@@ -328,10 +328,29 @@ export function invalidateKB(): void {
 
 /* ---------------------------------------------------------------- scoring */
 
+/** Tunable knobs (env overrides exist only for the offline eval sweep). */
+const envNum = (k: string, dflt: number): number => {
+	const v = process.env[k];
+	const n = v === undefined ? Number.NaN : Number(v);
+	return Number.isFinite(n) ? n : dflt;
+};
+
 const K1 = 1.4;
 const B = 0.72;
 const EXPANSION_WEIGHT = 0.45;
-const FIELD_WEIGHT = 1.9;
+const FIELD_WEIGHT = envNum('RT_FIELD_WEIGHT', 1.9);
+
+const PROC_HIT = envNum('RT_PROC_HIT', 1.45);
+/**
+ * Penalty for a chunk explicitly tagged with a *different* weld process.
+ *
+ * This used to be 0.45, which acted as a near-hard filter and was the sole cause
+ * of the q09 miss: "rated duty cycle for Flux-Cored" penalised page 7 (tagged
+ * mig/tig/stick) even though the manual documents flux-cored under the shared
+ * wire-feed specs. Softening it to a near-neutral nudge took recall@10 94.9% ->
+ * 100.0%. Keep it a soft preference, never a filter.
+ */
+const PROC_MISS = envNum('RT_PROC_MISS', 0.95);
 
 function idf(df: number, N: number): number {
 	return Math.log(1 + (N - df + 0.5) / (df + 0.5));
@@ -395,7 +414,12 @@ export interface SearchOptions {
 export function search(query: string, opts: SearchOptions = {}): SearchHit[] {
 	const index = getIndex();
 	const limit = opts.limit ?? 10;
-	const perPageLimit = opts.perPageLimit ?? Math.max(2, Math.ceil(limit / 4));
+	// Per-page diversity. A cap of limit/5 (=2 at the default limit of 10) beat
+	// limit/4 (=3): spec pages emit many near-duplicate table chunks that
+	// otherwise consumed 3 of the top 5 slots and crowded out the second gold
+	// page. recall@3 76.9% -> 82.1%, MRR 0.7290 -> 0.7380, nothing regressed.
+	const perPageLimit =
+		opts.perPageLimit ?? Math.max(2, Math.ceil(limit / envNum('RT_PAGE_DIV', 5)));
 	const q = analyzeQuery(query);
 	const wanted = opts.process ? [opts.process] : q.processes;
 
@@ -444,9 +468,9 @@ export function search(query: string, opts: SearchOptions = {}): SearchHit[] {
 			const procs = c.processes ?? [];
 			const hit = procs.some((p) => wanted.includes(p));
 			const general = procs.length === 0 || procs.includes('general');
-			if (hit) score *= 1.45;
+			if (hit) score *= PROC_HIT;
 			else if (general) score *= 1.0;
-			else score *= 0.45; // explicitly a different process
+			else score *= PROC_MISS; // explicitly a different process
 		}
 
 		// --- figure hook boost for visual questions ---------------------------

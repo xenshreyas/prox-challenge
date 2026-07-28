@@ -114,7 +114,7 @@ app.post('/api/chat', async (req: Request, res: Response) => {
 app.use('/kb/pages', express.static(KB_PAGES_DIR, { maxAge: '1y', immutable: true }));
 
 // Production: serve the built SPA. In dev, Vite serves it on 5173 and proxies here.
-const CLIENT_DIST = path.resolve(HERE, '../../dist/web');
+const CLIENT_DIST = path.join(REPO_ROOT, 'dist', 'web');
 if (existsSync(CLIENT_DIST)) {
 	app.use(express.static(CLIENT_DIST));
 	app.get('*', (_req, res) => res.sendFile(path.join(CLIENT_DIST, 'index.html')));

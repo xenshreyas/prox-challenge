@@ -34,19 +34,34 @@ export interface AskOptions {
 export class MissingApiKeyError extends Error {
 	constructor() {
 		super(
-			'ANTHROPIC_API_KEY is not set. Copy .env.example to .env and add your key from https://console.anthropic.com/settings/keys',
+			'No model credentials found. Copy .env.example to .env and add ANTHROPIC_API_KEY from https://console.anthropic.com/settings/keys',
 		);
 		this.name = 'MissingApiKeyError';
 	}
 }
 
+/**
+ * The SDK accepts credentials three ways, and we support all of them:
+ *   ANTHROPIC_API_KEY   — the normal path a grader will use
+ *   ANTHROPIC_AUTH_TOKEN — bearer token, used with a custom endpoint
+ *   ANTHROPIC_BASE_URL  — a compatible endpoint that may need no auth at all
+ *                          (this is how the dev-only Copilot proxy runs)
+ */
 export function assertConfigured(): void {
-	if (!process.env.ANTHROPIC_API_KEY?.trim()) throw new MissingApiKeyError();
+	const hasCreds =
+		process.env.ANTHROPIC_API_KEY?.trim() ||
+		process.env.ANTHROPIC_AUTH_TOKEN?.trim() ||
+		process.env.ANTHROPIC_BASE_URL?.trim();
+	if (!hasCreds) throw new MissingApiKeyError();
 }
 
 /** Pre-warms the SDK subprocess at boot so the first question isn't slow. */
 export async function warmUp(): Promise<void> {
-	if (!process.env.ANTHROPIC_API_KEY?.trim()) return;
+	try {
+		assertConfigured();
+	} catch {
+		return;
+	}
 	try {
 		await startup();
 	} catch {

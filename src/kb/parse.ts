@@ -103,6 +103,24 @@ function asList(v: string | string[] | undefined): string[] {
 	return Array.isArray(v) ? v : [v];
 }
 
+/**
+ * Normalize a page `topics` entry to a canonical slug.
+ *
+ * The extracted page metadata is inconsistent about separators: page 16 emits
+ * `duty-cycle`, page 19 emits `duty_cycle`, and other pages emit `duty cycle`.
+ * Those are the same topic but tokenized differently, so metadata-field matching
+ * silently missed. Collapse every separator to a single hyphen and lowercase.
+ */
+export function normalizeTopicSlug(raw: string): string {
+	return raw
+		.toLowerCase()
+		.trim()
+		.replace(/[\s_]+/g, '-')
+		.replace(/[^a-z0-9%/-]+/g, '-')
+		.replace(/-{2,}/g, '-')
+		.replace(/^-+|-+$/g, '');
+}
+
 function normalizeProcesses(raw: string[]): WeldProcess[] {
 	const seen = new Set<WeldProcess>();
 	for (const r of raw) {
@@ -258,7 +276,7 @@ export function parsePage(stem: string, raw: string): ParsedPage | null {
 
 	const section =
 		(typeof metaRaw.section === 'string' && metaRaw.section) || 'Unknown';
-	const topics = asList(metaRaw.topics).map((t) => t.toLowerCase());
+	const topics = asList(metaRaw.topics).map(normalizeTopicSlug).filter(Boolean);
 	const processes = normalizeProcesses(asList(metaRaw.processes));
 	const keyFacts = asList(metaRaw.key_facts);
 

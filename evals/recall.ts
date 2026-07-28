@@ -34,6 +34,7 @@ async function main() {
 	const ks = [1, 3, 5, 10];
 	const hitsAt: Record<number, number> = Object.fromEntries(ks.map((k) => [k, 0]));
 	const worst: { id: string; question: string; got: number[]; want: number[] }[] = [];
+	let rrSum = 0;
 
 	for (const q of questions) {
 		if (!q.page_refs?.length) continue;
@@ -42,6 +43,8 @@ async function main() {
 		for (const k of ks) {
 			if (pages.slice(0, k).some((p) => q.page_refs.includes(p))) hitsAt[k] += 1;
 		}
+		const firstHit = pages.findIndex((p) => q.page_refs.includes(p));
+		if (firstHit >= 0) rrSum += 1 / (firstHit + 1);
 		if (!pages.slice(0, 10).some((p) => q.page_refs.includes(p))) {
 			worst.push({
 				id: q.id,
@@ -57,6 +60,7 @@ async function main() {
 	for (const k of ks) {
 		console.log(`  recall@${String(k).padEnd(2)}  ${((hitsAt[k] / n) * 100).toFixed(1)}%`);
 	}
+	console.log(`  MRR        ${(rrSum / n).toFixed(4)}`);
 
 	if (worst.length) {
 		console.log(`\nMisses (${worst.length}) — right page not in top 10:`);

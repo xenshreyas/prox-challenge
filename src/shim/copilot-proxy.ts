@@ -210,78 +210,220 @@ interface ParsedToolCall {
   input: Record<string, unknown>;
 }
 
-/** Extract candidate JSON objects: raw, or inside ```json fences, or the first
- *  balanced {...} region containing "tool_calls". */
-function jsonCandidates(text: string): string[] {
-  const out: string[] = [];
-  const trimmed = text.trim();
-  if (trimmed.startsWith('{')) out.push(trimmed);
+/** A candidate JSON region located inside the raw model output. `start`/`end`
+ *  are offsets into the ORIGINAL text so the region can be excised afterwards
+ *  (requirement: none of the tool_calls JSON may ever surface as prose). */
+interface JsonSpan {
+  start: number;
+  end: number;
+  raw: string;
+}
 
-  const fence = /```(?:json)?\s*([\s\S]*?)```/g;
-  let m: RegExpExecArray | null;
-  while ((m = fence.exec(text)) !== null) {
-    const inner = (m[1] ?? '').trim();
-    if (inner) out.push(inner);
-  }
-
-  const idx = text.indexOf('"tool_calls"');
-  if (idx !== -1) {
-    // scan left for the opening brace, then match balanced braces
-    let start = text.lastIndexOf('{', idx);
-    while (start !== -1) {
-      let depth = 0;
-      let inStr = false;
-      let esc = false;
-      for (let i = start; i < text.length; i++) {
-        const c = text[i]!;
-        if (inStr) {
-          if (esc) esc = false;
-          else if (c === '\\') esc = true;
-          else if (c === '"') inStr = false;
-          continue;
-        }
-        if (c === '"') inStr = true;
-        else if (c === '{') depth++;
-        else if (c === '}') {
-          depth--;
-          if (depth === 0) {
-            out.push(text.slice(start, i + 1));
-            return out;
-          }
-        }
+/**
+ * Repair the single most common way an LLM emits *almost*-valid JSON: literal
+ * control characters (real newlines / tabs / CRs) inside a string literal.
+ * This is exactly what breaks large embedded `code` payloads — one stray raw
+ * newline in a 4KB source string invalidates the whole object.
+ *
+ * We walk the text with a proper string-state machine (so braces and escaped
+ * quotes inside strings are handled correctly) and escape any raw control char
+ * we find *while inside* a string. Everything outside strings is untouched.
+ */
+export function repairJsonControlChars(s: string): string {
+  let out = '';
+  let inStr = false;
+  let esc = false;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i]!;
+    if (inStr) {
+      if (esc) {
+        esc = false;
+        out += c;
+        continue;
       }
-      start = text.lastIndexOf('{', start - 1);
+      if (c === '\\') {
+        esc = true;
+        out += c;
+        continue;
+      }
+      if (c === '"') {
+        inStr = false;
+        out += c;
+        continue;
+      }
+      if (c === '\n') out += '\\n';
+      else if (c === '\r') out += '\\r';
+      else if (c === '\t') out += '\\t';
+      else if (c < ' ') out += '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0');
+      else out += c;
+      continue;
     }
+    if (c === '"') inStr = true;
+    out += c;
   }
   return out;
 }
 
-export function parseToolCalls(text: string): ParsedToolCall[] | null {
-  for (const cand of jsonCandidates(text)) {
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(cand);
-    } catch {
+/** Scan forward from `start` (which must be a `{`) to its balanced closing
+ *  brace, respecting string literals and escapes. Returns the end index
+ *  (inclusive) or -1. */
+function matchBalanced(text: string, start: number): number {
+  let depth = 0;
+  let inStr = false;
+  let esc = false;
+  for (let i = start; i < text.length; i++) {
+    const c = text[i]!;
+    if (inStr) {
+      if (esc) esc = false;
+      else if (c === '\\') esc = true;
+      else if (c === '"') inStr = false;
       continue;
     }
-    if (!parsed || typeof parsed !== 'object') continue;
-    const calls = (parsed as { tool_calls?: unknown }).tool_calls;
-    if (!Array.isArray(calls) || calls.length === 0) continue;
-    const valid: ParsedToolCall[] = [];
-    for (const c of calls) {
-      if (!c || typeof c !== 'object') continue;
-      const name = (c as { name?: unknown }).name;
-      if (typeof name !== 'string' || !name) continue;
-      const rawInput = (c as { input?: unknown }).input;
-      const input =
-        rawInput && typeof rawInput === 'object' && !Array.isArray(rawInput)
-          ? (rawInput as Record<string, unknown>)
-          : {};
-      valid.push({ name, input });
+    if (c === '"') inStr = true;
+    else if (c === '{') depth++;
+    else if (c === '}') {
+      depth--;
+      if (depth === 0) return i;
     }
-    if (valid.length > 0) return valid;
+  }
+  return -1;
+}
+
+/**
+ * Extract every plausible JSON-object candidate, with its offsets:
+ *   - the whole trimmed output, when it is itself an object
+ *   - the body of any ``` / ```json fence
+ *   - EVERY balanced {...} region that contains `"tool_calls"` (not just the
+ *     first — the model sometimes emits several)
+ * Ordered most-specific-first so a tool_calls region wins over an outer wrapper.
+ */
+export function jsonSpans(text: string): JsonSpan[] {
+  const out: JsonSpan[] = [];
+  const seen = new Set<string>();
+  const push = (start: number, end: number) => {
+    if (start < 0 || end <= start) return;
+    const key = `${start}:${end}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push({ start, end, raw: text.slice(start, end) });
+  };
+
+  // 1. Balanced regions anchored on each occurrence of "tool_calls".
+  let from = 0;
+  for (;;) {
+    const idx = text.indexOf('"tool_calls"', from);
+    if (idx === -1) break;
+    from = idx + 1;
+    let start = text.lastIndexOf('{', idx);
+    while (start !== -1) {
+      const end = matchBalanced(text, start);
+      if (end !== -1) {
+        push(start, end + 1);
+        break;
+      }
+      start = text.lastIndexOf('{', start - 1);
+    }
+  }
+
+  // 2. Fenced blocks.
+  const fence = /```(?:json)?[ \t]*\r?\n?([\s\S]*?)```/g;
+  let m: RegExpExecArray | null;
+  while ((m = fence.exec(text)) !== null) {
+    const inner = m[1] ?? '';
+    const innerStart = m.index + m[0].indexOf(inner);
+    // Excise the whole fence, not just its body, so no ``` residue remains.
+    if (inner.trim().startsWith('{')) push(m.index, m.index + m[0].length);
+    else push(innerStart, innerStart + inner.length);
+  }
+
+  // 3. The entire output, if it is one object.
+  const lead = text.length - text.trimStart().length;
+  const tail = text.trimEnd().length;
+  if (text.trim().startsWith('{') && text.trim().endsWith('}')) push(lead, tail);
+
+  return out;
+}
+
+function coerceCalls(parsed: unknown): ParsedToolCall[] | null {
+  if (!parsed || typeof parsed !== 'object') return null;
+  const calls = (parsed as { tool_calls?: unknown }).tool_calls;
+  if (!Array.isArray(calls) || calls.length === 0) return null;
+  const valid: ParsedToolCall[] = [];
+  for (const c of calls) {
+    if (!c || typeof c !== 'object') continue;
+    const name = (c as { name?: unknown }).name;
+    if (typeof name !== 'string' || !name) continue;
+    const rawInput = (c as { input?: unknown }).input ?? (c as { arguments?: unknown }).arguments;
+    let input: Record<string, unknown> = {};
+    if (rawInput && typeof rawInput === 'object' && !Array.isArray(rawInput)) {
+      input = rawInput as Record<string, unknown>;
+    } else if (typeof rawInput === 'string') {
+      // Some models double-encode the arguments object.
+      try {
+        const inner: unknown = JSON.parse(repairJsonControlChars(rawInput));
+        if (inner && typeof inner === 'object' && !Array.isArray(inner)) {
+          input = inner as Record<string, unknown>;
+        }
+      } catch {
+        /* leave empty */
+      }
+    }
+    valid.push({ name, input });
+  }
+  return valid.length > 0 ? valid : null;
+}
+
+export interface ToolCallExtraction {
+  calls: ParsedToolCall[];
+  /** The model output with every JSON region that produced a tool call removed. */
+  residualText: string;
+}
+
+/**
+ * Find tool calls anywhere in the output. Strictly JSON.parse-based (never a
+ * regex over the payload), with a control-character repair fallback so huge
+ * embedded `code` strings containing raw newlines still parse.
+ *
+ * Returns the calls AND the text with those JSON regions excised, so callers
+ * can guarantee the JSON never leaks into a text block.
+ */
+export function extractToolCalls(text: string): ToolCallExtraction | null {
+  const spans = jsonSpans(text);
+  for (const span of spans) {
+    let calls: ParsedToolCall[] | null = null;
+    for (const candidate of [span.raw, repairJsonControlChars(span.raw)]) {
+      try {
+        calls = coerceCalls(JSON.parse(candidate));
+      } catch {
+        calls = null;
+      }
+      if (calls) break;
+    }
+    if (!calls) continue;
+    const residual = (text.slice(0, span.start) + text.slice(span.end)).trim();
+    return { calls, residualText: residual };
   }
   return null;
+}
+
+/** Back-compat wrapper. */
+export function parseToolCalls(text: string): ParsedToolCall[] | null {
+  return extractToolCalls(text)?.calls ?? null;
+}
+
+/**
+ * Last-resort safety net for requirement (4): if the output still *looks* like
+ * a tool_calls payload but we could not parse it into calls, we must not show
+ * that JSON to the user either. Excise every such region.
+ */
+export function stripUnparsedToolCallJson(text: string): string {
+  if (!text.includes('"tool_calls"') && !text.includes("'tool_calls'")) return text;
+  let out = text;
+  for (const span of jsonSpans(text).slice().sort((a, b) => b.start - a.start)) {
+    if (!span.raw.includes('tool_calls')) continue;
+    out = out.slice(0, span.start) + out.slice(span.end);
+  }
+  return out.replace(/```(?:json)?\s*```/g, '').trim();
 }
 
 function estimateTokens(s: string): number {
@@ -305,20 +447,29 @@ export function buildAnthropicMessage(
   copilotText: string,
   toolsAvailable: boolean,
 ): BuiltMessage {
-  const calls = toolsAvailable ? parseToolCalls(copilotText) : null;
+  // NOTE: this function is the SINGLE conversion point. Both the JSON and the
+  // SSE paths call it, so they cannot diverge. It runs on every turn.
+  const extracted = toolsAvailable ? extractToolCalls(copilotText) : null;
   let content: ContentBlock[];
   let stop_reason: 'end_turn' | 'tool_use';
 
-  if (calls && calls.length > 0) {
-    content = calls.map((c) => ({
+  if (extracted && extracted.calls.length > 0) {
+    // Multiple tool calls -> multiple tool_use blocks in ONE assistant message,
+    // each with its own unique id.
+    content = extracted.calls.map((c) => ({
       type: 'tool_use' as const,
       id: `toolu_${randomUUID().replace(/-/g, '').slice(0, 24)}`,
       name: c.name,
       input: c.input,
     }));
     stop_reason = 'tool_use';
+    // Requirement (4): none of the tool_calls JSON may appear in a text block.
+    // We deliberately DROP the residual prose entirely rather than risk
+    // leaking a partially-excised fragment.
   } else {
-    content = [{ type: 'text', text: copilotText || '(empty response)' }];
+    // Even with no parsable calls, never surface tool_calls JSON as prose.
+    const safe = stripUnparsedToolCallJson(copilotText).trim();
+    content = [{ type: 'text', text: safe || '(empty response)' }];
     stop_reason = 'end_turn';
   }
 
