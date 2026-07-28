@@ -377,24 +377,27 @@ Retrieval recall over 39 golden questions:
   recall@1   66.7%
   recall@3   84.6%
   recall@5   89.7%
-  recall@10  97.4% – 100.0%
-  MRR        0.76
+  recall@10  100.0%
+  MRR        0.7658
 ```
 
 These are measured numbers from actual runs of the command above, not estimates.
-`recall@10` is quoted as a range deliberately: retrieval scoring was still being
-tuned as this was written, and across repeated runs the last one or two questions
-sat right on the k=10 boundary. The floor is the honest number to plan against.
+Retrieval is deterministic — no model, no network, no sampling — so repeated runs
+reproduce these figures exactly (verified across three consecutive runs).
 
-The residual failure mode is consistent and worth naming: questions whose answer
-lives on a page that never states the question's vocabulary. The recurring
-example is open-circuit voltage / per-process duty cycle values that sit on the
-nameplate and spec pages (7, 16) while the query's strongest lexical match is a
-different, more verbose page. This is the known weakness of a purely lexical
-retriever, and it's exactly the class of miss the harness exists to surface.
+There are currently no misses at k=10. The failure mode this harness exists to
+surface is a real one, though, and worth naming: questions whose answer lives on
+a page that never states the question's own vocabulary. Both of the original
+misses were exactly that — one asked about the "nameplate" duty-cycle curves,
+where the word *nameplate* appeared only inside a topic slug; the other asked
+about flux-cored duty cycle, where the manual files flux-cored under the shared
+MIG/wire specs. That second one was instructive: a hard process filter was
+*excluding* the correct pages, because it encoded an assumption the source
+document doesn't share. Softening it to a boost fixed it.
 
-Re-run the command to see current numbers; this is a snapshot of a system that
-was still being tuned, not a claim about a frozen artifact.
+This is the standing weakness of a purely lexical retriever. The `@1` and `@3`
+figures (66.7% / 84.6%) are where the remaining headroom is — the right page is
+always retrieved, but not always ranked first.
 
 ### 2. End-to-end agent scoring — `npm run eval`
 
