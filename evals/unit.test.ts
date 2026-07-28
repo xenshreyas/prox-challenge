@@ -14,6 +14,7 @@
 import { classifyAgainstBest, includesFact, isBackendRefusal } from './run.js';
 import { wrapArtifact } from '../src/agent/artifact-harness.js';
 import { artifactCallToAction, figureCallToAction } from '../src/agent/tools.js';
+import { parsePage } from '../src/kb/parse.js';
 import { search } from '../src/kb/search.js';
 import {
 	buildPrompt,
@@ -263,6 +264,52 @@ check(dutyArtifactCta.includes('calculator'), 'duty-cycle search requests a calc
 check(
 	artifactCallToAction('What is the maximum open circuit voltage?', search('maximum open circuit voltage', { limit: 8 })) === '',
 	'plain one-value lookup adds no artifact noise',
+);
+
+group('KB parser: tables retain bold subsection labels');
+// Regression: page 25 has adjacent 240 V and 120 V nameplate tables under one
+// markdown heading. Their voltage labels are standalone bold lines, which the
+// parser discarded. Both chunks therefore had the same generic heading and the
+// 120 V table ranked above the 240 V table for an explicit 240 V query.
+const labelledTables = parsePage(
+	'owner-manual-99',
+	`### Nameplate Data
+
+**240 VAC Input Section**
+
+| Process | Duty Cycle | Current |
+|---|---|---|
+| TIG | 60% | 125 A |
+
+**120 VAC Input Section**
+
+| Process | Duty Cycle | Current |
+|---|---|---|
+| TIG | 60% | 105 A |
+
+\`\`\`yaml
+page: 99
+doc: owner-manual
+section: Specifications
+topics: [duty-cycle]
+processes: [tig]
+\`\`\``,
+);
+const parsedTables = labelledTables?.chunks.filter((c) => c.kind === 'table') ?? [];
+check(parsedTables[0]?.heading === '240 VAC Input Section', '240 V table keeps its subsection label');
+check(parsedTables[1]?.heading === '120 VAC Input Section', '120 V table keeps its subsection label');
+const nameplate240 = search(
+	'What is the 60% duty cycle output for TIG and Stick on 240 V per the nameplate?',
+	{ limit: 2 },
+);
+check(
+	nameplate240[0]?.chunk.heading?.startsWith('240 VAC') === true,
+	'explicit 240 V query ranks the 240 V nameplate table first',
+);
+check(
+	nameplate240[0]?.chunk.text.includes('| Stick | 10A/20.4V to 175A/27V | 60% | 115A | 24.6V |') === true &&
+		nameplate240[0]?.chunk.text.includes('| TIG | 10A/10.4V to 175A/17V | 60% | 125A | 15V |') === true,
+	'top result contains both exact 240 V answers without interpolation',
 );
 
 group('eval: max-score verdict compares against previous runs');

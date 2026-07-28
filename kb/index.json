@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-07-28T03:39:44.338Z",
+  "builtAt": "2026-07-28T08:49:00.298Z",
   "chunks": [
     {
       "doc": "owner-manual",
@@ -13307,7 +13307,7 @@
       ],
       "id": "owner-manual#p25:table:0",
       "kind": "table",
-      "heading": "Nameplate / Rating Label Data (reproduced from embedded PDF text layer; not legibly rendered in the raster diagram)",
+      "heading": "240 VAC / 1~50/60Hz Input Section",
       "text": "| Process | Output Range | Duty Cycle (X) | Output Current (I2) | Load Voltage (U2) | Max OCV (U0) |\n|---|---|---|---|---|---|\n| MIG | 30A/15.5V to 220A/25V | 25% | 200A | 24V | 86V |\n| MIG | 30A/15.5V to 220A/25V | 60% | 130A | 20.5V | 86V |\n| MIG | 30A/15.5V to 220A/25V | 100% | 115A | 19.75V | 86V |\n| Stick | 10A/20.4V to 175A/27V | 25% | 175A | 27V | 86V |\n| Stick | 10A/20.4V to 175A/27V | 60% | 115A | 24.6V | 86V |\n| Stick | 10A/20.4V to 175A/27V | 100% | 100A | 24V | 86V |\n| TIG | 10A/10.4V to 175A/17V | 30% | 175A | 17V | 86V |\n| TIG | 10A/10.4V to 175A/17V | 60% | 125A | 15V | 86V |\n| TIG | 10A/10.4V to 175A/17V | 100% | 105A | 14.2V | 86V |"
     },
     {
@@ -13335,7 +13335,7 @@
       ],
       "id": "owner-manual#p25:table:1",
       "kind": "table",
-      "heading": "Nameplate / Rating Label Data (reproduced from embedded PDF text layer; not legibly rendered in the raster diagram)",
+      "heading": "120 VAC / 1~50/60Hz Input Section",
       "text": "| Process | Output Range | Duty Cycle (X) | Output Current (I2) | Load Voltage (U2) | Max OCV (U0) |\n|---|---|---|---|---|---|\n| MIG | 30A/15.5V to 140A/21V | 40% | 100A | 19V | 86V |\n| MIG | 30A/15.5V to 140A/21V | 60% | 85A | 18.25V | 86V |\n| MIG | 30A/15.5V to 140A/21V | 100% | 75A | 17.75V | 86V |\n| Stick | 10A/20.4V to 80A/23.2V | 40% | 80A | 23.2V | 86V |\n| Stick | 10A/20.4V to 80A/23.2V | 60% | 70A | 22.8V | 86V |\n| Stick | 10A/20.4V to 80A/23.2V | 100% | 60A | 22.4V | 86V |\n| TIG | 10A/10.4V to 125A/15V | 40% | 125A | 15V | 86V |\n| TIG | 10A/10.4V to 125A/15V | 60% | 105A | 14.2V | 86V |\n| TIG | 10A/10.4V to 125A/15V | 100% | 90A | 13.6V | 86V |"
     },
     {

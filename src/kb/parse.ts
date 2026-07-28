@@ -207,11 +207,23 @@ function splitTables(prose: string): { tables: string[]; text: string } {
 	return { tables, text: kept.join('\n') };
 }
 
-/** Finds the nearest preceding markdown heading for context. */
+/**
+ * Finds the nearest preceding structural label for context.
+ *
+ * Extracted pages use both markdown headings and standalone bold input-section
+ * labels. The latter matter for adjacent tables such as the 240 V and 120 V
+ * nameplate blocks: dropping them makes the tables indistinguishable to
+ * retrieval even though their values differ. Other bold callouts (for example
+ * "IMPORTANT!") are deliberately ignored because they are not table context.
+ */
 function nearestHeading(text: string, upto: number): string | null {
 	const before = text.slice(0, upto);
-	const matches = [...before.matchAll(/^#{1,4}\s+(.*)$/gm)];
-	return matches.length ? matches[matches.length - 1][1].trim() : null;
+	const labels = [...before.matchAll(/^(?:#{1,4}\s+(.+)|\s*\*\*(.+?)\*\*\s*)$/gm)].filter(
+		(m) => m[1] !== undefined || /\bsection\b|\b(?:120|240)\s*vac?\b/i.test(m[2] ?? ''),
+	);
+	if (labels.length === 0) return null;
+	const latest = labels[labels.length - 1];
+	return (latest[1] ?? latest[2]).trim();
 }
 
 /** Breaks long prose into paragraph-grouped chunks of roughly `target` chars. */
