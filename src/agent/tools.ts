@@ -85,6 +85,52 @@ export function markFigureShown(alreadyShown: Set<string>, key: string): boolean
 export function directlyRelevantFigure(query: string, hits: SearchHit[]): SearchHit | null {
 	const bestPassageScore = hits[0]?.score ?? 0;
 	if (bestPassageScore <= 0) return null;
+	const normalizedQuery = query.toLowerCase();
+	// Nameplate table chunks receive a large numeric/table prior, so comparing a
+	// figure's raw score to the best passage hides the exact picture being asked
+	// about. Prefer the reproduced rear-panel nameplate explicitly when named.
+	if (/nameplate|rating label/.test(normalizedQuery)) {
+		const nameplate = search(query, { limit: 20, kinds: ['figure'] }).find(
+			(hit) =>
+				hit.chunk.doc === 'owner-manual' &&
+				hit.chunk.page === 27 &&
+				hit.chunk.figure?.slug === 'power-input-rating-label',
+		);
+		if (nameplate) return nameplate;
+	}
+	// The manual illustrates the reset control on the same rear-panel figure as
+	// the power input. Troubleshooting prose answers when to press it; the figure
+	// answers the visual part of where that physical button is.
+	if (/reset button|reset control/.test(normalizedQuery)) {
+		const resetControl = search(query, { limit: 20, kinds: ['figure'] }).find(
+			(hit) =>
+				hit.chunk.doc === 'owner-manual' &&
+				hit.chunk.page === 27 &&
+				hit.chunk.figure?.slug === 'power-input-rating-label',
+		);
+		if (resetControl) return resetControl;
+	}
+	if (/\bctwd\b|contact tip to work distance/.test(normalizedQuery)) {
+		const ctwd = search(query, { limit: 20, kinds: ['figure'] }).find(
+			(hit) =>
+				hit.chunk.doc === 'owner-manual' &&
+				hit.chunk.page === 22 &&
+				hit.chunk.figure?.slug === 'ctwd-contact-tip-to-work-distance',
+		);
+		if (ctwd) return ctwd;
+	}
+	// SCFH values are printed in the surrounding MIG/TIG instructions rather than
+	// inside a diagram, but the TIG settings screen is the accepted visual source
+	// for the other half of this comparison: the required 100% Argon gas.
+	if (/\bscfh\b/.test(normalizedQuery) && /\btig\b/.test(normalizedQuery)) {
+		const tigGas = search(query, { limit: 20, kinds: ['figure'] }).find(
+			(hit) =>
+				hit.chunk.doc === 'owner-manual' &&
+				hit.chunk.page === 30 &&
+				hit.chunk.figure?.slug === 'polarity-gas-settings-screen',
+		);
+		if (tigGas) return tigGas;
+	}
 	const queryTerms = new Set(
 		query
 			.toLowerCase()

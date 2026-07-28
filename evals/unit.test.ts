@@ -236,7 +236,12 @@ group('eval: golden references include every verified nameplate source');
 // miss for q06-q08.
 const goldenQuestions = JSON.parse(
 	readFileSync(new URL('../research/eval-questions.json', import.meta.url), 'utf8'),
-) as { id: string; page_refs: number[] }[];
+) as {
+	id: string;
+	question: string;
+	requires_visual: boolean;
+	page_refs: number[];
+}[];
 for (const id of ['q06', 'q07', 'q08']) {
 	const question = goldenQuestions.find((q) => q.id === id);
 	check(question?.page_refs.includes(25) === true, `${id} accepts the verified nameplate on p. 25`);
@@ -361,6 +366,24 @@ check(
 	directlyRelevantFigure(machineSettingsQuestion, search(machineSettingsQuestion, { limit: 8 }))
 		?.chunk.figure?.slug === 'stick-diameter-thickness-screen',
 	'generic product wording does not outweigh the matching settings controls',
+);
+const visualQuestions = goldenQuestions.filter((question) => question.requires_visual);
+const automaticallySurfaced = visualQuestions.map((question) => ({
+	question,
+	figure: directlyRelevantFigure(question.question, search(question.question, { limit: 8 })),
+}));
+const strongAutomaticFigures = automaticallySurfaced.filter(({ figure }) => figure?.chunk.figure);
+check(
+	strongAutomaticFigures.length === visualQuestions.length,
+	'every visual golden question deterministically surfaces a figure',
+);
+check(
+	strongAutomaticFigures.every(
+		({ question, figure }) =>
+			figure &&
+			(question.page_refs.length === 0 || question.page_refs.includes(figure.chunk.page)),
+	),
+	'every automatically surfaced figure comes from an accepted reference page',
 );
 
 group('retrieval: shared MIG ratings remain reachable from a flux-cored query');
