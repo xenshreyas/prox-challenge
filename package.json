@@ -15,6 +15,7 @@
     "start": "node dist/src/server/index.js",
     "kb:build": "tsx src/kb/build.ts",
     "eval": "tsx evals/run.ts",
+    "test": "tsx evals/unit.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {

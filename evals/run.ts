@@ -55,7 +55,7 @@ interface QuestionResult {
 }
 
 /** Normalizes for tolerant substring matching: "2-1/2" vs "2 1/2", "200A" vs "200 A". */
-function norm(s: string): string {
+export function norm(s: string): string {
 	return s
 		.toLowerCase()
 		.replace(/[\u2013\u2014]/g, '-')
@@ -74,7 +74,7 @@ function norm(s: string): string {
 		.trim();
 }
 
-function includesFact(haystack: string, needle: string): boolean {
+export function includesFact(haystack: string, needle: string): boolean {
 	const h = norm(haystack);
 	const n = norm(needle);
 	if (h.includes(n)) return true;
