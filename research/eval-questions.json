@@ -11,7 +11,7 @@
       "10"
     ],
     "requires_visual": false,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       7,
       19,
@@ -28,7 +28,7 @@
       "100%"
     ],
     "requires_visual": false,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       7,
       19,
@@ -46,7 +46,7 @@
       "7"
     ],
     "requires_visual": false,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       7,
       29
@@ -63,7 +63,7 @@
       "60 A"
     ],
     "requires_visual": false,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       7,
       29
@@ -80,7 +80,7 @@
       "100 A"
     ],
     "requires_visual": false,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       7,
       29
@@ -96,7 +96,7 @@
       "20.5"
     ],
     "requires_visual": true,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       16,
       27
@@ -112,7 +112,7 @@
       "60%"
     ],
     "requires_visual": true,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       16,
       27
@@ -142,7 +142,7 @@
       "MIG"
     ],
     "requires_visual": false,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       7,
       19
@@ -239,7 +239,7 @@
       "DCEN"
     ],
     "requires_visual": false,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       42
     ]
@@ -404,7 +404,7 @@
       "white mark"
     ],
     "requires_visual": true,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       20,
       30,
@@ -426,7 +426,7 @@
       "3/16"
     ],
     "requires_visual": true,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": []
   },
   {
@@ -456,7 +456,7 @@
       "spatter"
     ],
     "requires_visual": true,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       17,
       22,
@@ -477,7 +477,7 @@
       "CTWD"
     ],
     "requires_visual": false,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       37
     ]
@@ -495,7 +495,7 @@
       "rust"
     ],
     "requires_visual": false,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       43
     ]
@@ -511,7 +511,7 @@
       "CTWD"
     ],
     "requires_visual": false,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       37
     ]
@@ -526,7 +526,7 @@
       "travel speed"
     ],
     "requires_visual": false,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       37,
       40
@@ -558,7 +558,7 @@
       "undercut"
     ],
     "requires_visual": false,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       35,
       36,
@@ -579,7 +579,7 @@
       "too tight"
     ],
     "requires_visual": false,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       42
     ]
@@ -595,7 +595,7 @@
       "liner"
     ],
     "requires_visual": false,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       42
     ]
@@ -612,7 +612,7 @@
       "Tensioner"
     ],
     "requires_visual": false,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       42
     ]
@@ -664,7 +664,7 @@
       "Dirty"
     ],
     "requires_visual": false,
-    "requires_artifact": false,
+    "requires_artifact": true,
     "page_refs": [
       43
     ]
