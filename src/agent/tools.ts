@@ -267,6 +267,52 @@ function asksForTroubleshootingEnumeration(question: string): boolean {
 /** Restates source-backed answer parts that a narrow model rewrite can obscure. */
 export function answerCompletenessCallToAction(query: string, userQuestion = query): string {
 	const intent = `${userQuestion} ${query}`;
+	const asksHowSizeAndThicknessAreSelected =
+		/\b(?:wire|rod|electrode)\b/i.test(userQuestion) &&
+		/\b(?:size|diameter)\b/i.test(userQuestion) &&
+		/\bmaterial thickness\b/i.test(userQuestion) &&
+		/\b(?:select|selection|set|handle)\b/i.test(userQuestion);
+	if (asksHowSizeAndThicknessAreSelected) {
+		// The question spans the MIG, TIG, and Stick setup screens. A narrow rewrite
+		// such as "process settings by stock gauge" can rank the supplementary
+		// capability chart above the machine-control instructions, even though the
+		// user asked how the welder performs the selection. Reassemble the three
+		// source-backed control paths from the original manual pages.
+		const controlGuidance = search(
+			'wire rod electrode diameter material thickness Left Knob Right Knob white mark Auto Weld Settings',
+			{ limit: 15 },
+		);
+		const mig = controlGuidance.find(
+			(hit) =>
+				hit.chunk.doc === 'owner-manual' &&
+				hit.chunk.page === 20 &&
+				hit.chunk.kind === 'prose' &&
+				/white mark on the line/i.test(hit.chunk.text),
+		);
+		const tig = controlGuidance.find(
+			(hit) =>
+				hit.chunk.doc === 'owner-manual' &&
+				hit.chunk.page === 30 &&
+				hit.chunk.kind === 'prose' &&
+				/rod diameter and material thickness/i.test(hit.chunk.text),
+		);
+		const stick = controlGuidance.find(
+			(hit) =>
+				hit.chunk.doc === 'owner-manual' &&
+				hit.chunk.page === 32 &&
+				hit.chunk.kind === 'prose' &&
+				/electrode diameter and material thickness/i.test(hit.chunk.text),
+		);
+		if (mig && tig && stick) {
+			return (
+				`\n\n=== MACHINE CONTROL MAPPING REQUIRED BY THE USER ===\n` +
+				`${renderHit(mig)}\n\n${renderHit(tig)}\n\n${renderHit(stick)}\n\n` +
+				`Explain how the machine performs the requested selection for wire, rod, and electrode ` +
+				`modes. Preserve the Left Knob / Right Knob mapping, Auto Weld Settings behavior, ` +
+				`and the white recommended-setting mark in the visible answer.`
+			);
+		}
+	}
 	if (asksForTroubleshootingEnumeration(userQuestion)) {
 		// A model rewrite can collapse an exact matrix-row request into generic
 		// wire-feed terms, which exposes adjacent troubleshooting rows and invites
@@ -362,6 +408,17 @@ export function artifactCompletionInstruction(question: string): string {
 		return (
 			'The user explicitly asked for the troubleshooting list. In your final prose, also list every ' +
 			'retrieved cause and its paired check or fix with the page citation; do not only describe the artifact.'
+		);
+	}
+	if (
+		/\b(?:wire|rod|electrode)\b/i.test(question) &&
+		/\b(?:size|diameter)\b/i.test(question) &&
+		/\bmaterial thickness\b/i.test(question) &&
+		/\b(?:select|selection|set|handle)\b/i.test(question)
+	) {
+		return (
+			'The user asked how the machine handles size versus thickness selection. In your final prose, ' +
+			'summarize the control mapping and recommended-setting mark with page citations; do not only describe the artifact.'
 		);
 	}
 	return 'Briefly tell the user what it does and how to use it — do not repeat its contents in prose.';

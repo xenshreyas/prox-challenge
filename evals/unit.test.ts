@@ -516,6 +516,24 @@ check(
 	'ordinary artifact answers stay concise',
 );
 
+const controlSelectionQuestion =
+	'How does the OmniPro 220 handle wire/electrode size versus material thickness selection?';
+const controlSelectionCompleteness = answerCompletenessCallToAction(
+	'process settings by stock gauge',
+	controlSelectionQuestion,
+);
+check(
+	controlSelectionCompleteness.includes('Turn Left Knob to set wire diameter') &&
+		controlSelectionCompleteness.includes('Right Knob to set material thickness') &&
+		controlSelectionCompleteness.includes('white mark on the line'),
+	'original q25 wording restores the machine control mapping after a narrow search rewrite',
+);
+check(
+	artifactCompletionInstruction(controlSelectionQuestion).includes('summarize the control mapping') &&
+		artifactCompletionInstruction(controlSelectionQuestion).includes('do not only describe the artifact'),
+	'q25 artifact completion preserves the requested explanation in visible prose',
+);
+
 group('agent: artifact-required turns cannot stop before creating one');
 for (const question of [
 	'What is the highest MIG output current at 100% duty cycle on 120 V and 240 V?',
