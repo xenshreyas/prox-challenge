@@ -534,6 +534,17 @@ check(
 	'q25 artifact completion preserves the requested explanation in visible prose',
 );
 
+const resetButtonQuestion = 'When should the Reset Button on the back of the machine be pressed?';
+const resetButtonCompleteness = answerCompletenessCallToAction(
+	'rear reset control operation',
+	resetButtonQuestion,
+);
+check(
+	resetButtonCompleteness.includes('low- or over-voltage protection') &&
+		resetButtonCompleteness.includes('Circuit breaker tripped due to high input amperage'),
+	'original q39 wording preserves both documented Reset Button cases after a narrow search rewrite',
+);
+
 group('agent: artifact-required turns cannot stop before creating one');
 for (const question of [
 	'What is the highest MIG output current at 100% duty cycle on 120 V and 240 V?',

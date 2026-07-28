@@ -313,6 +313,34 @@ export function answerCompletenessCallToAction(query: string, userQuestion = que
 			);
 		}
 	}
+	const asksWhenToUseResetButton =
+		/\breset button\b/i.test(userQuestion) &&
+		/\b(?:when|case|condition|press|use)\b/i.test(userQuestion);
+	if (asksWhenToUseResetButton) {
+		// The manual documents the same physical Reset Button under two different
+		// troubleshooting problems. A narrow rewrite commonly retrieves only one.
+		const resetGuidance = search(userQuestion, { limit: 8 });
+		const voltageProtection = resetGuidance.find(
+			(hit) =>
+				hit.chunk.doc === 'owner-manual' &&
+				hit.chunk.page === 43 &&
+				/low- or over-voltage protection/i.test(hit.chunk.text),
+		);
+		const trippedBreaker = resetGuidance.find(
+			(hit) =>
+				hit.chunk.doc === 'owner-manual' &&
+				hit.chunk.page === 43 &&
+				/circuit breaker tripped due to high input amperage/i.test(hit.chunk.text),
+		);
+		if (voltageProtection && trippedBreaker) {
+			return (
+				`\n\n=== BOTH DOCUMENTED RESET BUTTON CASES ARE REQUIRED ===\n` +
+				`${renderHit(voltageProtection)}\n\n${renderHit(trippedBreaker)}\n\n` +
+				`Answer when the rear Reset Button should be pressed by naming both distinct p. 43 cases: ` +
+				`voltage protection after checking the input voltage, and a circuit breaker trip from high input amperage.`
+			);
+		}
+	}
 	if (asksForTroubleshootingEnumeration(userQuestion)) {
 		// A model rewrite can collapse an exact matrix-row request into generic
 		// wire-feed terms, which exposes adjacent troubleshooting rows and invites
