@@ -16,7 +16,7 @@
  */
 
 import { spawn } from 'node:child_process';
-import { mkdtempSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
@@ -40,7 +40,9 @@ type ContentBlock =
   | { type: string; [k: string]: unknown };
 
 interface AnthropicMessage {
-  role: 'user' | 'assistant';
+  // The SDK occasionally injects a `system`-role message into the history, so
+  // the union is wider than the public Messages API documents.
+  role: 'user' | 'assistant' | 'system';
   content: string | ContentBlock[];
 }
 
@@ -161,22 +163,86 @@ function systemToText(system: MessagesRequest['system']): string {
   return system.map((b) => b.text ?? '').filter(Boolean).join('\n\n');
 }
 
-function blockToText(block: ContentBlock): string {
+/**
+ * Flatten an Anthropic `tool_result.content` value into readable plain text.
+ *
+ * This is the crux of the tool_result round-trip. `content` is legally either a
+ * plain string OR an array of content blocks (`{type:'text',text}`,
+ * `{type:'image',...}`). The array form is what the Claude Agent SDK actually
+ * sends for MCP tool results, and JSON-stringifying it produced
+ * `[{"type":"text","text":"[owner-manual p.7 | fact]\n..."}]` — every newline
+ * escaped, wrapped in array/object syntax. The model read that as machine noise
+ * rather than as retrieved manual content, and answered as if it had no tools.
+ *
+ * We therefore unwrap to the underlying text verbatim, newlines intact.
+ */
+export function toolResultToText(content: unknown): string {
+  if (content == null) return '(no content)';
+  if (typeof content === 'string') return content;
+  if (Array.isArray(content)) {
+    const parts: string[] = [];
+    for (const item of content) {
+      if (typeof item === 'string') {
+        parts.push(item);
+        continue;
+      }
+      if (!item || typeof item !== 'object') continue;
+      const b = item as { type?: string; text?: unknown; source?: unknown };
+      if (b.type === 'text' && typeof b.text === 'string') {
+        parts.push(b.text);
+      } else if (b.type === 'image') {
+        // Never inline base64 — it would blow up the prompt for no benefit.
+        parts.push('(an image was returned by this tool and is not shown here)');
+      } else if (typeof b.text === 'string') {
+        parts.push(b.text);
+      } else {
+        parts.push(safeJson(item));
+      }
+    }
+    const joined = parts.filter((s) => s.trim().length > 0).join('\n\n');
+    return joined || '(empty result)';
+  }
+  if (typeof content === 'object') {
+    const b = content as { text?: unknown };
+    if (typeof b.text === 'string') return b.text;
+  }
+  return safeJson(content);
+}
+
+/** Maps tool_use_id -> tool name so a tool_result can be labelled with the tool
+ *  that produced it. Populated by walking the message history in order. */
+type ToolNames = Map<string, string>;
+
+function blockToText(block: ContentBlock, toolNames: ToolNames): string {
   switch (block.type) {
     case 'text':
       return String((block as { text?: string }).text ?? '');
     case 'tool_use': {
-      const b = block as { name: string; input: unknown };
-      return `[assistant called tool ${b.name} with input ${safeJson(b.input)}]`;
+      const b = block as { id?: string; name: string; input: unknown };
+      if (b.id) toolNames.set(b.id, b.name);
+      return `[You requested execution of tool "${b.name}" with input ${safeJson(b.input)}]`;
     }
     case 'tool_result': {
-      const b = block as { content?: unknown; is_error?: boolean };
-      const body =
-        typeof b.content === 'string' ? b.content : safeJson(b.content);
-      return `[tool result${b.is_error ? ' (error)' : ''}: ${body}]`;
+      const b = block as { tool_use_id?: string; content?: unknown; is_error?: boolean };
+      const name = (b.tool_use_id && toolNames.get(b.tool_use_id)) || 'unknown tool';
+      const body = toolResultToText(b.content);
+      if (b.is_error) {
+        return (
+          `<<< TOOL ERROR — tool "${name}" failed >>>\n${body}\n<<< END TOOL ERROR >>>`
+        );
+      }
+      // Delimited, unescaped, and explicitly framed as authoritative retrieved
+      // content so the model answers FROM it instead of doubting it exists.
+      return (
+        `<<< TOOL RESULT — real output of "${name}", executed successfully by the orchestrator >>>\n` +
+        `${body}\n` +
+        `<<< END TOOL RESULT >>>`
+      );
     }
+    case 'image':
+      return '(the user attached an image)';
     default:
-      return `[${block.type} block]`;
+      return '';
   }
 }
 
@@ -188,10 +254,52 @@ function safeJson(v: unknown): string {
   }
 }
 
-function contentToText(content: AnthropicMessage['content']): string {
+function contentToText(content: AnthropicMessage['content'], toolNames: ToolNames): string {
   if (typeof content === 'string') return content;
   if (!Array.isArray(content)) return '';
-  return content.map(blockToText).filter(Boolean).join('\n');
+  return content
+    .map((b) => blockToText(b, toolNames))
+    .filter((s) => s.trim().length > 0)
+    .join('\n\n');
+}
+
+/**
+ * Tools the SDK host injects that have nothing to do with this agent. They are
+ * enormous (the `Workflow` schema alone was 21KB of a 93KB prompt, and the whole
+ * catalog was 78KB) and they crowd the five real manual tools — plus the actual
+ * tool results — into the noise floor. Copilot then reported it had "no manual
+ * search tool". We keep the catalog focused on tools the agent may really call.
+ */
+const IRRELEVANT_TOOL_NAMES = new Set([
+  'Agent',
+  'CronCreate',
+  'CronDelete',
+  'CronList',
+  'DesignSync',
+  'EnterWorktree',
+  'ExitWorktree',
+  'Monitor',
+  'NotebookEdit',
+  'PushNotification',
+  'ReportFindings',
+  'ScheduleWakeup',
+  'SendMessage',
+  'Skill',
+  'TaskCreate',
+  'TaskGet',
+  'TaskList',
+  'TaskOutput',
+  'TaskStop',
+  'TaskUpdate',
+  'Workflow',
+]);
+
+/** Keep MCP/domain tools; drop host-injected boilerplate. Never return empty if
+ *  the request genuinely had tools — falling back to the full list is safer than
+ *  telling the model it has none. */
+export function relevantTools(tools: AnthropicTool[]): AnthropicTool[] {
+  const kept = tools.filter((t) => !IRRELEVANT_TOOL_NAMES.has(t.name));
+  return kept.length > 0 ? kept : tools;
 }
 
 export function buildPrompt(body: MessagesRequest): string {
@@ -201,7 +309,7 @@ export function buildPrompt(body: MessagesRequest): string {
     parts.push(`=== SYSTEM INSTRUCTIONS ===\n${system}`);
   }
 
-  const tools = body.tools ?? [];
+  const tools = relevantTools(body.tools ?? []);
   if (tools.length > 0) {
     const spec = tools
       .map(
@@ -232,6 +340,16 @@ export function buildPrompt(body: MessagesRequest): string {
         `FORMAT 2 — final answer.\n` +
         `Emit ONLY prose for the user. No JSON object, no mention of tool_calls, and do not\n` +
         `echo the arguments you previously sent. Any JSON here will be stripped and lost.\n\n` +
+        `CHOOSING BETWEEN THEM — this is the most common mistake, read it carefully.\n` +
+        `You get as MANY turns as you need. Requesting a tool does NOT cost you the chance\n` +
+        `to write the answer: the orchestrator runs the tool, sends you the result, and then\n` +
+        `asks you again. So whenever you find yourself wanting to BOTH call a tool AND write\n` +
+        `prose in the same reply, emit FORMAT 1 ONLY and save the prose for the next turn.\n` +
+        `Never write prose that describes, promises, or apologises for a tool call instead of\n` +
+        `making it — for example, never say "I tried to build you a calculator but the tool\n` +
+        `isn't available", "the artifact tool errored out", or "I can't show that here".\n` +
+        `Those statements are always false. If you want an artifact or a figure, just emit\n` +
+        `the FORMAT 1 tool call for it and you will get your turn to write prose afterwards.\n\n` +
         `This applies to EVERY turn, including turns that follow tool results. After you\n` +
         `receive tool results, either request more executions (Format 1) or write the final\n` +
         `answer as plain prose (Format 2).`,
@@ -242,11 +360,39 @@ export function buildPrompt(body: MessagesRequest): string {
     );
   }
 
+  // Walk messages IN ORDER with a shared tool_use_id -> name map, so each
+  // tool_result can name the tool that produced it. The full history (including
+  // every prior tool_use/tool_result pair) is replayed on every turn, because
+  // each Copilot invocation is stateless.
+  const toolNames: ToolNames = new Map();
   const convo = (body.messages ?? [])
-    .map((m) => `${m.role.toUpperCase()}: ${contentToText(m.content)}`)
+    .map((m) => {
+      const text = contentToText(m.content, toolNames);
+      if (!text.trim()) return '';
+      // The SDK sometimes injects a `system`-role message mid-history. Labelling
+      // it "SYSTEM:" made it compete with the real system block, so it is
+      // demoted to a clearly-marked context note.
+      const label =
+        m.role === 'user' ? 'USER' : m.role === 'assistant' ? 'ASSISTANT' : 'CONTEXT NOTE';
+      return `${label}: ${text}`;
+    })
     .filter((s) => s.trim().length > 0)
     .join('\n\n');
-  parts.push(`=== CONVERSATION ===\n${convo}\n\n=== YOUR REPLY ===`);
+
+  const hasToolResults = (body.messages ?? []).some(
+    (m) =>
+      Array.isArray(m.content) && m.content.some((b) => b && b.type === 'tool_result'),
+  );
+
+  parts.push(
+    `=== CONVERSATION ===\n${convo}\n\n=== YOUR REPLY ===` +
+      (hasToolResults
+        ? `\nThe TOOL RESULT blocks above are real output that the orchestrator already\n` +
+          `executed on your behalf. They are authoritative — use their contents to answer.\n` +
+          `Never say a tool is unavailable, missing, or that you lack access: the results\n` +
+          `are right there. Answer directly from them and cite the pages they give you.`
+        : ''),
+  );
 
   return parts.join('\n\n');
 }
@@ -371,6 +517,11 @@ export function jsonSpans(text: string): JsonSpan[] {
         push(start, end + 1);
         break;
       }
+      // `lastIndexOf(x, -1)` clamps to 0 rather than returning -1, so walking
+      // back from index 0 yields 0 forever. Stop explicitly at the start of the
+      // string. Without this, an unbalanced payload (a truncated tool_calls
+      // object) spins here indefinitely and hangs the request.
+      if (start === 0) break;
       start = text.lastIndexOf('{', start - 1);
     }
   }
@@ -664,6 +815,17 @@ export function createCopilotProxyApp(): express.Express {
       } stream=${Boolean(body.stream)}`,
     );
 
+    if (process.env.SHIM_DEBUG_DIR) {
+      try {
+        mkdirSync(process.env.SHIM_DEBUG_DIR, { recursive: true });
+        const stamp = `${Date.now()}-${randomUUID().slice(0, 8)}`;
+        writeFileSync(join(process.env.SHIM_DEBUG_DIR, `req-${stamp}.json`), safeJson(body));
+        writeFileSync(join(process.env.SHIM_DEBUG_DIR, `prompt-${stamp}.txt`), prompt);
+      } catch {
+        /* debugging only */
+      }
+    }
+
     let copilotText: string;
     try {
       copilotText = await runCopilot(prompt);
@@ -680,6 +842,17 @@ export function createCopilotProxyApp(): express.Express {
     }
 
     const msg = buildAnthropicMessage(model, prompt, copilotText, toolsAvailable);
+
+    if (process.env.SHIM_DEBUG_DIR) {
+      try {
+        const stamp = `${Date.now()}-${randomUUID().slice(0, 8)}`;
+        writeFileSync(join(process.env.SHIM_DEBUG_DIR, `raw-${stamp}.txt`), copilotText);
+        writeFileSync(join(process.env.SHIM_DEBUG_DIR, `built-${stamp}.json`), safeJson(msg));
+      } catch {
+        /* debugging only */
+      }
+    }
+
     if (body.stream) streamMessage(res, msg);
     else res.json(msg);
   });
